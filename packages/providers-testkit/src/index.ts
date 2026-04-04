@@ -2,6 +2,7 @@ import type {
   DerivedResourcePlan,
   ProviderRegistry,
   Refusal,
+  ResourceReset,
   ResourceValidation,
   RepositoryConfiguration,
   WorktreeInstanceInput
@@ -34,6 +35,47 @@ function validateScopedResource(input: {
   };
 }
 
+function deriveScopedResource(input: {
+  resource: {
+    name: string;
+    provider: string;
+    isolationStrategy: DerivedResourcePlan["isolationStrategy"];
+  };
+  worktree: WorktreeInstanceInput;
+}): DerivedResourcePlan | Refusal {
+  if (!input.worktree.id) {
+    return unsafeScope("Safe worktree scope cannot be determined.");
+  }
+
+  return {
+    resourceName: input.resource.name,
+    provider: input.resource.provider,
+    isolationStrategy: input.resource.isolationStrategy,
+    worktreeId: input.worktree.id,
+    handle: `${input.resource.name}--${input.worktree.id}`
+  };
+}
+
+function resetScopedResource(input: {
+  resource: {
+    name: string;
+    provider: string;
+  };
+  derived: DerivedResourcePlan;
+  worktree: WorktreeInstanceInput;
+}): ResourceReset | Refusal {
+  if (!input.worktree.id) {
+    return unsafeScope("Safe worktree scope cannot be determined.");
+  }
+
+  return {
+    resourceName: input.resource.name,
+    provider: input.resource.provider,
+    worktreeId: input.derived.worktreeId,
+    capability: "reset"
+  };
+}
+
 export function createExplicitTestProviders(): ProviderRegistry {
   return {
     resources: {
@@ -42,17 +84,10 @@ export function createExplicitTestProviders(): ProviderRegistry {
           validate: true
         },
         deriveResource({ resource, worktree }) {
-          if (!worktree.id) {
-            return unsafeScope("Safe worktree scope cannot be determined.");
-          }
-
-          return {
-            resourceName: resource.name,
-            provider: resource.provider,
-            isolationStrategy: resource.isolationStrategy,
-            worktreeId: worktree.id,
-            handle: `${resource.name}--${worktree.id}`
-          };
+          return deriveScopedResource({
+            resource,
+            worktree
+          });
         },
         validateResource({ resource, derived, worktree }) {
           return validateScopedResource({
@@ -62,19 +97,30 @@ export function createExplicitTestProviders(): ProviderRegistry {
           });
         }
       },
+      "test-resource-provider-with-reset": {
+        capabilities: {
+          reset: true
+        },
+        deriveResource({ resource, worktree }) {
+          return deriveScopedResource({
+            resource,
+            worktree
+          });
+        },
+        resetResource({ resource, derived, worktree }) {
+          return resetScopedResource({
+            resource,
+            derived,
+            worktree
+          });
+        }
+      },
       "test-resource-provider-no-validate": {
         deriveResource({ resource, worktree }) {
-          if (!worktree.id) {
-            return unsafeScope("Safe worktree scope cannot be determined.");
-          }
-
-          return {
-            resourceName: resource.name,
-            provider: resource.provider,
-            isolationStrategy: resource.isolationStrategy,
-            worktreeId: worktree.id,
-            handle: `${resource.name}--${worktree.id}`
-          };
+          return deriveScopedResource({
+            resource,
+            worktree
+          });
         }
       }
     },
@@ -135,6 +181,21 @@ export function createProvidersWithResourceValidateRefusal(
   providers.resources["test-resource-provider"] = {
     ...providers.resources["test-resource-provider"],
     validateResource() {
+      return refusal;
+    }
+  };
+
+  return providers;
+}
+
+export function createProvidersWithResourceResetRefusal(
+  refusal: Refusal
+): ProviderRegistry {
+  const providers = createExplicitTestProviders();
+
+  providers.resources["test-resource-provider-with-reset"] = {
+    ...providers.resources["test-resource-provider-with-reset"],
+    resetResource() {
       return refusal;
     }
   };
