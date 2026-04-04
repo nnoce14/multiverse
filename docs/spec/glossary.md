@@ -48,7 +48,7 @@ A resource models state collision risk.
 
 ## Endpoint
 
-A local communication address whose routing must remain correct for the owning worktree instance.
+An endpoint is a local communication address whose routing must remain correct for the owning worktree instance so that one worktree does not unintentionally send traffic to or receive traffic for another.
 
 An endpoint models communication misdirection risk.
 
@@ -68,6 +68,36 @@ A provider that carries out isolation behavior for a resource.
 ## Endpoint Provider
 
 A provider that carries out isolation behavior for an endpoint.
+
+## Repository Configuration
+
+The unified business declaration model through which a repository defines the objects managed by the tool and binds those objects to explicit providers and explicit isolation behavior.
+
+In 1.0, repository configuration declares:
+
+- managed resources
+- managed endpoints
+- provider assignments
+- repository-level configuration metadata required by the tool
+
+## Provider Capability
+
+A capability declared by a provider to indicate which isolation-related operations the provider supports.
+
+Examples may include:
+
+- derive
+- validate
+- reset
+- cleanup
+
+## Repository Intent
+
+The capabilities a repository declares it intends to use for a specific managed object.
+
+Repository intent is distinct from provider capability.
+
+A repository may not intend to use a capability that the selected provider does not support.
 
 ## Derive
 
