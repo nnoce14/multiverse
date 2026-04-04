@@ -3,4 +3,4 @@ profile = "multiverse"
 [profiles.multiverse]
 sandbox_mode = "workspace-write"
 approval_policy = "on-request"
-model = "gpt-5.4-codex"
+model = "gpt-5.4"
