@@ -6,7 +6,7 @@ Multiverse is a behavior-first tool for deterministic local runtime isolation ac
 
 ## Current Phase
 
-This repository is transitioning from design into implementation through small vertical slices driven by executable acceptance tests.
+This repository is transitioning from design into implementation through small slices driven by executable acceptance tests.
 
 ## Source of Truth
 
@@ -57,7 +57,7 @@ Multiverse follows behavior-first TDD.
 
 Each implementation task must define:
 
-- the vertical slice in scope
+- the slice in scope
 - scenario coverage in scope
 - expected files to change
 - explicit out-of-scope behavior
@@ -68,7 +68,7 @@ If a task is ambiguous, preserve existing boundaries rather than introducing new
 
 ## Codex Environment Rules
 
-When running package-manager or toolchain commands that may write to HOME, XDG data/cache locations, Corepack state, or the pnpm store, use the repository wrapper instead of calling the tool directly.
+When running package-manager or toolchain commands that may write to HOME, XDG paths, Corepack state, or the pnpm store, use the repository wrapper.
 
 Use:
 
@@ -76,34 +76,21 @@ Use:
 - `scripts/codex-env.sh corepack ...`
 - `scripts/codex-env.sh npm ...` only if npm is explicitly required
 
-Do not use `/tmp` for repo-local package-manager state unless explicitly instructed.
+Keep repo-local tool state under `.codex/`.
 Do not redirect project files outside the repository.
-Keep all Codex scratch state under `.codex/`.
 
-## Git Workflow Rules
+## Git Workflow Policy
 
 For coding-agent work in this repository:
 
 - never work directly on `main`
-- create or use a task-scoped branch named with one of:
-  - `feat/<task-or-slice-name>`
-  - `fix/<task-or-slice-name>`
-  - `chore/<task-or-slice-name>`
-  - `docs/<task-or-slice-name>`
-- before making commits, summarize the planned file set and the checks that passed
-- make focused, logical commits grouped by purpose
-- do not use `git add .`
-- stage only files relevant to the current task
-- do not include unrelated generated files or incidental changes
-- after required checks pass, the agent may:
-  - commit to the current task branch
-  - push the branch to origin
-  - create a pull request for review
-- the agent must not:
-  - push directly to `main`
-  - merge pull requests
-  - force-push unless explicitly instructed
-  - include unrelated cleanup in a feature PR
+- never push directly to `main`
+- use a task-scoped branch for implementation work
+- pull requests are required for review
+- merges are human-only
+- do not force-push unless explicitly instructed
+
+Use the `git-task-workflow` skill when a task reaches branch, commit, push, or pull request stages.
 
 ### Pull Request Rules
 
@@ -115,3 +102,52 @@ When creating a PR, include:
 - notable deferred items or follow-up work
 
 Keep PR descriptions concise and factual.
+
+## Skill Usage Guidance
+
+When a task clearly matches a repository skill, prefer using the skill instead of recreating the workflow ad hoc.
+
+Prefer the lightest workflow that fits the task.
+
+### Default execution
+
+For small or well-bounded tasks, use direct execution without subagents.
+
+### Use `scenario-to-acceptance`
+
+Use when the task is to derive executable acceptance coverage from existing ADRs, specs, scenarios, and active slice docs.
+
+### Use `slice-implementation`
+
+Use when acceptance or contract coverage already defines the in-scope behavior and the task is to implement the minimum production change required for the current slice.
+
+### Use `git-task-workflow`
+
+Use when the task is ready for branch, commit, push, or pull request workflow.
+Do not use it before required checks pass.
+
+### Use `lite-subagent-development`
+
+Use when a task may benefit from limited subagent decomposition for planning, implementation, and review.
+Default to solo or paired mode.
+Do not use subagents to mutate the same shared seam in parallel.
+
+### Use `slice-review`
+
+Use when reviewing a diff, branch, or implementation result against the active slice, task, and scenario-map documents.
+
+### Use `validation-boundary-check`
+
+Use when a change introduces or modifies validation logic and it is necessary to confirm that declaration validation, scope-safety validation, and provider capability or runtime validation are placed in the correct layer.
+
+## Skill Selection Rule
+
+Prefer the smallest number of skills and the lightest execution mode that can complete the task safely.
+
+Do not introduce subagents or extra review passes unless they provide clear value for the active slice.
+
+## Core Principle
+
+The agent may discover implementation, but it may not discover business truth.
+
+Business truth must come from ADRs, specs, scenarios, and development slice/task documents.

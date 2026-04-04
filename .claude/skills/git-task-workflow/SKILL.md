@@ -12,6 +12,7 @@ Use this skill when a Multiverse task is ready for branch, commit, push, and pul
 1. `CLAUDE.md`
 2. the active task document under `docs/development/tasks/` if one exists
 3. the active slice document under `docs/development/` if the task is slice-based
+4. `AGENTS.md` only if additional repo guidance is needed
 
 ## Use this skill when
 
@@ -30,7 +31,7 @@ Do not use this skill when:
 - the work is not ready for commit
 - required checks have not passed
 - the working tree still contains unrelated changes
-- the task would require merging a PR
+- the task would require merging a pull request
 
 ## Workflow
 
