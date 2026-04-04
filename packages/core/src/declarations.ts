@@ -26,7 +26,31 @@ export interface ValidatedEndpointDeclaration {
   provider: string;
 }
 
+export interface EndpointDeclarationValidationError {
+  path: "name" | "role" | "provider";
+  code: "required";
+}
+
+export type EndpointDeclarationValidationResult<T> =
+  | {
+      ok: true;
+      value: T;
+    }
+  | {
+      ok: false;
+      errors: EndpointDeclarationValidationError[];
+    };
+
 function requiredError(path: string): DeclarationValidationError {
+  return {
+    path,
+    code: "required"
+  };
+}
+
+function requiredEndpointError(
+  path: EndpointDeclarationValidationError["path"]
+): EndpointDeclarationValidationError {
   return {
     path,
     code: "required"
@@ -88,31 +112,21 @@ export function validateResourceDeclaration(input: {
   };
 }
 
-export function validateEndpointDeclaration(input: {
-  endpoint: EndpointDeclaration;
-  index: number;
-}):
-  | {
-      ok: true;
-      value: ValidatedEndpointDeclaration;
-    }
-  | {
-      ok: false;
-      errors: DeclarationValidationError[];
-    } {
-  const { endpoint, index } = input;
-  const errors: DeclarationValidationError[] = [];
+export function validateEndpointDeclaration(
+  input: EndpointDeclaration
+): EndpointDeclarationValidationResult<ValidatedEndpointDeclaration> {
+  const errors: EndpointDeclarationValidationError[] = [];
 
-  if (!endpoint.name) {
-    errors.push(requiredError(`endpoints[${index}].name`));
+  if (!input.name) {
+    errors.push(requiredEndpointError("name"));
   }
 
-  if (!endpoint.role) {
-    errors.push(requiredError(`endpoints[${index}].role`));
+  if (!input.role) {
+    errors.push(requiredEndpointError("role"));
   }
 
-  if (!endpoint.provider) {
-    errors.push(requiredError(`endpoints[${index}].provider`));
+  if (!input.provider) {
+    errors.push(requiredEndpointError("provider"));
   }
 
   if (errors.length > 0) {
@@ -125,10 +139,54 @@ export function validateEndpointDeclaration(input: {
   return {
     ok: true,
     value: {
-      name: endpoint.name!,
-      role: endpoint.role!,
-      provider: endpoint.provider!
+      name: input.name!,
+      role: input.role!,
+      provider: input.provider!
     }
+  };
+}
+
+export function withValidatedEndpointDeclaration<TResult>(
+  input: EndpointDeclaration,
+  onValidated: (endpoint: ValidatedEndpointDeclaration) => TResult
+): EndpointDeclarationValidationResult<TResult> {
+  const validation = validateEndpointDeclaration(input);
+  if (!validation.ok) {
+    return validation;
+  }
+
+  return {
+    ok: true,
+    value: onValidated(validation.value)
+  };
+}
+
+export function validateIndexedEndpointDeclaration(input: {
+  endpoint: EndpointDeclaration;
+  index: number;
+}):
+  | {
+      ok: true;
+      value: ValidatedEndpointDeclaration;
+    }
+  | {
+      ok: false;
+      errors: DeclarationValidationError[];
+    } {
+  const validation = validateEndpointDeclaration(input.endpoint);
+
+  if (!validation.ok) {
+    return {
+      ok: false,
+      errors: validation.errors.map((error) =>
+        requiredError(`endpoints[${input.index}].${error.path}`)
+      )
+    };
+  }
+
+  return {
+    ok: true,
+    value: validation.value
   };
 }
 
@@ -150,10 +208,7 @@ export function toValidatedResource(
 export function toValidatedEndpoint(
   endpoint: EndpointDeclaration
 ): ValidatedEndpointDeclaration | FailureResult {
-  const validation = validateEndpointDeclaration({
-    endpoint,
-    index: 0
-  });
+  const validation = validateEndpointDeclaration(endpoint);
 
   if (!validation.ok) {
     return invalidConfiguration("Endpoint declaration is invalid.");

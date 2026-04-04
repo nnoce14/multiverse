@@ -1,7 +1,7 @@
 import type { RepositoryConfiguration } from "../../provider-contracts/index";
 
 import {
-  validateEndpointDeclaration,
+  validateIndexedEndpointDeclaration,
   validateResourceDeclaration,
   type DeclarationValidationError,
   type ValidatedEndpointDeclaration,
@@ -47,7 +47,7 @@ export function validateRepositoryConfiguration(
   }
 
   for (const [index, endpoint] of input.endpoints.entries()) {
-    const validation = validateEndpointDeclaration({
+    const validation = validateIndexedEndpointDeclaration({
       endpoint,
       index
     });
