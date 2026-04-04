@@ -1,54 +1,33 @@
 import type {
-  DerivedEndpointMapping,
-  DerivedResourcePlan,
-  EndpointProvider,
   ProviderRegistry,
   Refusal,
   ResolveSlice01Result,
   ResolveSlice02Result,
   RepositoryConfiguration,
   ResourceValidation,
-  ResourceProvider,
   WorktreeInstanceInput
 } from "../../provider-contracts/index";
+import { isRefusal, unsupportedCapability } from "./refusals";
 import {
-  isFailureResult,
-  toValidatedEndpoint,
-  toValidatedResource,
-  type ValidatedEndpointDeclaration,
-  type ValidatedResourceDeclaration
-} from "./declarations";
-import {
-  invalidConfiguration,
-  isRefusal,
-  unsafeScope,
-  unsupportedCapability
-} from "./refusals";
+  resolveSliceExecution,
+  type ResolvedSliceExecution
+} from "./orchestration";
 
 export {
   validateWorktreeIdentity,
   withValidatedWorktreeIdentity
 } from "./worktree-identity";
 
-function deriveResourcePlan(input: {
-  provider: ResourceProvider;
-  resource: ValidatedResourceDeclaration;
-  worktree: {
-    id: string;
-    label?: string;
-    branch?: string;
-  };
-}): DerivedResourcePlan | Refusal {
-  return input.provider.deriveResource({
-    resource: input.resource,
-    worktree: input.worktree
-  });
+function isFailureOutcome(
+  value: ResolvedSliceExecution | Extract<ResolveSlice01Result, { ok: false }>
+): value is Extract<ResolveSlice01Result, { ok: false }> {
+  return "ok" in value && value.ok === false;
 }
 
 function validateResourcePlan(input: {
-  provider: ResourceProvider;
-  resource: ValidatedResourceDeclaration;
-  derived: DerivedResourcePlan;
+  provider: ResolvedSliceExecution["providers"]["resource"];
+  resource: ResolvedSliceExecution["declarations"]["resource"];
+  derived: ResolvedSliceExecution["derived"]["resourcePlan"];
   worktree: {
     id?: string;
     label?: string;
@@ -69,107 +48,25 @@ function validateResourcePlan(input: {
   });
 }
 
-function deriveEndpointMapping(input: {
-  provider: EndpointProvider;
-  endpoint: ValidatedEndpointDeclaration;
-  worktree: {
-    id: string;
-    label?: string;
-    branch?: string;
-  };
-}): DerivedEndpointMapping | Refusal {
-  return input.provider.deriveEndpoint({
-    endpoint: input.endpoint,
-    worktree: input.worktree
-  });
-}
-
 export function resolveSlice01(input: {
   repository: RepositoryConfiguration;
   worktree: WorktreeInstanceInput;
   providers: ProviderRegistry;
 }): ResolveSlice01Result {
-  const { repository, worktree, providers } = input;
-
-  if (!worktree.id) {
-    return unsafeScope("Safe worktree scope cannot be determined.");
-  }
-
-  if (repository.resources.length !== 1) {
-    return invalidConfiguration(
-      "Slice 01 requires exactly one declared managed resource."
-    );
-  }
-
-  if (repository.endpoints.length !== 1) {
-    return invalidConfiguration(
-      "Slice 01 requires exactly one declared managed endpoint."
-    );
-  }
-
-  const resource = repository.resources[0];
-  const endpoint = repository.endpoints[0];
-
-  const validatedResource = toValidatedResource(resource);
-  if (isFailureResult(validatedResource)) {
-    return validatedResource;
-  }
-
-  const validatedEndpoint = toValidatedEndpoint(endpoint);
-  if (isFailureResult(validatedEndpoint)) {
-    return validatedEndpoint;
-  }
-
-  const resourceProvider = providers.resources[validatedResource.provider];
-  if (!resourceProvider) {
-    return invalidConfiguration(
-      `No resource provider is registered for "${validatedResource.provider}".`
-    );
-  }
-
-  const endpointProvider = providers.endpoints[validatedEndpoint.provider];
-  if (!endpointProvider) {
-    return invalidConfiguration(
-      `No endpoint provider is registered for "${validatedEndpoint.provider}".`
-    );
-  }
-
-  const resolvedWorktree = {
-    id: worktree.id,
-    label: worktree.label,
-    branch: worktree.branch
-  };
-
-  const resourcePlan = deriveResourcePlan({
-    provider: resourceProvider,
-    resource: validatedResource,
-    worktree: resolvedWorktree
+  const execution = resolveSliceExecution({
+    ...input,
+    resourceCountReason: "Slice 01 requires exactly one declared managed resource.",
+    endpointCountReason: "Slice 01 requires exactly one declared managed endpoint."
   });
 
-  if (isRefusal(resourcePlan)) {
-    return {
-      ok: false,
-      refusal: resourcePlan
-    };
-  }
-
-  const endpointMapping = deriveEndpointMapping({
-    provider: endpointProvider,
-    endpoint: validatedEndpoint,
-    worktree: resolvedWorktree
-  });
-
-  if (isRefusal(endpointMapping)) {
-    return {
-      ok: false,
-      refusal: endpointMapping
-    };
+  if (isFailureOutcome(execution)) {
+    return execution;
   }
 
   return {
     ok: true,
-    resourcePlans: [resourcePlan],
-    endpointMappings: [endpointMapping]
+    resourcePlans: [execution.derived.resourcePlan],
+    endpointMappings: [execution.derived.endpointMapping]
   };
 }
 
@@ -178,105 +75,24 @@ export function resolveSlice02(input: {
   worktree: WorktreeInstanceInput;
   providers: ProviderRegistry;
 }): ResolveSlice02Result {
-  const { repository, worktree, providers } = input;
-
-  if (!worktree.id) {
-    return {
-      ok: false,
-      refusal: {
-        category: "unsafe_scope",
-        reason: "Safe worktree scope cannot be determined."
-      }
-    };
-  }
-
-  if (repository.resources.length !== 1) {
-    return {
-      ok: false,
-      refusal: {
-        category: "invalid_configuration",
-        reason: "Slice 02 requires exactly one declared managed resource."
-      }
-    };
-  }
-
-  if (repository.endpoints.length !== 1) {
-    return {
-      ok: false,
-      refusal: {
-        category: "invalid_configuration",
-        reason: "Slice 02 requires exactly one declared managed endpoint."
-      }
-    };
-  }
-
-  const resource = repository.resources[0];
-  const endpoint = repository.endpoints[0];
-
-  const validatedResource = toValidatedResource(resource);
-  if (isFailureResult(validatedResource)) {
-    return validatedResource;
-  }
-
-  const validatedEndpoint = toValidatedEndpoint(endpoint);
-  if (isFailureResult(validatedEndpoint)) {
-    return validatedEndpoint;
-  }
-
-  const resourceProvider = providers.resources[validatedResource.provider];
-  if (!resourceProvider) {
-    return invalidConfiguration(
-      `No resource provider is registered for "${validatedResource.provider}".`
-    );
-  }
-
-  const endpointProvider = providers.endpoints[validatedEndpoint.provider];
-  if (!endpointProvider) {
-    return invalidConfiguration(
-      `No endpoint provider is registered for "${validatedEndpoint.provider}".`
-    );
-  }
-
-  const resolvedWorktree = {
-    id: worktree.id,
-    label: worktree.label,
-    branch: worktree.branch
-  };
-
-  const resourcePlan = deriveResourcePlan({
-    provider: resourceProvider,
-    resource: validatedResource,
-    worktree: resolvedWorktree
+  const execution = resolveSliceExecution({
+    ...input,
+    resourceCountReason: "Slice 02 requires exactly one declared managed resource.",
+    endpointCountReason: "Slice 02 requires exactly one declared managed endpoint."
   });
 
-  if (isRefusal(resourcePlan)) {
-    return {
-      ok: false,
-      refusal: resourcePlan
-    };
-  }
-
-  const endpointMapping = deriveEndpointMapping({
-    provider: endpointProvider,
-    endpoint: validatedEndpoint,
-    worktree: resolvedWorktree
-  });
-
-  if (isRefusal(endpointMapping)) {
-    return {
-      ok: false,
-      refusal: endpointMapping
-    };
+  if (isFailureOutcome(execution)) {
+    return execution;
   }
 
   const resourceValidations: ResourceValidation[] = [];
 
-  if (validatedResource.scopedValidate) {
+  if (execution.declarations.resource.scopedValidate) {
     const validation = validateResourcePlan({
-      provider: resourceProvider,
-      resource: validatedResource,
-      derived: resourcePlan,
-      worktree: resolvedWorktree
+      provider: execution.providers.resource,
+      resource: execution.declarations.resource,
+      derived: execution.derived.resourcePlan,
+      worktree: execution.worktree
     });
 
     if (isRefusal(validation)) {
@@ -295,8 +111,8 @@ export function resolveSlice02(input: {
 
   return {
     ok: true,
-    resourcePlans: [resourcePlan],
-    endpointMappings: [endpointMapping],
+    resourcePlans: [execution.derived.resourcePlan],
+    endpointMappings: [execution.derived.endpointMapping],
     resourceValidations
   };
 }
