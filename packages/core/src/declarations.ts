@@ -6,6 +6,11 @@ import type {
 
 import { invalidConfiguration, type FailureResult } from "./refusals";
 
+export interface DeclarationValidationError {
+  path: string;
+  code: "required";
+}
+
 export interface ValidatedResourceDeclaration {
   name: string;
   provider: string;
@@ -21,65 +26,140 @@ export interface ValidatedEndpointDeclaration {
   provider: string;
 }
 
-export function toValidatedResource(
-  resource: ResourceDeclaration
-): ValidatedResourceDeclaration | FailureResult {
+function requiredError(path: string): DeclarationValidationError {
+  return {
+    path,
+    code: "required"
+  };
+}
+
+export function validateResourceDeclaration(input: {
+  resource: ResourceDeclaration;
+  index: number;
+}):
+  | {
+      ok: true;
+      value: ValidatedResourceDeclaration;
+    }
+  | {
+      ok: false;
+      errors: DeclarationValidationError[];
+    } {
+  const { resource, index } = input;
+  const errors: DeclarationValidationError[] = [];
+
   if (!resource.name) {
-    return invalidConfiguration("Resource declaration must include a name.");
+    errors.push(requiredError(`resources[${index}].name`));
   }
 
   if (!resource.provider) {
-    return invalidConfiguration("Resource declaration must include a provider.");
+    errors.push(requiredError(`resources[${index}].provider`));
   }
 
   if (!resource.isolationStrategy) {
-    return invalidConfiguration(
-      "Resource declaration must include a primary isolation strategy."
-    );
+    errors.push(requiredError(`resources[${index}].isolationStrategy`));
   }
 
   if (typeof resource.scopedReset !== "boolean") {
-    return invalidConfiguration(
-      "Resource declaration must indicate scoped reset intent."
-    );
+    errors.push(requiredError(`resources[${index}].scopedReset`));
   }
 
   if (typeof resource.scopedCleanup !== "boolean") {
-    return invalidConfiguration(
-      "Resource declaration must indicate scoped cleanup intent."
-    );
+    errors.push(requiredError(`resources[${index}].scopedCleanup`));
+  }
+
+  if (errors.length > 0) {
+    return {
+      ok: false,
+      errors
+    };
   }
 
   return {
-    name: resource.name,
-    provider: resource.provider,
-    isolationStrategy: resource.isolationStrategy,
-    scopedValidate: resource.scopedValidate === true,
-    scopedReset: resource.scopedReset,
-    scopedCleanup: resource.scopedCleanup
+    ok: true,
+    value: {
+      name: resource.name!,
+      provider: resource.provider!,
+      isolationStrategy: resource.isolationStrategy!,
+      scopedValidate: resource.scopedValidate === true,
+      scopedReset: resource.scopedReset!,
+      scopedCleanup: resource.scopedCleanup!
+    }
   };
+}
+
+export function validateEndpointDeclaration(input: {
+  endpoint: EndpointDeclaration;
+  index: number;
+}):
+  | {
+      ok: true;
+      value: ValidatedEndpointDeclaration;
+    }
+  | {
+      ok: false;
+      errors: DeclarationValidationError[];
+    } {
+  const { endpoint, index } = input;
+  const errors: DeclarationValidationError[] = [];
+
+  if (!endpoint.name) {
+    errors.push(requiredError(`endpoints[${index}].name`));
+  }
+
+  if (!endpoint.role) {
+    errors.push(requiredError(`endpoints[${index}].role`));
+  }
+
+  if (!endpoint.provider) {
+    errors.push(requiredError(`endpoints[${index}].provider`));
+  }
+
+  if (errors.length > 0) {
+    return {
+      ok: false,
+      errors
+    };
+  }
+
+  return {
+    ok: true,
+    value: {
+      name: endpoint.name!,
+      role: endpoint.role!,
+      provider: endpoint.provider!
+    }
+  };
+}
+
+export function toValidatedResource(
+  resource: ResourceDeclaration
+): ValidatedResourceDeclaration | FailureResult {
+  const validation = validateResourceDeclaration({
+    resource,
+    index: 0
+  });
+
+  if (!validation.ok) {
+    return invalidConfiguration("Resource declaration is invalid.");
+  }
+
+  return validation.value;
 }
 
 export function toValidatedEndpoint(
   endpoint: EndpointDeclaration
 ): ValidatedEndpointDeclaration | FailureResult {
-  if (!endpoint.name) {
-    return invalidConfiguration("Endpoint declaration must include a name.");
+  const validation = validateEndpointDeclaration({
+    endpoint,
+    index: 0
+  });
+
+  if (!validation.ok) {
+    return invalidConfiguration("Endpoint declaration is invalid.");
   }
 
-  if (!endpoint.role) {
-    return invalidConfiguration("Endpoint declaration must include a role.");
-  }
-
-  if (!endpoint.provider) {
-    return invalidConfiguration("Endpoint declaration must include a provider.");
-  }
-
-  return {
-    name: endpoint.name,
-    role: endpoint.role,
-    provider: endpoint.provider
-  };
+  return validation.value;
 }
 
 export function isFailureResult(
