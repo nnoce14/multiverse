@@ -40,6 +40,11 @@ Do not invent behavior not supported by these sources.
 
 - implement only the current slice
 - prefer extending tests before extending production code
+- follow a bounded red-green-refactor loop for slice implementation:
+  1. make the relevant acceptance and contract tests fail for the in-scope behavior
+  2. add the minimum production code needed to make them pass
+  3. perform a bounded refactor pass while keeping tests green
+  4. add focused unit tests for extracted pure helpers when they improve maintainability
 - do not broaden CLI or UX surface unless explicitly required
 - do not introduce orchestration behavior unless explicitly required
 - do not silently resolve ambiguity by guessing
@@ -52,6 +57,8 @@ Multiverse follows behavior-first TDD.
 - acceptance tests verify externally visible business behavior and derive from scenario documents
 - provider contract tests verify provider compliance with core expectations
 - unit tests verify local implementation details and do not replace acceptance coverage
+- passing acceptance tests are necessary but not always sufficient for completion; a slice may require a bounded refactor pass before it is considered done
+- refactor passes must preserve behavior proven by acceptance and contract tests
 
 ## Task Discipline
 
@@ -119,7 +126,16 @@ Use when the task is to derive executable acceptance coverage from existing ADRs
 
 ### Use `slice-implementation`
 
-Use when acceptance or contract coverage already defines the in-scope behavior and the task is to implement the minimum production change required for the current slice.
+Use when acceptance or contract coverage already defines the in-scope behavior and the task is to implement the current slice with a narrow production change.
+
+### Use `tdd-red-green-refactor`
+
+Use when the task requires the full TDD loop for the current slice, including:
+
+- driving behavior from acceptance and contract tests
+- getting to green with minimal code
+- performing a bounded refactor pass under test protection
+- adding focused unit tests for extracted pure helpers where useful
 
 ### Use `git-task-workflow`
 
