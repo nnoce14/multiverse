@@ -1,0 +1,9 @@
+{
+  "name": "@multiverse/cli",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@multiverse/core": "workspace:*",
+    "@multiverse/provider-contracts": "workspace:*"
+  }
+}
