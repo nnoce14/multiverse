@@ -136,3 +136,47 @@ A resource isolation strategy in which isolation is achieved through a unique fi
 ## Process-Scoped
 
 A resource isolation strategy in which isolation is achieved through a dedicated process or runtime instance.
+
+## Declared Object
+
+A repository object explicitly declared in repository configuration and managed by the tool.
+
+In 1.0, declared objects include:
+
+- resources
+- endpoints
+
+## Safety Principle
+
+The rule that the tool may act only when it can preserve the guaranteed ownership boundary of a worktree instance.
+
+## Refusal
+
+A first-class business behavior in which the tool or a provider does not proceed with an operation because safe worktree-instance ownership cannot be determined or preserved.
+
+## Invalid Configuration
+
+A business failure category in which repository declarations violate required business rules.
+
+Examples may include missing declarations, missing required fields, missing provider assignment, or contradictory configuration intent.
+
+## Unsupported Capability
+
+A business failure category in which a repository declares intent to use a capability that the selected provider does not support.
+
+## Unsafe Scope
+
+A business failure category and refusal condition in which the tool or a provider cannot safely determine or preserve the owning worktree-instance boundary for an operation.
+
+## Provider Failure
+
+A business failure category in which a valid provider cannot successfully complete an operation for provider-specific reasons unrelated to invalid configuration, unsupported capability, or unsafe scope.
+
+## Destructive Operation
+
+An operation that reinitializes, destroys, or removes isolated state.
+
+In 1.0, destructive operations include:
+
+- reset
+- cleanup

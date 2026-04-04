@@ -37,6 +37,7 @@ Business rules, guarantees, and domain concepts:
 - `docs/spec/provider-model.md`
 - `docs/spec/repository-configuration.md`
 - `docs/spec/resource-isolation.md`
+- `docs/spec/safety-and-refusal.md`
 - `docs/spec/worktree-identity.md`
 
 ### Scenarios
@@ -47,6 +48,7 @@ Behavior-oriented scenarios intended to evolve into acceptance-test inputs for T
 - `docs/scenarios/provider-model.scenarios.md`
 - `docs/scenarios/repository-configuration.scenarios.md`
 - `docs/scenarios/resource-isolation.scenarios.md`
+- `docs/scenarios/safety-and-refusal.scenarios.md`
 - `docs/scenarios/worktree-identity.scenarios.md`
 
 ### ADRs
@@ -60,6 +62,7 @@ Accepted architectural decisions that close alternatives:
 - `docs/adr/0005-providers-implement-isolation-contracts.md`
 - `docs/adr/0006-endpoints-are-declared-communication-objects.md`
 - `docs/adr/0007-repository-configuration-is-explicit-in-1-0.md`
+- `docs/adr/0008-unsafe-operations-are-refused-in-1-0.md`
 
 ## Core Constraint
 
