@@ -1,4 +1,5 @@
 import type {
+  ResourceCleanup,
   DerivedResourcePlan,
   ProviderRegistry,
   Refusal,
@@ -76,6 +77,26 @@ function resetScopedResource(input: {
   };
 }
 
+function cleanupScopedResource(input: {
+  resource: {
+    name: string;
+    provider: string;
+  };
+  derived: DerivedResourcePlan;
+  worktree: WorktreeInstanceInput;
+}): ResourceCleanup | Refusal {
+  if (!input.worktree.id) {
+    return unsafeScope("Safe worktree scope cannot be determined.");
+  }
+
+  return {
+    resourceName: input.resource.name,
+    provider: input.resource.provider,
+    worktreeId: input.derived.worktreeId,
+    capability: "cleanup"
+  };
+}
+
 export function createExplicitTestProviders(): ProviderRegistry {
   return {
     resources: {
@@ -109,6 +130,24 @@ export function createExplicitTestProviders(): ProviderRegistry {
         },
         resetResource({ resource, derived, worktree }) {
           return resetScopedResource({
+            resource,
+            derived,
+            worktree
+          });
+        }
+      },
+      "test-resource-provider-with-cleanup": {
+        capabilities: {
+          cleanup: true
+        },
+        deriveResource({ resource, worktree }) {
+          return deriveScopedResource({
+            resource,
+            worktree
+          });
+        },
+        cleanupResource({ resource, derived, worktree }) {
+          return cleanupScopedResource({
             resource,
             derived,
             worktree
@@ -196,6 +235,21 @@ export function createProvidersWithResourceResetRefusal(
   providers.resources["test-resource-provider-with-reset"] = {
     ...providers.resources["test-resource-provider-with-reset"],
     resetResource() {
+      return refusal;
+    }
+  };
+
+  return providers;
+}
+
+export function createProvidersWithResourceCleanupRefusal(
+  refusal: Refusal
+): ProviderRegistry {
+  const providers = createExplicitTestProviders();
+
+  providers.resources["test-resource-provider-with-cleanup"] = {
+    ...providers.resources["test-resource-provider-with-cleanup"],
+    cleanupResource() {
       return refusal;
     }
   };

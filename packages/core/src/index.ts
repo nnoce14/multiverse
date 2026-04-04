@@ -1,6 +1,8 @@
 import type {
+  CleanupOneResourceResult,
   ProviderRegistry,
   Refusal,
+  ResourceCleanup,
   ResetOneResourceResult,
   ResolveSlice01Result,
   ResolveSlice02Result,
@@ -91,6 +93,35 @@ function resetResourcePlan(input: {
   }
 
   return input.provider.resetResource({
+    resource: input.resource,
+    derived: input.derived,
+    worktree: input.worktree
+  });
+}
+
+function cleanupResourcePlan(input: {
+  provider: ResolvedSliceExecution["providers"]["resource"];
+  resource: ResolvedSliceExecution["declarations"]["resource"];
+  derived: ResolvedSliceExecution["derived"]["resourcePlan"];
+  worktree: {
+    id?: string;
+    label?: string;
+    branch?: string;
+  };
+}): ResourceCleanup | Refusal | Extract<CleanupOneResourceResult, { ok: false }> {
+  if (!input.resource.scopedCleanup) {
+    return invalidConfiguration(
+      `Resource "${input.resource.name}" does not declare scoped cleanup intent.`
+    );
+  }
+
+  if (!input.provider.capabilities?.cleanup || !input.provider.cleanupResource) {
+    return unsupportedCapability(
+      `Resource provider "${input.resource.provider}" does not support cleanup.`
+    );
+  }
+
+  return input.provider.cleanupResource({
     resource: input.resource,
     derived: input.derived,
     worktree: input.worktree
@@ -221,5 +252,63 @@ export function resetOneResource(input: {
     ok: true,
     resourcePlans: [resourcePlan],
     resourceResets: [reset]
+  };
+}
+
+export function cleanupOneResource(input: {
+  repository: RepositoryConfiguration;
+  worktree: WorktreeInstanceInput;
+  providers: ProviderRegistry;
+}): CleanupOneResourceResult {
+  const preflight = resolveSlicePreflight({
+    ...input,
+    resourceCountReason: "Cleanup requires exactly one declared managed resource.",
+    endpointCountReason: "Cleanup requires exactly one declared managed endpoint."
+  });
+
+  if (isFailureResult(preflight)) {
+    return preflight;
+  }
+
+  if (!preflight.declarations.resource.scopedCleanup) {
+    return invalidConfiguration(
+      `Resource "${preflight.declarations.resource.name}" does not declare scoped cleanup intent.`
+    );
+  }
+
+  const resourcePlan = preflight.providers.resource.deriveResource({
+    resource: preflight.declarations.resource,
+    worktree: preflight.worktree
+  });
+
+  if (isRefusal(resourcePlan)) {
+    return {
+      ok: false,
+      refusal: resourcePlan
+    };
+  }
+
+  const cleanup = cleanupResourcePlan({
+    provider: preflight.providers.resource,
+    resource: preflight.declarations.resource,
+    derived: resourcePlan,
+    worktree: preflight.worktree
+  });
+
+  if (isFailureResult(cleanup)) {
+    return cleanup;
+  }
+
+  if (isRefusal(cleanup)) {
+    return {
+      ok: false,
+      refusal: cleanup
+    };
+  }
+
+  return {
+    ok: true,
+    resourcePlans: [resourcePlan],
+    resourceCleanups: [cleanup]
   };
 }
