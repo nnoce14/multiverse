@@ -1,10 +1,10 @@
 # Multiverse
 
-Multiverse (name TBD) is a local runtime isolation tool for parallel git worktree development on one machine.
+**Multiverse** is currently a project codename for a local runtime isolation tool for parallel development across git worktrees of the same repository on one machine.
 
 ## Purpose
 
-Multiverse explores a design for deterministic local runtime isolation across multiple git worktrees of the same repository.
+Multiverse is a design-first effort to define deterministic local runtime isolation across multiple git worktrees of the same repository.
 
 The tool is intended to support both human developers and coding agents by ensuring that concurrent local execution does not collide through shared resources or misrouted local endpoints.
 
@@ -18,6 +18,42 @@ This repository currently focuses on:
 - domain vocabulary
 - architectural decisions
 - behavior scenarios for future TDD implementation
+
+## Design Approach
+
+The repository follows a behavior-first design approach. Business rules and scenarios are being defined before implementation so that the eventual build phase can be driven by TDD rather than ad hoc local-development assumptions.
+
+## Document Map
+
+This repository is currently organized around behavior-first design artifacts.
+
+### Specifications
+
+Business rules, guarantees, and domain concepts:
+
+- `docs/spec/product-spec.md`
+- `docs/spec/worktree-identity.md`
+- `docs/spec/resource-isolation.md`
+- `docs/spec/provider-model.md`
+- `docs/spec/glossary.md`
+
+### Scenarios
+
+Behavior-oriented scenarios intended to evolve into acceptance-test inputs for TDD:
+
+- `docs/scenarios/worktree-identity.scenarios.md`
+- `docs/scenarios/resource-isolation.scenarios.md`
+- `docs/scenarios/provider-model.scenarios.md`
+
+### ADRs
+
+Accepted architectural decisions that close alternatives:
+
+- `docs/adr/0001-git-worktrees-only-v1.md`
+- `docs/adr/0002-branch-name-is-metadata.md`
+- `docs/adr/0003-main-checkout-uses-reserved-main-identity.md`
+- `docs/adr/0004-resource-isolation-strategies.md`
+- `docs/adr/0005-providers-implement-isolation-contracts.md`
 
 ## Core Constraint
 
