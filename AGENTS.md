@@ -79,3 +79,39 @@ Use:
 Do not use `/tmp` for repo-local package-manager state unless explicitly instructed.
 Do not redirect project files outside the repository.
 Keep all Codex scratch state under `.codex/`.
+
+## Git Workflow Rules
+
+For coding-agent work in this repository:
+
+- never work directly on `main`
+- create or use a task-scoped branch named with one of:
+  - `feat/<task-or-slice-name>`
+  - `fix/<task-or-slice-name>`
+  - `chore/<task-or-slice-name>`
+  - `docs/<task-or-slice-name>`
+- before making commits, summarize the planned file set and the checks that passed
+- make focused, logical commits grouped by purpose
+- do not use `git add .`
+- stage only files relevant to the current task
+- do not include unrelated generated files or incidental changes
+- after required checks pass, the agent may:
+  - commit to the current task branch
+  - push the branch to origin
+  - create a pull request for review
+- the agent must not:
+  - push directly to `main`
+  - merge pull requests
+  - force-push unless explicitly instructed
+  - include unrelated cleanup in a feature PR
+
+### Pull Request Rules
+
+When creating a PR, include:
+
+- a concise summary of the task
+- the scope of changes
+- validation performed
+- notable deferred items or follow-up work
+
+Keep PR descriptions concise and factual.
