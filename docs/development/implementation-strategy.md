@@ -4,7 +4,7 @@
 
 This document defines the implementation approach for the first phase of Multiverse.
 
-The goal is to begin with a small, behavior-proving vertical slice that exercises the core model without expanding scope beyond the current 1.0 boundaries.
+The goal is to begin with a small, behavior-proving slice that exercises the core model without expanding scope beyond the current 1.0 boundaries.
 
 ## Current Phase
 
@@ -13,10 +13,24 @@ Multiverse is transitioning from design-first specification into behavior-first 
 The implementation approach is:
 
 - acceptance-first
-- vertical-slice oriented
+- slice oriented
 - boundary-preserving
 - explicit rather than inferred
 - refusal-aware from the first slice
+
+## Implementation Platform
+
+Multiverse is being implemented for the npm ecosystem.
+
+The initial implementation uses:
+
+- TypeScript
+- Node.js
+- pnpm workspaces
+
+Early slices should follow Node.js and TypeScript conventions for package structure, test setup, scripts, and entrypoints.
+
+Cross-runtime portability is not an implicit goal of the initial implementation. Do not introduce runtime-neutral abstractions unless a later decision explicitly requires them.
 
 ## First Slice Objective
 
@@ -79,6 +93,14 @@ The first slice should preserve the explicit responsibility model:
 - core validates declarations and coordinates behavior
 - provider derives technology-specific scoped values
 - application/runtime remains a consumer of derived outputs
+
+## Package Discipline
+
+Multiverse is implemented as a pnpm workspace monorepo, but early slices should use the minimum number of packages required to preserve clarity.
+
+Do not create new packages for speculative reuse or abstract neatness.
+
+A new package should be introduced only when a real responsibility boundary or dependency-direction need requires it.
 
 ## Expected Deliverables for the First Slice
 

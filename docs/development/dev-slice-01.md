@@ -265,6 +265,16 @@ If a design or abstraction is not required to satisfy the acceptance behavior of
 
 This slice is meant to prove the model, not to pre-build the entire system.
 
+## Slice 01 Implementation Platform
+
+Development Slice 01 should be implemented using the repository’s accepted initial platform:
+
+- TypeScript
+- Node.js
+- pnpm workspaces
+
+Do not introduce cross-runtime abstractions or language-neutral scaffolding for this slice.
+
 ## Workspace and Package Targeting
 
 Development Slice 01 should be implemented within the repository’s pnpm workspace monorepo structure.

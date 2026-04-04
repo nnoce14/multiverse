@@ -25,7 +25,7 @@ The repository follows a behavior-first approach. Business rules, scenarios, and
 
 ## Implementation Structure
 
-Multiverse is implemented as a pnpm workspace monorepo. The codebase uses a small set of workspace packages to preserve explicit boundaries between core behavior, provider contracts, and application entrypoints.
+Multiverse is implemented as a pnpm workspace monorepo using TypeScript on Node.js for the npm ecosystem.. The codebase uses a small set of workspace packages to preserve explicit boundaries between core behavior, provider contracts, and application entrypoints.
 
 ## Development Docs
 
@@ -90,6 +90,7 @@ Accepted architectural decisions that close alternatives:
 - `docs/adr/0008-unsafe-operations-are-refused-in-1-0.md`
 - `docs/adr/0009-core-provider-repository-and-application-boundaries-are-explicit.md`
 - `docs/adr/0010-pnpm-workspace-monorepo-for-implementation.md`
+- `docs/adr/0011-typescript-nodejs-for-initial-implementation.md`
 
 ## Core Constraint
 
