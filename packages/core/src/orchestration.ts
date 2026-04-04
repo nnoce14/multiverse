@@ -6,7 +6,7 @@ import type {
   RepositoryConfiguration,
   ResourceProvider,
   WorktreeInstanceInput
-} from "../../provider-contracts/index";
+} from "@multiverse/provider-contracts";
 import {
   type ValidatedEndpointDeclaration,
   type ValidatedResourceDeclaration

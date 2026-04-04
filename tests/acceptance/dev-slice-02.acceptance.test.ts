@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { resolveSlice02 } from "../../packages/core/index";
+import { resolveSlice02 } from "@multiverse/core";
 import {
   createExplicitTestProviders,
   createValidRepositoryConfiguration,
   createWorktreeInstance
-} from "../../packages/providers-testkit/index";
+} from "@multiverse/providers-testkit";
 
 describe("Development Slice 02 acceptance", () => {
   it("accepts an explicitly supported validate capability request", () => {

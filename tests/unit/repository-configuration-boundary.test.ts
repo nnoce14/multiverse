@@ -3,8 +3,8 @@ import { describe, expect, it, vi } from "vitest";
 import {
   validateRepositoryConfiguration,
   withValidatedRepositoryConfiguration
-} from "../../packages/core/index";
-import { createValidRepositoryConfiguration } from "../../packages/providers-testkit/index";
+} from "@multiverse/core";
+import { createValidRepositoryConfiguration } from "@multiverse/providers-testkit";
 
 describe("repository configuration boundary validation", () => {
   it("accepts a valid repository configuration and returns a trusted representation", () => {

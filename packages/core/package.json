@@ -1,0 +1,11 @@
+{
+  "name": "@multiverse/core",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "dependencies": {
+    "@multiverse/provider-contracts": "workspace:*"
+  }
+}

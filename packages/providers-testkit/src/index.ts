@@ -5,7 +5,7 @@ import type {
   ResourceValidation,
   RepositoryConfiguration,
   WorktreeInstanceInput
-} from "../../provider-contracts/index";
+} from "@multiverse/provider-contracts";
 
 function unsafeScope(reason: string): Refusal {
   return {

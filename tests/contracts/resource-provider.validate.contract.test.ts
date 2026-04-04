@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { createExplicitTestProviders } from "../../packages/providers-testkit/index";
+import { createExplicitTestProviders } from "@multiverse/providers-testkit";
 
 describe("resource provider validate contract", () => {
   it("declares validate support explicitly and validates one worktree instance", () => {

@@ -1,4 +1,4 @@
-import type { RepositoryConfiguration } from "../../provider-contracts/index";
+import type { RepositoryConfiguration } from "@multiverse/provider-contracts";
 
 import {
   validateIndexedEndpointDeclaration,

@@ -4,6 +4,7 @@
   "type": "module",
   "packageManager": "pnpm@10.33.0",
   "scripts": {
+    "check:boundaries": "bash scripts/check-package-boundaries.sh",
     "test": "vitest run",
     "test:acceptance": "vitest run tests/acceptance",
     "test:contracts": "vitest run tests/contracts",
@@ -11,6 +12,9 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "@multiverse/core": "workspace:*",
+    "@multiverse/provider-contracts": "workspace:*",
+    "@multiverse/providers-testkit": "workspace:*",
     "@types/node": "^24.6.0",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4"

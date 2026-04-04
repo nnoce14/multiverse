@@ -1,0 +1,8 @@
+{
+  "name": "@multiverse/provider-contracts",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  }
+}

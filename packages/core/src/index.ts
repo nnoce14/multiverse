@@ -6,7 +6,7 @@ import type {
   RepositoryConfiguration,
   ResourceValidation,
   WorktreeInstanceInput
-} from "../../provider-contracts/index";
+} from "@multiverse/provider-contracts";
 import { isRefusal, unsupportedCapability } from "./refusals";
 import {
   resolveSliceExecution,

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { createProvidersWithResourceValidateRefusal } from "../../packages/providers-testkit/index";
+import { createProvidersWithResourceValidateRefusal } from "@multiverse/providers-testkit";
 
 describe("resource provider refusal contract", () => {
   it("may refuse validate with provider failure distinctly from unsafe scope", () => {
