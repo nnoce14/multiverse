@@ -1,11 +1,12 @@
-# ADR 0004: Resource isolation strategies for v1
+# ADR 0004: Resource isolation strategies for 1.0
 
 ## Status
+
 Accepted
 
 ## Decision
 
-In v1, resources are isolated using one primary strategy chosen from:
+In 1.0, resources are isolated using one primary strategy chosen from:
 
 - name-scoped
 - path-scoped

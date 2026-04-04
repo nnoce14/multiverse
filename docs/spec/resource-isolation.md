@@ -19,6 +19,7 @@ Resources may include real local infrastructure and integration-owned state.
 Real local infrastructure refers to backing systems or runtime dependencies that exist independently of the application process and are used during local development.
 
 Examples include:
+
 - local databases
 - local storage emulators
 - local brokers or queues
@@ -30,6 +31,7 @@ Examples include:
 Integration-owned state refers to mutable state produced or consumed by application integrations, especially fake or local-only implementations.
 
 Examples include:
+
 - fake email outbox data
 - fake search index state
 - local replay or recording stores
@@ -50,7 +52,7 @@ Endpoints are defined separately.
 
 Every resource must define how it maintains isolation across worktree instances.
 
-In v1, every resource must declare exactly one primary isolation strategy.
+In 1.0, every resource must declare exactly one primary isolation strategy.
 
 ## Isolation Strategies
 
@@ -59,6 +61,7 @@ In v1, every resource must declare exactly one primary isolation strategy.
 A resource is isolated through a unique logical name or prefix within a shared backing system.
 
 Examples include:
+
 - database names
 - schema names
 - queue names
@@ -70,6 +73,7 @@ Examples include:
 A resource is isolated through a unique filesystem path on the local machine.
 
 Examples include:
+
 - SQLite files
 - artifact directories
 - temporary directories
@@ -81,6 +85,7 @@ Examples include:
 A resource is isolated through a dedicated process or runtime instance.
 
 Examples include:
+
 - a dedicated emulator instance
 - a dedicated local mock service process
 - a dedicated per-worktree runtime for a stateful local dependency

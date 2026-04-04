@@ -8,7 +8,7 @@ Enable safe parallel local development in multiple git worktrees of the same rep
 
 Ensure isolation.
 
-## Non-Goals for v1
+## Non-Goals for 1.0
 
 - arbitrary parallel checkouts beyond git worktrees
 - deployment management
@@ -16,7 +16,7 @@ Ensure isolation.
 - agent-specific workflow behavior
 - package manager abstraction beyond the chosen target ecosystem
 
-## Required Guarantees for v1
+## Required Guarantees for 1.0
 
 1. Two worktrees of the same repository can run locally without isolated-resource collisions.
 2. Runtime context derivation is deterministic for a given worktree instance.

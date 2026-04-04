@@ -3,12 +3,15 @@
 ## Core Concepts
 
 ### Worktree ID
+
 A tool-owned unique identifier for a specific worktree instance.
 
 ### Worktree Label
+
 A human-readable label associated with a worktree instance.
 
 ### Branch Name
+
 Optional metadata. Branch name is not identity.
 
 ## Invariants
@@ -26,6 +29,7 @@ The main checkout uses the reserved Worktree ID `main` and reserved Worktree Lab
 ## Linked Worktrees
 
 A linked worktree receives:
+
 - a tool-owned unique Worktree ID
 - a human-readable Worktree Label
 - optional branch metadata
