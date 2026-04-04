@@ -36,7 +36,7 @@ Without this seam, later slices risk smearing parsing, validation, and domain be
 
 ## Problem statement
 
-Multiverse has explicit domain and architectural boundaries, and its core responsibility is deterministic local isolation. The implementation now needs a concrete rule for how raw inputs are admitted into the trusted model. :contentReference[oaicite:1]{index=1}
+Multiverse has explicit domain and architectural boundaries, and its core responsibility is deterministic local isolation. The implementation now needs a concrete rule for how raw inputs are admitted into the trusted model.
 
 At present, there is no implementation-grade contract for:
 
