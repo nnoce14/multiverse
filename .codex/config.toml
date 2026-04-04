@@ -1,0 +1,6 @@
+profile = "multiverse"
+
+[profiles.multiverse]
+sandbox = "workspace-write"
+approval_policy = "on-request"
+model = "gpt-5-codex"
