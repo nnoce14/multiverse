@@ -76,6 +76,13 @@ export interface ResourceReset {
   capability: "reset";
 }
 
+export interface ResourceCleanup {
+  resourceName: string;
+  provider: string;
+  worktreeId: string;
+  capability: "cleanup";
+}
+
 export interface ResourceProvider {
   capabilities?: ProviderCapabilities;
   deriveResource(input: {
@@ -125,6 +132,22 @@ export interface ResourceProvider {
       branch?: string;
     };
   }): ResourceReset | Refusal;
+  cleanupResource?(input: {
+    resource: {
+      name: string;
+      provider: string;
+      isolationStrategy: IsolationStrategy;
+      scopedValidate: boolean;
+      scopedReset: boolean;
+      scopedCleanup: boolean;
+    };
+    derived: DerivedResourcePlan;
+    worktree: {
+      id?: string;
+      label?: string;
+      branch?: string;
+    };
+  }): ResourceCleanup | Refusal;
 }
 
 export interface EndpointProvider {
@@ -175,6 +198,17 @@ export type ResetOneResourceResult =
       ok: true;
       resourcePlans: DerivedResourcePlan[];
       resourceResets: ResourceReset[];
+    }
+  | {
+      ok: false;
+      refusal: Refusal;
+    };
+
+export type CleanupOneResourceResult =
+  | {
+      ok: true;
+      resourcePlans: DerivedResourcePlan[];
+      resourceCleanups: ResourceCleanup[];
     }
   | {
       ok: false;
