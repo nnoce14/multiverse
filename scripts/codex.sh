@@ -12,6 +12,7 @@ mkdir -p \
 exec codex \
   --cd "$ROOT" \
   --profile multiverse \
+  --sandbox workspace-write \
   --add-dir "$ROOT/.codex/home" \
   --add-dir "$ROOT/.codex/data" \
   --add-dir "$ROOT/.codex/cache" \
