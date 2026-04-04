@@ -65,3 +65,17 @@ Each implementation task must define:
 - safety/refusal expectations
 
 If a task is ambiguous, preserve existing boundaries rather than introducing new behavior.
+
+## Codex Environment Rules
+
+When running package-manager or toolchain commands that may write to HOME, XDG data/cache locations, Corepack state, or the pnpm store, use the repository wrapper instead of calling the tool directly.
+
+Use:
+
+- `scripts/codex-env.sh pnpm ...`
+- `scripts/codex-env.sh corepack ...`
+- `scripts/codex-env.sh npm ...` only if npm is explicitly required
+
+Do not use `/tmp` for repo-local package-manager state unless explicitly instructed.
+Do not redirect project files outside the repository.
+Keep all Codex scratch state under `.codex/`.
