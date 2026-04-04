@@ -9,6 +9,12 @@ export type RefusalCategory =
   | "unsafe_scope"
   | "provider_failure";
 
+export interface ProviderCapabilities {
+  validate?: true;
+  reset?: true;
+  cleanup?: true;
+}
+
 export interface Refusal {
   category: RefusalCategory;
   reason: string;
@@ -24,6 +30,7 @@ export interface ResourceDeclaration {
   name?: string;
   provider?: string;
   isolationStrategy?: IsolationStrategy;
+  scopedValidate?: boolean;
   scopedReset?: boolean;
   scopedCleanup?: boolean;
 }
@@ -55,12 +62,21 @@ export interface DerivedEndpointMapping {
   address: string;
 }
 
+export interface ResourceValidation {
+  resourceName: string;
+  provider: string;
+  worktreeId: string;
+  capability: "validate";
+}
+
 export interface ResourceProvider {
+  capabilities?: ProviderCapabilities;
   deriveResource(input: {
     resource: {
       name: string;
       provider: string;
       isolationStrategy: IsolationStrategy;
+      scopedValidate: boolean;
       scopedReset: boolean;
       scopedCleanup: boolean;
     };
@@ -70,6 +86,22 @@ export interface ResourceProvider {
       branch?: string;
     };
   }): DerivedResourcePlan | Refusal;
+  validateResource?(input: {
+    resource: {
+      name: string;
+      provider: string;
+      isolationStrategy: IsolationStrategy;
+      scopedValidate: boolean;
+      scopedReset: boolean;
+      scopedCleanup: boolean;
+    };
+    derived: DerivedResourcePlan;
+    worktree: {
+      id?: string;
+      label?: string;
+      branch?: string;
+    };
+  }): ResourceValidation | Refusal;
 }
 
 export interface EndpointProvider {
@@ -97,6 +129,18 @@ export type ResolveSlice01Result =
       ok: true;
       resourcePlans: DerivedResourcePlan[];
       endpointMappings: DerivedEndpointMapping[];
+    }
+  | {
+      ok: false;
+      refusal: Refusal;
+    };
+
+export type ResolveSlice02Result =
+  | {
+      ok: true;
+      resourcePlans: DerivedResourcePlan[];
+      endpointMappings: DerivedEndpointMapping[];
+      resourceValidations: ResourceValidation[];
     }
   | {
       ok: false;
