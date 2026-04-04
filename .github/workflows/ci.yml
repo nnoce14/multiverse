@@ -31,8 +31,8 @@ jobs:
       - name: Run typecheck
         run: pnpm typecheck
 
-  test-acceptance:
-    name: test-acceptance
+  test:
+    name: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -52,8 +52,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run acceptance tests
-        run: pnpm test:acceptance
+      - name: Run test suite
+        run: pnpm test
 
   test-contracts:
     name: test-contracts
@@ -77,4 +77,28 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run contract tests
-        run: pnpm exec vitest run tests/contracts
+        run: pnpm test:contracts
+
+  test-unit:
+    name: test-unit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run unit tests
+        run: pnpm test:unit
