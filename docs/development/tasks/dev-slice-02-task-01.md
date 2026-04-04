@@ -93,7 +93,7 @@ Derive and add the initial executable coverage for Development Slice 02 in the a
 Coverage in scope:
 
 - accepts an explicitly supported optional capability request
-- refuses unsupported capability intent as invalid configuration
+- refuses unsupported capability intent as unsupported capability
 - refuses when safe scope for the requested operation cannot be established
 
 Requirements for Phase 1:
@@ -146,7 +146,7 @@ Requirements for Phase 2:
 
 - executable coverage exists for the Slice 02 behaviors identified in `docs/development/dev-slice-02-scenario-map.md`
 - supported capability intent is accepted only when explicitly supported
-- unsupported capability intent is refused explicitly as invalid configuration
+- unsupported capability intent is refused explicitly as unsupported capability
 - unsafe-scope refusal remains explicit for the requested operation
 - the implementation preserves the current core/provider/configuration boundaries
 - no provider inference, managed object inference, orchestration expansion, or unrelated package growth was introduced

@@ -78,12 +78,12 @@ Use this area to derive executable coverage for:
 
 - explicit provider assignment
 - explicit distinction between provider capability and repository intent
-- invalid configuration when repository intent exceeds selected provider support
+- unsupported capability when repository intent exceeds selected provider support
 
 Expected contribution to executable coverage:
 
 - repository intent is evaluated separately from provider capability
-- unsupported capability intent is refused as invalid configuration
+- unsupported capability intent is refused as unsupported capability
 
 ### Safety and refusal
 
@@ -95,7 +95,7 @@ Use this area to derive executable coverage for:
 
 Expected contribution to executable coverage:
 
-- unsupported capability remains invalid configuration, not unsafe scope
+- unsupported capability remains unsupported capability, not unsafe scope
 - unsafe ownership for the requested operation remains a refusal condition
 
 ### System boundary
@@ -138,12 +138,12 @@ Primary scenario sources:
 - repository configuration
 - system boundary
 
-### Coverage 02: refuses unsupported capability intent as invalid configuration
+### Coverage 02: refuses unsupported capability intent as unsupported capability
 
 Given a declared repository object
 And a selected provider that does not support the optional capability intended by repository configuration
 When the system evaluates the request
-Then the configuration is invalid
+Then the refusal category is `unsupported_capability`
 And the operation is refused
 
 Primary scenario sources:
