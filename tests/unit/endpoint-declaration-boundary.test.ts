@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   validateEndpointDeclaration,
   withValidatedEndpointDeclaration
-} from "../../packages/core/src/declarations";
+} from "../../packages/core/index";
 
 describe("endpoint declaration boundary validation", () => {
   it("accepts a valid endpoint declaration and returns a trusted representation", () => {

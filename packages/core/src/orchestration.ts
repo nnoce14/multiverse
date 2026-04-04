@@ -16,6 +16,7 @@ import {
   withValidatedRepositoryConfiguration
 } from "./repository-configuration";
 import { invalidConfiguration, isRefusal, unsafeScope, type FailureResult } from "./refusals";
+import { validateWorktreeIdentity } from "./worktree-identity";
 
 export interface ResolvedWorktree {
   id: string;
@@ -127,12 +128,16 @@ export function resolveSliceExecution(input: {
 function requireResolvedWorktree(
   worktree: WorktreeInstanceInput
 ): ResolvedWorktree | FailureResult {
-  if (!worktree.id) {
+  const validation = validateWorktreeIdentity({
+    worktreeId: worktree.id
+  });
+
+  if (!validation.ok) {
     return unsafeScope("Safe worktree scope cannot be determined.");
   }
 
   return {
-    id: worktree.id,
+    id: validation.value.value,
     label: worktree.label,
     branch: worktree.branch
   };

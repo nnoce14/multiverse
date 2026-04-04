@@ -1,6 +1,6 @@
 ---
 name: git-task-workflow
-description: Use this skill when a Multiverse task is ready for Git workflow handling on a task branch, including confirming or creating the correct branch, validating and grouping changes, making focused commits, pushing the branch, and creating a concise pull request for human review without merging.
+description: Use this skill when a Multiverse task is ready for Git workflow handling on a task branch, including autonomously confirming or creating the correct branch, validating and grouping changes, making focused commits, pushing the branch, and creating a concise pull request for human review without merging.
 ---
 
 # Git Task Workflow
@@ -24,6 +24,8 @@ Use this skill when the task requires:
 - pushing the branch
 - creating a pull request with `gh`
 
+In this repository, these workflow steps are autonomous by default once the work is ready and required checks have passed.
+
 ## Do not use this skill when
 
 Do not use this skill when:
@@ -43,7 +45,7 @@ Do not use this skill when:
 6. Stage only the intended files.
 7. Commit in focused logical groups.
 8. Push the branch to origin.
-9. Create a concise PR with `gh pr create` if requested and available.
+9. Create a concise PR with `gh pr create` when the work is ready and `gh` is available.
 10. Stop for human review. Do not merge.
 
 ## Validation
@@ -82,5 +84,6 @@ Stop if:
 - unrelated changes cannot be safely separated
 - required checks are failing
 - the correct branch is unclear
-- `gh` is unavailable or unauthenticated when PR creation is requested
+- `gh` is unavailable or unauthenticated when PR creation is part of task completion
+- business truth is ambiguous and would need to be invented
 - the workflow would require merge or force-push without explicit instruction

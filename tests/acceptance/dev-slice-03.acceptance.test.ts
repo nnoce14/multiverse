@@ -31,6 +31,34 @@ describe("Development Slice 03 acceptance", () => {
     });
   });
 
+  it("accepts the reserved main worktree identity and passes a trusted value downstream", () => {
+    const downstream = vi.fn((worktreeIdentity) => ({
+      trusted: worktreeIdentity
+    }));
+
+    const outcome = withValidatedWorktreeIdentity(
+      {
+        worktreeId: "main"
+      },
+      downstream
+    );
+
+    expect(outcome).toEqual({
+      ok: true,
+      value: {
+        trusted: {
+          kind: "worktree_identity",
+          value: "main"
+        }
+      }
+    });
+    expect(downstream).toHaveBeenCalledTimes(1);
+    expect(downstream).toHaveBeenCalledWith({
+      kind: "worktree_identity",
+      value: "main"
+    });
+  });
+
   it("rejects missing worktree identity with structured validation output", () => {
     const downstream = vi.fn();
 

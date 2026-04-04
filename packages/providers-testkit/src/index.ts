@@ -98,6 +98,50 @@ export function createExplicitTestProviders(): ProviderRegistry {
   };
 }
 
+export function createProvidersWithResourceDeriveRefusal(
+  refusal: Refusal
+): ProviderRegistry {
+  const providers = createExplicitTestProviders();
+
+  providers.resources["test-resource-provider"] = {
+    ...providers.resources["test-resource-provider"],
+    deriveResource() {
+      return refusal;
+    }
+  };
+
+  return providers;
+}
+
+export function createProvidersWithEndpointDeriveRefusal(
+  refusal: Refusal
+): ProviderRegistry {
+  const providers = createExplicitTestProviders();
+
+  providers.endpoints["test-endpoint-provider"] = {
+    deriveEndpoint() {
+      return refusal;
+    }
+  };
+
+  return providers;
+}
+
+export function createProvidersWithResourceValidateRefusal(
+  refusal: Refusal
+): ProviderRegistry {
+  const providers = createExplicitTestProviders();
+
+  providers.resources["test-resource-provider"] = {
+    ...providers.resources["test-resource-provider"],
+    validateResource() {
+      return refusal;
+    }
+  };
+
+  return providers;
+}
+
 export function createValidRepositoryConfiguration(
   overrides: Partial<RepositoryConfiguration> = {}
 ): RepositoryConfiguration {

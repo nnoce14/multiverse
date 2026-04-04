@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   validateRepositoryConfiguration,
   withValidatedRepositoryConfiguration
-} from "../../packages/core/src/repository-configuration";
+} from "../../packages/core/index";
 import { createValidRepositoryConfiguration } from "../../packages/providers-testkit/index";
 
 describe("repository configuration boundary validation", () => {
