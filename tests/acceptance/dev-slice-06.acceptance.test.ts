@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import { resolveSlice01, resolveSlice02 } from "../../packages/core/index";
+import { resolveSlice01, resolveSlice02 } from "@multiverse/core";
 import {
   createProvidersWithEndpointDeriveRefusal,
   createProvidersWithResourceDeriveRefusal,
   createProvidersWithResourceValidateRefusal,
   createValidRepositoryConfiguration,
   createWorktreeInstance
-} from "../../packages/providers-testkit/index";
+} from "@multiverse/providers-testkit";
 
 describe("Development Slice 06 acceptance", () => {
   it("returns provider-originated unsafe scope during derive unchanged", () => {

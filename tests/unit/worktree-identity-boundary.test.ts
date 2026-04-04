@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { validateWorktreeIdentity } from "../../packages/core/index";
+import { validateWorktreeIdentity } from "@multiverse/core";
 
 describe("worktree identity boundary validation", () => {
   it("accepts a valid worktree identity input including the reserved main identity", () => {

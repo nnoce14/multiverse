@@ -2,7 +2,7 @@ import type {
   EndpointDeclaration,
   IsolationStrategy,
   ResourceDeclaration
-} from "../../provider-contracts/index";
+} from "@multiverse/provider-contracts";
 
 import { invalidConfiguration, type FailureResult } from "./refusals";
 

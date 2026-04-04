@@ -1,11 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { resolveSlice01 } from "../../packages/core/index";
+import { resolveSlice01 } from "@multiverse/core";
 import {
   createExplicitTestProviders,
   createValidRepositoryConfiguration,
   createWorktreeInstance
-} from "../../packages/providers-testkit/index";
+} from "@multiverse/providers-testkit";
 
 describe("Development Slice 04 acceptance", () => {
   it("accepts valid raw repository configuration through the current orchestration path", () => {

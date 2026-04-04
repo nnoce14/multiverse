@@ -8,6 +8,15 @@ importers:
 
   .:
     devDependencies:
+      '@multiverse/core':
+        specifier: workspace:*
+        version: link:packages/core
+      '@multiverse/provider-contracts':
+        specifier: workspace:*
+        version: link:packages/provider-contracts
+      '@multiverse/providers-testkit':
+        specifier: workspace:*
+        version: link:packages/providers-testkit
       '@types/node':
         specifier: ^24.6.0
         version: 24.12.2
@@ -17,6 +26,20 @@ importers:
       vitest:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@24.12.2)
+
+  packages/core:
+    dependencies:
+      '@multiverse/provider-contracts':
+        specifier: workspace:*
+        version: link:../provider-contracts
+
+  packages/provider-contracts: {}
+
+  packages/providers-testkit:
+    dependencies:
+      '@multiverse/provider-contracts':
+        specifier: workspace:*
+        version: link:../provider-contracts
 
 packages:
 

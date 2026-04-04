@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { withValidatedWorktreeIdentity } from "../../packages/core/index";
+import { withValidatedWorktreeIdentity } from "@multiverse/core";
 
 describe("Development Slice 03 acceptance", () => {
   it("accepts valid raw worktree identity input and passes a trusted value downstream", () => {

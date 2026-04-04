@@ -1,4 +1,8 @@
-import type { Refusal, ResolveSlice01Result, ResolveSlice02Result } from "../../provider-contracts/index";
+import type {
+  Refusal,
+  ResolveSlice01Result,
+  ResolveSlice02Result
+} from "@multiverse/provider-contracts";
 
 export type FailureResult = Extract<ResolveSlice01Result, { ok: false }>;
 
