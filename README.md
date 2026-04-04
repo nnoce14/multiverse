@@ -10,38 +10,44 @@ The tool is intended to support both human developers and coding agents by ensur
 
 ## Current Phase
 
-Design complete. The repository is now in implementation preparation and first-slice TDD planning.
+The repository has moved from design into implementation slices driven by executable acceptance tests.
 
 This repository currently focuses on:
 
 - accepted product and behavior specifications
 - domain vocabulary and architectural decisions
 - scenario documents that drive acceptance-first TDD
-- implementation preparation for the first development slice
+- implementation slices, provider contracts, and focused unit coverage
 
 ## Design Approach
 
-The repository follows a behavior-first approach. Business rules, scenarios, and architectural decisions were defined before implementation so that development can proceed through acceptance-first TDD rather than ad hoc local-development assumptions.
+The repository follows a behavior-first approach. Business rules, scenarios, and architectural decisions were defined before implementation so development can proceed through acceptance-first TDD rather than ad hoc local-development assumptions.
 
 ## Implementation Structure
 
-Multiverse is implemented as a pnpm workspace monorepo using TypeScript on Node.js for the npm ecosystem.. The codebase uses a small set of workspace packages to preserve explicit boundaries between core behavior, provider contracts, and application entrypoints.
+Multiverse is implemented as a pnpm workspace monorepo using TypeScript on Node.js. The codebase uses a small set of workspace packages to preserve explicit boundaries between core behavior, provider contracts, and test support:
+
+- `packages/core/`
+- `packages/provider-contracts/`
+- `packages/providers-testkit/`
+- `tests/acceptance/`
+- `tests/contracts/`
+- `tests/unit/`
 
 ## Development Docs
 
 Implementation is guided by the repository’s development and agent-facing documents:
 
 - `AGENTS.md`
-- `CLAUDE.md`
+- `docs/development/testing-strategy.md`
 - `docs/development/implementation-strategy.md`
-- `docs/development/dev-slice-01.md`
+- `docs/development/dev-slice-*.md`
 - `docs/development/repo-map.md`
 
 ## Repository Layout
 
-The implementation is expected to grow primarily through:
+The implementation grows primarily through:
 
-- `apps/` — thin application entrypoints
 - `packages/` — core and provider-related workspace packages
 - `tests/` — acceptance, contract, and unit tests
 - `docs/` — specifications, scenarios, ADRs, and development guidance

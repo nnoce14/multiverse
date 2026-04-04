@@ -8,12 +8,13 @@ import type {
   WorktreeInstanceInput
 } from "../../provider-contracts/index";
 import {
-  isFailureResult,
-  toValidatedEndpoint,
-  toValidatedResource,
   type ValidatedEndpointDeclaration,
   type ValidatedResourceDeclaration
 } from "./declarations";
+import {
+  type ValidatedRepositoryConfiguration,
+  withValidatedRepositoryConfiguration
+} from "./repository-configuration";
 import { invalidConfiguration, isRefusal, unsafeScope, type FailureResult } from "./refusals";
 
 export interface ResolvedWorktree {
@@ -68,8 +69,16 @@ export function resolveSlicePreflight(input: {
     return resolvedWorktree;
   }
 
+  const repositoryValidation = withValidatedRepositoryConfiguration(
+    input.repository,
+    (repository) => repository
+  );
+  if (!repositoryValidation.ok) {
+    return invalidConfiguration("Repository configuration is invalid.");
+  }
+
   const declarations = resolveSliceDeclarations({
-    repository: input.repository,
+    repository: repositoryValidation.value,
     resourceCountReason: input.resourceCountReason,
     endpointCountReason: input.endpointCountReason
   });
@@ -130,7 +139,7 @@ function requireResolvedWorktree(
 }
 
 function resolveSliceDeclarations(input: {
-  repository: RepositoryConfiguration;
+  repository: ValidatedRepositoryConfiguration;
   resourceCountReason: string;
   endpointCountReason: string;
 }): ResolvedSliceDeclarations | FailureResult {
@@ -144,19 +153,9 @@ function resolveSliceDeclarations(input: {
     return invalidConfiguration(endpointCountReason);
   }
 
-  const validatedResource = toValidatedResource(repository.resources[0]);
-  if (isFailureResult(validatedResource)) {
-    return validatedResource;
-  }
-
-  const validatedEndpoint = toValidatedEndpoint(repository.endpoints[0]);
-  if (isFailureResult(validatedEndpoint)) {
-    return validatedEndpoint;
-  }
-
   return {
-    resource: validatedResource,
-    endpoint: validatedEndpoint
+    resource: repository.resources[0],
+    endpoint: repository.endpoints[0]
   };
 }
 
