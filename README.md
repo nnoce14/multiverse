@@ -10,18 +10,41 @@ The tool is intended to support both human developers and coding agents by ensur
 
 ## Current Phase
 
-Discovery and design.
+Design complete. The repository is now in implementation preparation and first-slice TDD planning.
 
 This repository currently focuses on:
 
-- product and behavior specification
-- domain vocabulary
-- architectural decisions
-- behavior scenarios for future TDD implementation
+- accepted product and behavior specifications
+- domain vocabulary and architectural decisions
+- scenario documents that drive acceptance-first TDD
+- implementation preparation for the first development slice
 
 ## Design Approach
 
-The repository follows a behavior-first design approach. Business rules and scenarios are being defined before implementation so that the eventual build phase can be driven by TDD rather than ad hoc local-development assumptions.
+The repository follows a behavior-first approach. Business rules, scenarios, and architectural decisions were defined before implementation so that development can proceed through acceptance-first TDD rather than ad hoc local-development assumptions.
+
+## Implementation Structure
+
+Multiverse is implemented as a pnpm workspace monorepo. The codebase uses a small set of workspace packages to preserve explicit boundaries between core behavior, provider contracts, and application entrypoints.
+
+## Development Docs
+
+Implementation is guided by the repository’s development and agent-facing documents:
+
+- `AGENTS.md`
+- `CLAUDE.md`
+- `docs/development/implementation-strategy.md`
+- `docs/development/dev-slice-01.md`
+- `docs/development/repo-map.md`
+
+## Repository Layout
+
+The implementation is expected to grow primarily through:
+
+- `apps/` — thin application entrypoints
+- `packages/` — core and provider-related workspace packages
+- `tests/` — acceptance, contract, and unit tests
+- `docs/` — specifications, scenarios, ADRs, and development guidance
 
 ## Document Map
 
@@ -66,6 +89,7 @@ Accepted architectural decisions that close alternatives:
 - `docs/adr/0007-repository-configuration-is-explicit-in-1-0.md`
 - `docs/adr/0008-unsafe-operations-are-refused-in-1-0.md`
 - `docs/adr/0009-core-provider-repository-and-application-boundaries-are-explicit.md`
+- `docs/adr/0010-pnpm-workspace-monorepo-for-implementation.md`
 
 ## Core Constraint
 
