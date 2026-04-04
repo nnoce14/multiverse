@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { resolveSlice02 } from "../../packages/core/src";
+import { resolveSlice02 } from "../../packages/core/index";
 import {
   createExplicitTestProviders,
   createValidRepositoryConfiguration,
   createWorktreeInstance
-} from "../../packages/providers-testkit/src";
+} from "../../packages/providers-testkit/index";
 
 describe("Development Slice 02 acceptance", () => {
   it("accepts an explicitly supported validate capability request", () => {

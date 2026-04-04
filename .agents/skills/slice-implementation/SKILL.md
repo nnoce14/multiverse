@@ -47,12 +47,14 @@ Do not use this skill when the task is primarily:
 ## Workflow
 
 1. Read the active development slice document.
-2. Read the acceptance tests that define the in-scope behavior.
+2. Read the acceptance and contract tests that define the in-scope behavior.
 3. Identify the smallest set of production files required.
-4. Implement only what is needed to satisfy the current slice.
-5. Preserve explicit boundaries between core, provider contracts, providers, and entrypoints.
-6. Keep changes small and test-led.
-7. Stop at the slice boundary.
+4. Make the relevant tests fail for the slice behavior if they do not already.
+5. Implement only what is needed to make the in-scope tests pass.
+6. Perform a bounded refactor pass while keeping acceptance and contract tests green.
+7. Add focused unit tests for extracted pure helpers where they improve maintainability.
+8. Preserve explicit boundaries between core, provider contracts, providers, and entrypoints.
+9. Stop at the slice boundary.
 
 ## Implementation rules
 
@@ -92,8 +94,30 @@ Do not create new packages unless the slice cannot be implemented cleanly within
 - provider contract tests verify provider compliance with core expectations
 - unit tests verify local implementation details
 - unit tests do not replace acceptance coverage
+- refactor passes must preserve behavior already proven by acceptance and contract tests
+- when extracting pure validation, mapping, derivation, or refusal helpers, add unit tests only if they improve maintainability of the touched path
 
 When adding tests, keep them aligned with the slice and avoid testing provider internals through acceptance coverage.
+
+## Bounded Refactor
+
+A bounded refactor pass is part of the slice workflow when the first green implementation leaves the touched path harder to extend safely.
+
+Allowed refactor goals:
+
+- separate mixed responsibilities in touched files
+- extract stable pure helpers for validation, mapping, derivation, or refusal logic
+- improve package entrypoint discipline on the touched path
+- reduce monolithic concentration in the active slice path
+- keep public entrypoints thin where practical
+
+Do not use the refactor phase to:
+
+- add new product behavior
+- broaden scope beyond the active slice
+- perform repo-wide cleanup
+- introduce speculative abstractions
+- redesign package structure without a real boundary need
 
 ## Refusal discipline
 
@@ -117,7 +141,8 @@ These constraints remain mandatory:
 
 Produce:
 
-- the minimal production implementation required for the current slice
+- the minimum production implementation required for the current slice
+- a bounded refactor of the touched implementation path when needed for maintainability
 - only the tests needed to support and verify that slice
 - no unrelated refactors
 - no future-slice convenience features

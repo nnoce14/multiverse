@@ -4,7 +4,10 @@
   "type": "module",
   "packageManager": "pnpm@10.33.0",
   "scripts": {
+    "test": "vitest run",
     "test:acceptance": "vitest run tests/acceptance",
+    "test:contracts": "vitest run tests/contracts",
+    "test:unit": "vitest run tests/unit",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

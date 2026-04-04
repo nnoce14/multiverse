@@ -62,6 +62,10 @@ Unit tests are useful for:
 
 Unit tests must not replace acceptance coverage for business rules.
 
+Unit tests are especially useful after a refactor pass extracts stable pure helpers from a previously monolithic implementation path.
+
+They should support maintainability of validation, mapping, derivation, and refusal helpers without replacing acceptance or provider contract coverage.
+
 ## Test Progression
 
 Implementation should generally proceed in this order:
@@ -69,8 +73,13 @@ Implementation should generally proceed in this order:
 1. identify in-scope acceptance scenarios for the current slice
 2. create executable acceptance tests for those scenarios
 3. add provider contract tests needed by the slice
-4. implement the minimal production code required to satisfy the tests
-5. add focused unit tests where they improve maintainability
+4. implement the minimum production code required to satisfy the tests
+5. perform a bounded refactor pass while keeping acceptance and contract tests green
+6. add focused unit tests where they improve maintainability of extracted pure logic
+
+The goal is not to stop at the first green implementation.
+
+The goal is to preserve accepted behavior while improving structure enough that the next slice can be implemented without accumulating accidental architecture.
 
 ## Mapping from Scenario Docs to Tests
 
