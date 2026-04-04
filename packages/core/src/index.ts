@@ -1,194 +1,34 @@
 import type {
   DerivedEndpointMapping,
   DerivedResourcePlan,
-  EndpointDeclaration,
   EndpointProvider,
-  IsolationStrategy,
   ProviderRegistry,
   Refusal,
+  ResolveSlice01Result,
   ResolveSlice02Result,
   RepositoryConfiguration,
   ResourceValidation,
-  ResolveSlice01Result,
-  ResourceDeclaration,
   ResourceProvider,
   WorktreeInstanceInput
-} from "../../provider-contracts/src";
+} from "../../provider-contracts/index";
+import {
+  isFailureResult,
+  toValidatedEndpoint,
+  toValidatedResource,
+  type ValidatedEndpointDeclaration,
+  type ValidatedResourceDeclaration
+} from "./declarations";
+import {
+  invalidConfiguration,
+  isRefusal,
+  unsafeScope,
+  unsupportedCapability
+} from "./refusals";
 
-type FailureResult = Extract<ResolveSlice01Result, { ok: false }>;
-
-function invalidConfiguration(reason: string): FailureResult {
-  return {
-    ok: false,
-    refusal: {
-      category: "invalid_configuration",
-      reason
-    }
-  };
-}
-
-function unsafeScope(reason: string): FailureResult {
-  return {
-    ok: false,
-    refusal: {
-      category: "unsafe_scope",
-      reason
-    }
-  };
-}
-
-function unsupportedCapability(reason: string): Extract<
-  ResolveSlice02Result,
-  { ok: false }
-> {
-  return {
-    ok: false,
-    refusal: {
-      category: "unsupported_capability",
-      reason
-    }
-  };
-}
-
-function isRefusal(value: unknown): value is Refusal {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "category" in value &&
-    "reason" in value
-  );
-}
-
-function validateResource(resource: ResourceDeclaration) {
-  if (!resource.name) {
-    return invalidConfiguration("Resource declaration must include a name.");
-  }
-
-  if (!resource.provider) {
-    return invalidConfiguration("Resource declaration must include a provider.");
-  }
-
-  if (!resource.isolationStrategy) {
-    return invalidConfiguration(
-      "Resource declaration must include a primary isolation strategy."
-    );
-  }
-
-  if (typeof resource.scopedReset !== "boolean") {
-    return invalidConfiguration(
-      "Resource declaration must indicate scoped reset intent."
-    );
-  }
-
-  if (typeof resource.scopedCleanup !== "boolean") {
-    return invalidConfiguration(
-      "Resource declaration must indicate scoped cleanup intent."
-    );
-  }
-
-  return null;
-}
-
-function validateEndpoint(endpoint: EndpointDeclaration) {
-  if (!endpoint.name) {
-    return invalidConfiguration("Endpoint declaration must include a name.");
-  }
-
-  if (!endpoint.role) {
-    return invalidConfiguration("Endpoint declaration must include a role.");
-  }
-
-  if (!endpoint.provider) {
-    return invalidConfiguration("Endpoint declaration must include a provider.");
-  }
-
-  return null;
-}
-
-interface ValidatedResourceDeclaration {
-  name: string;
-  provider: string;
-  isolationStrategy: IsolationStrategy;
-  scopedValidate: boolean;
-  scopedReset: boolean;
-  scopedCleanup: boolean;
-}
-
-interface ValidatedEndpointDeclaration {
-  name: string;
-  role: string;
-  provider: string;
-}
-
-function toValidatedResource(
-  resource: ResourceDeclaration
-): ValidatedResourceDeclaration | FailureResult {
-  if (!resource.name) {
-    return invalidConfiguration("Resource declaration must include a name.");
-  }
-
-  if (!resource.provider) {
-    return invalidConfiguration("Resource declaration must include a provider.");
-  }
-
-  if (!resource.isolationStrategy) {
-    return invalidConfiguration(
-      "Resource declaration must include a primary isolation strategy."
-    );
-  }
-
-  if (typeof resource.scopedReset !== "boolean") {
-    return invalidConfiguration(
-      "Resource declaration must indicate scoped reset intent."
-    );
-  }
-
-  if (typeof resource.scopedCleanup !== "boolean") {
-    return invalidConfiguration(
-      "Resource declaration must indicate scoped cleanup intent."
-    );
-  }
-
-  return {
-    name: resource.name,
-    provider: resource.provider,
-    isolationStrategy: resource.isolationStrategy,
-    scopedValidate: resource.scopedValidate === true,
-    scopedReset: resource.scopedReset,
-    scopedCleanup: resource.scopedCleanup
-  };
-}
-
-function toValidatedEndpoint(
-  endpoint: EndpointDeclaration
-): ValidatedEndpointDeclaration | FailureResult {
-  if (!endpoint.name) {
-    return invalidConfiguration("Endpoint declaration must include a name.");
-  }
-
-  if (!endpoint.role) {
-    return invalidConfiguration("Endpoint declaration must include a role.");
-  }
-
-  if (!endpoint.provider) {
-    return invalidConfiguration("Endpoint declaration must include a provider.");
-  }
-
-  return {
-    name: endpoint.name,
-    role: endpoint.role,
-    provider: endpoint.provider
-  };
-}
-
-function isFailureResult(
-  value:
-    | ValidatedResourceDeclaration
-    | ValidatedEndpointDeclaration
-    | FailureResult
-): value is FailureResult {
-  return "ok" in value && value.ok === false;
-}
+export {
+  validateWorktreeIdentity,
+  withValidatedWorktreeIdentity
+} from "./worktree-identity";
 
 function deriveResourcePlan(input: {
   provider: ResourceProvider;

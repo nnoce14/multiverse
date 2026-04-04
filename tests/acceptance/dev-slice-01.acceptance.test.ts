@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { resolveSlice01 } from "../../packages/core/src";
+import { resolveSlice01 } from "../../packages/core/index";
 import {
   createExplicitTestProviders,
   createValidRepositoryConfiguration,
   createWorktreeInstance
-} from "../../packages/providers-testkit/src";
+} from "../../packages/providers-testkit/index";
 
 describe("Development Slice 01 acceptance", () => {
   it("resolves successfully for a valid declared worktree instance", () => {
