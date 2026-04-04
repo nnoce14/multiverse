@@ -23,7 +23,7 @@ The next business gap in the source documents is explicit capability coordinatio
 - every provider must support `derive`
 - optional capabilities such as `validate` are explicit
 - repository intent does not replace provider capability
-- unsupported capability intent is invalid
+- unsupported capability intent is refused as `unsupported_capability`
 - refusal distinctions must remain explicit
 
 This slice strengthens the provider contract boundary without introducing orchestration, multiple-object expansion, or destructive lifecycle execution.
@@ -74,7 +74,7 @@ This slice includes only the behavior needed to prove explicit provider-capabili
 - preserve the existing derive path from Slice 01
 - evaluate one optional capability request relevant to this slice
 - distinguish supported optional capability from unsupported optional capability
-- preserve explicit refusal categories for invalid configuration and unsafe scope
+- preserve explicit refusal categories for unsupported capability and unsafe scope
 
 ### Safety scope
 
@@ -154,7 +154,7 @@ The next executable coverage for this slice should prove:
 
 1. optional capability intent is evaluated explicitly rather than inferred
 2. a supported optional capability request can be evaluated for the existing single-worktree path
-3. an unsupported optional capability request is refused as invalid configuration
+3. an unsupported optional capability request is refused as unsupported capability
 4. unsafe scope still refuses for the requested operation
 5. derive behavior from Slice 01 is preserved and not broadened incidentally
 
@@ -174,7 +174,7 @@ Then the request is accepted through the explicit capability path
 Given a declared repository object
 And a selected provider that does not support the optional capability intended by repository configuration
 When the system evaluates the request
-Then the configuration is invalid
+Then the refusal category is `unsupported_capability`
 And the operation is refused
 
 ### Refusal: unsafe scope for the requested operation

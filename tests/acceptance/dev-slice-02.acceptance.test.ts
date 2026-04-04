@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { resolveSlice02 } from "@multiverse/core";
 import {
@@ -49,6 +49,12 @@ describe("Development Slice 02 acceptance", () => {
   });
 
   it("refuses unsupported validate intent explicitly", () => {
+    const providers = createExplicitTestProviders();
+    const deriveResource = vi.spyOn(
+      providers.resources["test-resource-provider-no-validate"],
+      "deriveResource"
+    );
+
     const outcome = resolveSlice02({
       repository: createValidRepositoryConfiguration({
         resources: [
@@ -66,7 +72,7 @@ describe("Development Slice 02 acceptance", () => {
         id: "wt-validate-unsupported",
         label: "validate-unsupported"
       }),
-      providers: createExplicitTestProviders()
+      providers
     });
 
     expect(outcome).toMatchObject({
@@ -75,6 +81,7 @@ describe("Development Slice 02 acceptance", () => {
         category: "unsupported_capability"
       }
     });
+    expect(deriveResource).not.toHaveBeenCalled();
   });
 
   it("refuses validation when safe scope cannot be established", () => {
@@ -104,5 +111,75 @@ describe("Development Slice 02 acceptance", () => {
         category: "unsafe_scope"
       }
     });
+  });
+
+  it("refuses unsupported scoped reset intent before derivation", () => {
+    const providers = createExplicitTestProviders();
+    const deriveResource = vi.spyOn(
+      providers.resources["test-resource-provider"],
+      "deriveResource"
+    );
+
+    const outcome = resolveSlice02({
+      repository: createValidRepositoryConfiguration({
+        resources: [
+          {
+            name: "primary-db",
+            provider: "test-resource-provider",
+            isolationStrategy: "name-scoped",
+            scopedValidate: false,
+            scopedReset: true,
+            scopedCleanup: false
+          }
+        ]
+      }),
+      worktree: createWorktreeInstance({
+        id: "wt-reset-unsupported"
+      }),
+      providers
+    });
+
+    expect(outcome).toMatchObject({
+      ok: false,
+      refusal: {
+        category: "unsupported_capability"
+      }
+    });
+    expect(deriveResource).not.toHaveBeenCalled();
+  });
+
+  it("refuses unsupported scoped cleanup intent before derivation", () => {
+    const providers = createExplicitTestProviders();
+    const deriveResource = vi.spyOn(
+      providers.resources["test-resource-provider"],
+      "deriveResource"
+    );
+
+    const outcome = resolveSlice02({
+      repository: createValidRepositoryConfiguration({
+        resources: [
+          {
+            name: "primary-db",
+            provider: "test-resource-provider",
+            isolationStrategy: "name-scoped",
+            scopedValidate: false,
+            scopedReset: false,
+            scopedCleanup: true
+          }
+        ]
+      }),
+      worktree: createWorktreeInstance({
+        id: "wt-cleanup-unsupported"
+      }),
+      providers
+    });
+
+    expect(outcome).toMatchObject({
+      ok: false,
+      refusal: {
+        category: "unsupported_capability"
+      }
+    });
+    expect(deriveResource).not.toHaveBeenCalled();
   });
 });

@@ -15,7 +15,13 @@ import {
   type ValidatedRepositoryConfiguration,
   withValidatedRepositoryConfiguration
 } from "./repository-configuration";
-import { invalidConfiguration, isRefusal, unsafeScope, type FailureResult } from "./refusals";
+import {
+  invalidConfiguration,
+  isRefusal,
+  unsupportedCapability,
+  unsafeScope,
+  type FailureResult
+} from "./refusals";
 import { validateWorktreeIdentity } from "./worktree-identity";
 
 export interface ResolvedWorktree {
@@ -93,6 +99,14 @@ export function resolveSlicePreflight(input: {
   });
   if (isFailureOutcome(resolvedProviders)) {
     return resolvedProviders;
+  }
+
+  const capabilityIntent = validateCapabilityIntent({
+    resource: declarations.resource,
+    provider: resolvedProviders.resource
+  });
+  if (isFailureOutcome(capabilityIntent)) {
+    return capabilityIntent;
   }
 
   return {
@@ -188,6 +202,31 @@ function resolveSliceProviders(input: {
     resource: resourceProvider,
     endpoint: endpointProvider
   };
+}
+
+function validateCapabilityIntent(input: {
+  resource: ValidatedResourceDeclaration;
+  provider: ResourceProvider;
+}): void | FailureResult {
+  const { resource, provider } = input;
+
+  if (resource.scopedValidate && !provider.capabilities?.validate) {
+    return unsupportedCapability(
+      `Resource provider "${resource.provider}" does not support validate.`
+    );
+  }
+
+  if (resource.scopedReset && !provider.capabilities?.reset) {
+    return unsupportedCapability(
+      `Resource provider "${resource.provider}" does not support reset.`
+    );
+  }
+
+  if (resource.scopedCleanup && !provider.capabilities?.cleanup) {
+    return unsupportedCapability(
+      `Resource provider "${resource.provider}" does not support cleanup.`
+    );
+  }
 }
 
 function deriveSliceValues(

@@ -49,7 +49,7 @@ Then provider capability is not treated as the same thing as repository intent
 Given a declared repository object
 And a selected provider that does not support a capability
 When the repository declares intent to use that capability
-Then the configuration is invalid
+Then the refusal category is `unsupported_capability`
 
 ## Scenario: provider-specific configuration may extend but not replace core declaration
 
