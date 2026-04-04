@@ -17,6 +17,14 @@ export {
   validateWorktreeIdentity,
   withValidatedWorktreeIdentity
 } from "./worktree-identity";
+export {
+  validateEndpointDeclaration,
+  withValidatedEndpointDeclaration
+} from "./declarations";
+export {
+  validateRepositoryConfiguration,
+  withValidatedRepositoryConfiguration
+} from "./repository-configuration";
 
 function isFailureOutcome(
   value: ResolvedSliceExecution | Extract<ResolveSlice01Result, { ok: false }>

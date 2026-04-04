@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { resolveSlice01 } from "../../packages/core/index";
 import {
@@ -56,6 +56,30 @@ describe("Development Slice 01 acceptance", () => {
     const second = resolveSlice01({ repository, worktree, providers });
 
     expect(first).toEqual(second);
+  });
+
+  it("resolves successfully for the reserved main worktree identity", () => {
+    const outcome = resolveSlice01({
+      repository: createValidRepositoryConfiguration(),
+      worktree: createWorktreeInstance({
+        id: "main",
+        label: "main"
+      }),
+      providers: createExplicitTestProviders()
+    });
+
+    expect(outcome.ok).toBe(true);
+
+    if (!outcome.ok) {
+      return;
+    }
+
+    expect(outcome.resourcePlans[0]).toMatchObject({
+      worktreeId: "main"
+    });
+    expect(outcome.endpointMappings[0]).toMatchObject({
+      worktreeId: "main"
+    });
   });
 
   it("resolves different isolated outputs for different worktree instances", () => {
@@ -160,5 +184,35 @@ describe("Development Slice 01 acceptance", () => {
         category: "unsafe_scope"
       }
     });
+  });
+
+  it("refuses whitespace-only worktree identity before provider invocation", () => {
+    const providers = createExplicitTestProviders();
+    const deriveResource = vi.spyOn(
+      providers.resources["test-resource-provider"],
+      "deriveResource"
+    );
+    const deriveEndpoint = vi.spyOn(
+      providers.endpoints["test-endpoint-provider"],
+      "deriveEndpoint"
+    );
+
+    const outcome = resolveSlice01({
+      repository: createValidRepositoryConfiguration(),
+      worktree: createWorktreeInstance({
+        id: "   ",
+        label: "invalid-worktree-id"
+      }),
+      providers
+    });
+
+    expect(outcome).toMatchObject({
+      ok: false,
+      refusal: {
+        category: "unsafe_scope"
+      }
+    });
+    expect(deriveResource).not.toHaveBeenCalled();
+    expect(deriveEndpoint).not.toHaveBeenCalled();
   });
 });

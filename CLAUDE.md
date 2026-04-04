@@ -81,10 +81,19 @@ For coding-agent work in this repository:
 - never push directly to `main`
 - use a task-scoped branch for implementation work
 - pull requests are required for review
+- the coding agent should autonomously create branches, commit focused changes, push task branches, and open pull requests when work is ready
 - merges are human-only
 - do not force-push unless explicitly instructed
 
 Use the `git-task-workflow` skill when a task reaches branch, commit, push, or pull request stages.
+
+Routine branch, commit, push, and pull request steps do not require additional user approval.
+Stop for user input only when:
+
+- business truth is ambiguous
+- unrelated changes cannot be safely separated
+- required validation is failing and the next step is unclear
+- a force-push or merge would be required
 
 ### Pull Request Rules
 
