@@ -69,6 +69,13 @@ export interface ResourceValidation {
   capability: "validate";
 }
 
+export interface ResourceReset {
+  resourceName: string;
+  provider: string;
+  worktreeId: string;
+  capability: "reset";
+}
+
 export interface ResourceProvider {
   capabilities?: ProviderCapabilities;
   deriveResource(input: {
@@ -102,6 +109,22 @@ export interface ResourceProvider {
       branch?: string;
     };
   }): ResourceValidation | Refusal;
+  resetResource?(input: {
+    resource: {
+      name: string;
+      provider: string;
+      isolationStrategy: IsolationStrategy;
+      scopedValidate: boolean;
+      scopedReset: boolean;
+      scopedCleanup: boolean;
+    };
+    derived: DerivedResourcePlan;
+    worktree: {
+      id?: string;
+      label?: string;
+      branch?: string;
+    };
+  }): ResourceReset | Refusal;
 }
 
 export interface EndpointProvider {
@@ -141,6 +164,17 @@ export type ResolveSlice02Result =
       resourcePlans: DerivedResourcePlan[];
       endpointMappings: DerivedEndpointMapping[];
       resourceValidations: ResourceValidation[];
+    }
+  | {
+      ok: false;
+      refusal: Refusal;
+    };
+
+export type ResetOneResourceResult =
+  | {
+      ok: true;
+      resourcePlans: DerivedResourcePlan[];
+      resourceResets: ResourceReset[];
     }
   | {
       ok: false;

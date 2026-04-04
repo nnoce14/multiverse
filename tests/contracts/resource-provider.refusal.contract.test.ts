@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { createProvidersWithResourceValidateRefusal } from "@multiverse/providers-testkit";
+import {
+  createProvidersWithResourceResetRefusal,
+  createProvidersWithResourceValidateRefusal
+} from "@multiverse/providers-testkit";
 
 describe("resource provider refusal contract", () => {
   it("may refuse validate with provider failure distinctly from unsafe scope", () => {
@@ -38,6 +41,44 @@ describe("resource provider refusal contract", () => {
     expect(validation).toEqual({
       category: "provider_failure",
       reason: "Provider validation failed after safe scope was established."
+    });
+  });
+
+  it("may refuse reset with provider failure distinctly from unsafe scope", () => {
+    const providers = createProvidersWithResourceResetRefusal({
+      category: "provider_failure",
+      reason: "Provider reset failed after safe scope was established."
+    });
+    const resourceProvider = providers.resources["test-resource-provider-with-reset"];
+
+    if (!resourceProvider.resetResource) {
+      throw new Error("Expected resetResource to be defined.");
+    }
+
+    const reset = resourceProvider.resetResource({
+      resource: {
+        name: "primary-db",
+        provider: "test-resource-provider-with-reset",
+        isolationStrategy: "name-scoped",
+        scopedReset: true,
+        scopedCleanup: false,
+        scopedValidate: false
+      },
+      derived: {
+        resourceName: "primary-db",
+        provider: "test-resource-provider-with-reset",
+        isolationStrategy: "name-scoped",
+        worktreeId: "wt-contract-provider-failure",
+        handle: "primary-db--wt-contract-provider-failure"
+      },
+      worktree: {
+        id: "wt-contract-provider-failure"
+      }
+    });
+
+    expect(reset).toEqual({
+      category: "provider_failure",
+      reason: "Provider reset failed after safe scope was established."
     });
   });
 });
