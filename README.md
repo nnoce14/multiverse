@@ -162,6 +162,7 @@ Business truth should come from those documents, not be invented in code.
 Start here:
 
 * `AGENTS.md`
+* `docs/guides/external-demo-guide.md` — practical usage guide: multiverse run, parallel worktrees, reset/cleanup
 * `docs/development/repo-map.md`
 * `docs/development/implementation-strategy.md`
 * `docs/development/testing-strategy.md`
