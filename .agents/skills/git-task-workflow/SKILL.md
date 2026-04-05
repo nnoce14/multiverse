@@ -1,6 +1,6 @@
 ---
 name: git-task-workflow
-description: Use this skill when a Multiverse task is ready for Git workflow handling on a task branch, including autonomously confirming or creating the correct branch, validating and grouping changes, making focused commits, pushing the branch, and creating a concise pull request for human review without merging.
+description: Use this skill when a Multiverse task is ready for Git workflow handling on a task branch, including autonomously confirming or creating the correct branch, validating and grouping changes, making focused commits, pushing the branch, opening a concise pull request, and merging when repo policy allows it.
 ---
 
 # Git Task Workflow
@@ -23,6 +23,7 @@ Use this skill when the task requires:
 - making focused commits
 - pushing the branch
 - creating a pull request with `gh`
+- merging the pull request when repo policy allows it
 
 In this repository, these workflow steps are autonomous by default once the work is ready and required checks have passed.
 
@@ -33,7 +34,7 @@ Do not use this skill when:
 - the work is not ready for commit
 - required checks have not passed
 - the working tree still contains unrelated changes
-- the task would require merging a pull request
+- the task would require force-pushing
 
 ## Workflow
 
@@ -46,7 +47,7 @@ Do not use this skill when:
 7. Commit in focused logical groups.
 8. Push the branch to origin.
 9. Create a concise PR with `gh pr create` when the work is ready and `gh` is available.
-10. Stop for human review. Do not merge.
+10. If repo policy allows agent merges and required checks pass with no blocking review feedback, merge the PR. Otherwise stop for review.
 
 ## Validation
 
@@ -76,6 +77,7 @@ Provide:
 - proposed commit message(s)
 - push result
 - PR title and summary if a PR is created
+- merge result if the PR is merged
 
 ## Stop conditions
 
@@ -86,4 +88,5 @@ Stop if:
 - the correct branch is unclear
 - `gh` is unavailable or unauthenticated when PR creation is part of task completion
 - business truth is ambiguous and would need to be invented
-- the workflow would require merge or force-push without explicit instruction
+- the workflow would require force-push without explicit instruction
+- merge readiness is unclear because checks or blocking review state cannot be established
