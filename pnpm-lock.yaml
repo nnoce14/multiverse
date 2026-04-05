@@ -20,6 +20,9 @@ importers:
       '@multiverse/provider-local-port':
         specifier: workspace:*
         version: link:packages/provider-local-port
+      '@multiverse/provider-name-scoped':
+        specifier: workspace:*
+        version: link:packages/provider-name-scoped
       '@multiverse/providers-testkit':
         specifier: workspace:*
         version: link:packages/providers-testkit
@@ -54,6 +57,12 @@ importers:
   packages/provider-contracts: {}
 
   packages/provider-local-port:
+    dependencies:
+      '@multiverse/provider-contracts':
+        specifier: workspace:*
+        version: link:../provider-contracts
+
+  packages/provider-name-scoped:
     dependencies:
       '@multiverse/provider-contracts':
         specifier: workspace:*

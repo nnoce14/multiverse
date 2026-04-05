@@ -17,6 +17,7 @@
     "@multiverse/cli": "workspace:*",
     "@multiverse/provider-contracts": "workspace:*",
     "@multiverse/provider-local-port": "workspace:*",
+    "@multiverse/provider-name-scoped": "workspace:*",
     "@multiverse/providers-testkit": "workspace:*",
     "@types/node": "^24.6.0",
     "tsx": "^4.20.6",
