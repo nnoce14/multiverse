@@ -5,6 +5,7 @@ import { pathToFileURL } from "node:url";
 
 import {
   cleanupOneResource,
+  deriveAndValidateOne,
   resetOneResource,
   deriveOne,
   validateRepositoryConfiguration,
@@ -132,6 +133,17 @@ async function deriveFromFiles(input: {
   });
 }
 
+async function validateFromFiles(input: {
+  configPath: string;
+  worktreeId: string;
+  providersModulePath: string;
+}): Promise<CliResult> {
+  return executeOperationFromFiles({
+    ...input,
+    operation: deriveAndValidateOne
+  });
+}
+
 async function resetFromFiles(input: {
   configPath: string;
   worktreeId: string;
@@ -231,6 +243,29 @@ async function handleDerive(args: string[]): Promise<CliResult> {
   });
 }
 
+async function handleValidate(args: string[]): Promise<CliResult> {
+  const configPath = readRequiredOption(args, "--config");
+  if (isCliResult(configPath)) {
+    return configPath;
+  }
+
+  const worktreeId = readRequiredOption(args, "--worktree-id");
+  if (isCliResult(worktreeId)) {
+    return worktreeId;
+  }
+
+  const providersModulePath = readRequiredOption(args, "--providers");
+  if (isCliResult(providersModulePath)) {
+    return providersModulePath;
+  }
+
+  return validateFromFiles({
+    configPath,
+    worktreeId,
+    providersModulePath
+  });
+}
+
 async function handleReset(args: string[]): Promise<CliResult> {
   const configPath = readRequiredOption(args, "--config");
   if (isCliResult(configPath)) {
@@ -292,6 +327,10 @@ export async function runCli(args: string[]): Promise<CliResult> {
     return handleDerive(args);
   }
 
+  if (command === "validate") {
+    return handleValidate(args);
+  }
+
   if (command === "reset") {
     return handleReset(args);
   }
@@ -301,7 +340,7 @@ export async function runCli(args: string[]): Promise<CliResult> {
   }
 
   return usage(
-    "Usage: multiverse <validate-worktree --worktree-id VALUE | validate-repository --config PATH | derive --config PATH --worktree-id VALUE --providers MODULE | reset --config PATH --worktree-id VALUE --providers MODULE | cleanup --config PATH --worktree-id VALUE --providers MODULE>"
+    "Usage: multiverse <validate-worktree --worktree-id VALUE | validate-repository --config PATH | derive --config PATH --worktree-id VALUE --providers MODULE | validate --config PATH --worktree-id VALUE --providers MODULE | reset --config PATH --worktree-id VALUE --providers MODULE | cleanup --config PATH --worktree-id VALUE --providers MODULE>"
   );
 }
 
