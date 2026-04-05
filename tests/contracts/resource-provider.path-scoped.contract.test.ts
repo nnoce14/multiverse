@@ -81,11 +81,11 @@ describe("resource provider contract: path-scoped reset", () => {
     expect(provider.capabilities?.reset).toBe(true);
   });
 
-  it("returns a ResourceReset for valid input", () => {
+  it("returns a ResourceReset for valid input", async () => {
     expect(provider.resetResource).toBeDefined();
     if (!provider.resetResource) return;
 
-    const result = provider.resetResource({
+    const result = await provider.resetResource({
       resource: resourceInput,
       derived,
       worktree: { id: "feature-login" }
@@ -122,11 +122,11 @@ describe("resource provider contract: path-scoped cleanup", () => {
     expect(provider.capabilities?.cleanup).toBe(true);
   });
 
-  it("returns a ResourceCleanup for valid input", () => {
+  it("returns a ResourceCleanup for valid input", async () => {
     expect(provider.cleanupResource).toBeDefined();
     if (!provider.cleanupResource) return;
 
-    const result = provider.cleanupResource({
+    const result = await provider.cleanupResource({
       resource: resourceInput,
       derived,
       worktree: { id: "feature-login" }

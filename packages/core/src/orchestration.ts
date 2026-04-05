@@ -239,11 +239,11 @@ export function resolveAndDeriveAllWithValidation(input: {
   return { ok: true, resourcePlans, endpointMappings, resourceValidations };
 }
 
-export function resolveAndResetAll(input: {
+export async function resolveAndResetAll(input: {
   repository: RepositoryConfiguration;
   worktree: WorktreeInstanceInput;
   providers: ProviderRegistry;
-}): ResetOneResourceResult {
+}): Promise<ResetOneResourceResult> {
   const resolvedWorktree = requireResolvedWorktree(input.worktree);
   if (isFailureOutcome(resolvedWorktree)) {
     return resolvedWorktree;
@@ -289,7 +289,7 @@ export function resolveAndResetAll(input: {
       return { ok: false, refusal: plan };
     }
 
-    const reset = resourceProvider.resetResource({
+    const reset = await resourceProvider.resetResource({
       resource: resourceDecl,
       derived: plan,
       worktree: resolvedWorktree
@@ -305,11 +305,11 @@ export function resolveAndResetAll(input: {
   return { ok: true, resourcePlans, resourceResets };
 }
 
-export function resolveAndCleanupAll(input: {
+export async function resolveAndCleanupAll(input: {
   repository: RepositoryConfiguration;
   worktree: WorktreeInstanceInput;
   providers: ProviderRegistry;
-}): CleanupOneResourceResult {
+}): Promise<CleanupOneResourceResult> {
   const resolvedWorktree = requireResolvedWorktree(input.worktree);
   if (isFailureOutcome(resolvedWorktree)) {
     return resolvedWorktree;
@@ -355,7 +355,7 @@ export function resolveAndCleanupAll(input: {
       return { ok: false, refusal: plan };
     }
 
-    const cleanup = resourceProvider.cleanupResource({
+    const cleanup = await resourceProvider.cleanupResource({
       resource: resourceDecl,
       derived: plan,
       worktree: resolvedWorktree

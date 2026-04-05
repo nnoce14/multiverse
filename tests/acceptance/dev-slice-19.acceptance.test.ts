@@ -42,8 +42,8 @@ describe("dev-slice-19: multi-resource reset and cleanup", () => {
   }
 
   describe("reset", () => {
-    it("resets all resources that declare scopedReset", () => {
-      const result = resetOneResource({
+    it("resets all resources that declare scopedReset", async () => {
+      const result = await resetOneResource({
         repository: makeTwoResourceRepository({
           firstScopedReset: true,
           secondScopedReset: true
@@ -63,8 +63,8 @@ describe("dev-slice-19: multi-resource reset and cleanup", () => {
       expect(result.resourceResets[1].capability).toBe("reset");
     });
 
-    it("resets only the resources that declare scopedReset", () => {
-      const result = resetOneResource({
+    it("resets only the resources that declare scopedReset", async () => {
+      const result = await resetOneResource({
         repository: makeTwoResourceRepository({
           firstScopedReset: true,
           secondScopedReset: false
@@ -81,8 +81,8 @@ describe("dev-slice-19: multi-resource reset and cleanup", () => {
       expect(result.resourceResets[0].resourceName).toBe("primary-db");
     });
 
-    it("returns invalid_configuration when no resources declare scopedReset", () => {
-      const result = resetOneResource({
+    it("returns invalid_configuration when no resources declare scopedReset", async () => {
+      const result = await resetOneResource({
         repository: makeTwoResourceRepository({
           firstScopedReset: false,
           secondScopedReset: false
@@ -97,7 +97,7 @@ describe("dev-slice-19: multi-resource reset and cleanup", () => {
       expect(result.refusal.category).toBe("invalid_configuration");
     });
 
-    it("returns refusal fail-fast when the second resource reset refuses", () => {
+    it("returns refusal fail-fast when the second resource reset refuses", async () => {
       const failingProvider = {
         capabilities: { reset: true as const },
         deriveResource() {
@@ -109,7 +109,7 @@ describe("dev-slice-19: multi-resource reset and cleanup", () => {
             handle: "cache_feature-login"
           };
         },
-        resetResource() {
+        async resetResource() {
           return {
             category: "provider_failure" as const,
             reason: "Reset provider encountered an error."
@@ -117,7 +117,7 @@ describe("dev-slice-19: multi-resource reset and cleanup", () => {
         }
       };
 
-      const result = resetOneResource({
+      const result = await resetOneResource({
         repository: makeTwoResourceRepository({
           firstScopedReset: true,
           secondScopedReset: true
@@ -137,7 +137,7 @@ describe("dev-slice-19: multi-resource reset and cleanup", () => {
       expect(result.ok).toBe(true); // both name-scoped resources succeed
     });
 
-    it("returns refusal fail-fast when a reset provider refuses", () => {
+    it("returns refusal fail-fast when a reset provider refuses", async () => {
       const refusingResetProvider = {
         capabilities: { reset: true as const },
         deriveResource() {
@@ -149,7 +149,7 @@ describe("dev-slice-19: multi-resource reset and cleanup", () => {
             handle: "cache_feature-login"
           };
         },
-        resetResource() {
+        async resetResource() {
           return {
             category: "provider_failure" as const,
             reason: "Reset provider refused."
@@ -179,7 +179,7 @@ describe("dev-slice-19: multi-resource reset and cleanup", () => {
         endpoints: []
       };
 
-      const result = resetOneResource({
+      const result = await resetOneResource({
         repository,
         worktree: { id: "feature-login" },
         providers: {
@@ -197,8 +197,8 @@ describe("dev-slice-19: multi-resource reset and cleanup", () => {
       expect(result.refusal.category).toBe("provider_failure");
     });
 
-    it("succeeds with no endpoints declared (endpoints are irrelevant to reset)", () => {
-      const result = resetOneResource({
+    it("succeeds with no endpoints declared (endpoints are irrelevant to reset)", async () => {
+      const result = await resetOneResource({
         repository: {
           resources: [
             {
@@ -225,8 +225,8 @@ describe("dev-slice-19: multi-resource reset and cleanup", () => {
   });
 
   describe("cleanup", () => {
-    it("cleans up all resources that declare scopedCleanup", () => {
-      const result = cleanupOneResource({
+    it("cleans up all resources that declare scopedCleanup", async () => {
+      const result = await cleanupOneResource({
         repository: makeTwoResourceRepository({
           firstScopedCleanup: true,
           secondScopedCleanup: true
@@ -246,8 +246,8 @@ describe("dev-slice-19: multi-resource reset and cleanup", () => {
       expect(result.resourceCleanups[1].capability).toBe("cleanup");
     });
 
-    it("cleans up only the resources that declare scopedCleanup", () => {
-      const result = cleanupOneResource({
+    it("cleans up only the resources that declare scopedCleanup", async () => {
+      const result = await cleanupOneResource({
         repository: makeTwoResourceRepository({
           firstScopedCleanup: true,
           secondScopedCleanup: false
@@ -264,8 +264,8 @@ describe("dev-slice-19: multi-resource reset and cleanup", () => {
       expect(result.resourceCleanups[0].resourceName).toBe("primary-db");
     });
 
-    it("returns invalid_configuration when no resources declare scopedCleanup", () => {
-      const result = cleanupOneResource({
+    it("returns invalid_configuration when no resources declare scopedCleanup", async () => {
+      const result = await cleanupOneResource({
         repository: makeTwoResourceRepository({
           firstScopedCleanup: false,
           secondScopedCleanup: false
@@ -280,7 +280,7 @@ describe("dev-slice-19: multi-resource reset and cleanup", () => {
       expect(result.refusal.category).toBe("invalid_configuration");
     });
 
-    it("returns refusal fail-fast when a cleanup provider refuses", () => {
+    it("returns refusal fail-fast when a cleanup provider refuses", async () => {
       const refusingCleanupProvider = {
         capabilities: { cleanup: true as const },
         deriveResource() {
@@ -292,7 +292,7 @@ describe("dev-slice-19: multi-resource reset and cleanup", () => {
             handle: "cache_feature-login"
           };
         },
-        cleanupResource() {
+        async cleanupResource() {
           return {
             category: "provider_failure" as const,
             reason: "Cleanup provider refused."
@@ -322,7 +322,7 @@ describe("dev-slice-19: multi-resource reset and cleanup", () => {
         endpoints: []
       };
 
-      const result = cleanupOneResource({
+      const result = await cleanupOneResource({
         repository,
         worktree: { id: "feature-login" },
         providers: {
@@ -340,8 +340,8 @@ describe("dev-slice-19: multi-resource reset and cleanup", () => {
       expect(result.refusal.category).toBe("provider_failure");
     });
 
-    it("succeeds with no endpoints declared (endpoints are irrelevant to cleanup)", () => {
-      const result = cleanupOneResource({
+    it("succeeds with no endpoints declared (endpoints are irrelevant to cleanup)", async () => {
+      const result = await cleanupOneResource({
         repository: {
           resources: [
             {

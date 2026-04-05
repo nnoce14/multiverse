@@ -38,8 +38,8 @@ describe("dev-slice-17: path-scoped provider lifecycle", () => {
   }
 
   describe("reset", () => {
-    it("succeeds for a path-scoped resource with scopedReset declared", () => {
-      const result = resetOneResource({
+    it("succeeds for a path-scoped resource with scopedReset declared", async () => {
+      const result = await resetOneResource({
         repository: makeRepository({ scopedReset: true }),
         worktree: { id: "feature-login" },
         providers: makeProviders()
@@ -53,8 +53,8 @@ describe("dev-slice-17: path-scoped provider lifecycle", () => {
       expect(result.resourceResets[0].worktreeId).toBe("feature-login");
     });
 
-    it("returns invalid_configuration when scopedReset is not declared", () => {
-      const result = resetOneResource({
+    it("returns invalid_configuration when scopedReset is not declared", async () => {
+      const result = await resetOneResource({
         repository: makeRepository({ scopedReset: false }),
         worktree: { id: "feature-login" },
         providers: makeProviders()
@@ -66,8 +66,8 @@ describe("dev-slice-17: path-scoped provider lifecycle", () => {
       expect(result.refusal.category).toBe("invalid_configuration");
     });
 
-    it("returns unsafe_scope when worktree ID is absent", () => {
-      const result = resetOneResource({
+    it("returns unsafe_scope when worktree ID is absent", async () => {
+      const result = await resetOneResource({
         repository: makeRepository({ scopedReset: true }),
         worktree: {},
         providers: makeProviders()
@@ -81,8 +81,8 @@ describe("dev-slice-17: path-scoped provider lifecycle", () => {
   });
 
   describe("cleanup", () => {
-    it("succeeds for a path-scoped resource with scopedCleanup declared", () => {
-      const result = cleanupOneResource({
+    it("succeeds for a path-scoped resource with scopedCleanup declared", async () => {
+      const result = await cleanupOneResource({
         repository: makeRepository({ scopedCleanup: true }),
         worktree: { id: "feature-login" },
         providers: makeProviders()
@@ -96,8 +96,8 @@ describe("dev-slice-17: path-scoped provider lifecycle", () => {
       expect(result.resourceCleanups[0].worktreeId).toBe("feature-login");
     });
 
-    it("returns invalid_configuration when scopedCleanup is not declared", () => {
-      const result = cleanupOneResource({
+    it("returns invalid_configuration when scopedCleanup is not declared", async () => {
+      const result = await cleanupOneResource({
         repository: makeRepository({ scopedCleanup: false }),
         worktree: { id: "feature-login" },
         providers: makeProviders()
@@ -109,8 +109,8 @@ describe("dev-slice-17: path-scoped provider lifecycle", () => {
       expect(result.refusal.category).toBe("invalid_configuration");
     });
 
-    it("returns unsafe_scope when worktree ID is absent", () => {
-      const result = cleanupOneResource({
+    it("returns unsafe_scope when worktree ID is absent", async () => {
+      const result = await cleanupOneResource({
         repository: makeRepository({ scopedCleanup: true }),
         worktree: {},
         providers: makeProviders()

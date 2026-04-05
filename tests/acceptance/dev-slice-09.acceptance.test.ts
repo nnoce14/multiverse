@@ -9,8 +9,8 @@ import {
 } from "@multiverse/providers-testkit";
 
 describe("Development Slice 09 acceptance", () => {
-  it("executes one explicit scoped cleanup when cleanup is supported", () => {
-    const outcome = cleanupOneResource({
+  it("executes one explicit scoped cleanup when cleanup is supported", async () => {
+    const outcome = await cleanupOneResource({
       repository: createValidRepositoryConfiguration({
         resources: [
           {
@@ -51,14 +51,14 @@ describe("Development Slice 09 acceptance", () => {
     });
   });
 
-  it("refuses unsupported cleanup intent explicitly", () => {
+  it("refuses unsupported cleanup intent explicitly", async () => {
     const providers = createExplicitTestProviders();
     const deriveResource = vi.spyOn(
       providers.resources["test-resource-provider"],
       "deriveResource"
     );
 
-    const outcome = cleanupOneResource({
+    const outcome = await cleanupOneResource({
       repository: createValidRepositoryConfiguration({
         resources: [
           {
@@ -86,14 +86,14 @@ describe("Development Slice 09 acceptance", () => {
     expect(deriveResource).not.toHaveBeenCalled();
   });
 
-  it("refuses cleanup when repository intent does not enable scoped cleanup", () => {
+  it("refuses cleanup when repository intent does not enable scoped cleanup", async () => {
     const providers = createExplicitTestProviders();
     const deriveResource = vi.spyOn(
       providers.resources["test-resource-provider-with-cleanup"],
       "deriveResource"
     );
 
-    const outcome = cleanupOneResource({
+    const outcome = await cleanupOneResource({
       repository: createValidRepositoryConfiguration({
         resources: [
           {
@@ -121,8 +121,8 @@ describe("Development Slice 09 acceptance", () => {
     expect(deriveResource).not.toHaveBeenCalled();
   });
 
-  it("refuses cleanup when safe scope cannot be established", () => {
-    const outcome = cleanupOneResource({
+  it("refuses cleanup when safe scope cannot be established", async () => {
+    const outcome = await cleanupOneResource({
       repository: createValidRepositoryConfiguration({
         resources: [
           {
@@ -179,8 +179,8 @@ describe("Development Slice 09 acceptance", () => {
     expect(cleanupResource).not.toHaveBeenCalled();
   });
 
-  it("returns provider-originated unsafe scope during cleanup unchanged", () => {
-    const outcome = cleanupOneResource({
+  it("returns provider-originated unsafe scope during cleanup unchanged", async () => {
+    const outcome = await cleanupOneResource({
       repository: createValidRepositoryConfiguration({
         resources: [
           {
@@ -211,8 +211,8 @@ describe("Development Slice 09 acceptance", () => {
     });
   });
 
-  it("returns provider-originated provider failure during cleanup unchanged", () => {
-    const outcome = cleanupOneResource({
+  it("returns provider-originated provider failure during cleanup unchanged", async () => {
+    const outcome = await cleanupOneResource({
       repository: createValidRepositoryConfiguration({
         resources: [
           {
