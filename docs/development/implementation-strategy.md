@@ -118,6 +118,8 @@ Current `main` includes implemented slices covering:
 - one-worktree deterministic derive orchestration
 - validated worktree identity admission
 - validated repository-configuration admission
+- validated endpoint-declaration admission
+- explicit ESM workspace packages and package-boundary enforcement
 - explicit capability-intent refusal behavior
 - refusal propagation from providers
 - explicit reset and cleanup core paths

@@ -6,7 +6,7 @@ Explicit CLI cleanup command
 
 ## Scenario goal
 
-Demonstrate that the CLI can request explicit scoped cleanup through the provider-module boundary seam without introducing discovery or hidden defaults.
+Demonstrate that the CLI can request explicit scoped cleanup through the explicit `--providers <module-path>` boundary seam without introducing discovery or hidden defaults.
 
 The scenario set is intentionally narrow.
 It proves the CLI cleanup seam, not command breadth.

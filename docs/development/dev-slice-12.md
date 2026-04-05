@@ -8,7 +8,7 @@ Implemented on `main`
 
 Add one thin CLI command for explicit scoped cleanup through the explicit provider-module boundary seam established by the earlier CLI slices.
 
-This slice reuses the same application-boundary seam as derive and reset so cleanup remains explicit and refusal-first.
+This slice reuses the same application-boundary seam as derive and reset, including the explicit `--providers <module-path>` input path, so cleanup remains explicit and refusal-first.
 
 ## Why this slice after the CLI validation and reset slices
 

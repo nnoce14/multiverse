@@ -8,7 +8,7 @@ Implemented on `main`
 
 Add one thin CLI command for explicit scoped reset through the explicit provider-module boundary seam established by the earlier CLI slice.
 
-This slice keeps provider loading explicit at the application boundary and delegates reset business behavior to core.
+This slice keeps provider loading explicit at the application boundary, reuses the explicit `--providers <module-path>` seam established by CLI derive, and delegates reset business behavior to core.
 
 ## Why this slice after the thin CLI validation and provider wiring slices
 

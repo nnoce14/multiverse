@@ -6,7 +6,7 @@ Explicit CLI reset command
 
 ## Scenario goal
 
-Demonstrate that the CLI can request explicit scoped reset through the provider-module boundary seam without introducing discovery or hidden defaults.
+Demonstrate that the CLI can request explicit scoped reset through the explicit `--providers <module-path>` boundary seam without introducing discovery or hidden defaults.
 
 The scenario set is intentionally narrow.
 It proves the CLI reset seam, not command breadth.
