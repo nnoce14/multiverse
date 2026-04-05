@@ -46,4 +46,28 @@ describe("endpoint provider contract: derive", () => {
     expect(result.address.length).toBeGreaterThan(0);
   });
 
+  it("derives different addresses for different endpoint names in the same worktree", () => {
+    const resultApp = provider.deriveEndpoint(validInput);
+    const resultAdmin = provider.deriveEndpoint({
+      ...validInput,
+      endpoint: { ...validInput.endpoint, name: "admin-url", role: "admin-base-url" }
+    });
+
+    expect(isDerivedEndpointMapping(resultApp)).toBe(true);
+    expect(isDerivedEndpointMapping(resultAdmin)).toBe(true);
+    if (!isDerivedEndpointMapping(resultApp) || !isDerivedEndpointMapping(resultAdmin)) return;
+
+    expect(resultApp.address).not.toBe(resultAdmin.address);
+  });
+
+  it("derives the same address for the same endpoint name and worktree (deterministic)", () => {
+    const result1 = provider.deriveEndpoint(validInput);
+    const result2 = provider.deriveEndpoint(validInput);
+
+    expect(isDerivedEndpointMapping(result1)).toBe(true);
+    expect(isDerivedEndpointMapping(result2)).toBe(true);
+    if (!isDerivedEndpointMapping(result1) || !isDerivedEndpointMapping(result2)) return;
+
+    expect(result1.address).toBe(result2.address);
+  });
 });
