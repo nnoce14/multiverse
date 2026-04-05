@@ -73,8 +73,8 @@ Current packages:
 - `packages/core/` — business logic, orchestration, validation, refusal enforcement
 - `packages/provider-contracts/` — shared TypeScript interfaces between core and providers
 - `packages/providers-testkit/` — fake providers and test fixtures
-- `packages/provider-name-scoped/` — name-scoped resource isolation (derive, reset, cleanup)
-- `packages/provider-path-scoped/` — path-scoped resource isolation (derive, reset, cleanup)
+- `packages/provider-name-scoped/` — name-scoped resource isolation (derive, reset, cleanup confirmation only)
+- `packages/provider-path-scoped/` — path-scoped resource isolation (derive, effectful reset, effectful cleanup for provider-managed filesystem state)
 - `packages/provider-local-port/` — local-port endpoint isolation (derive)
 
 Additional packages may be introduced when justified by real implementation boundaries.
