@@ -8,7 +8,7 @@ The goal is to begin with a small, behavior-proving slice that exercises the cor
 
 ## Current Phase
 
-Multiverse is transitioning from design-first specification into behavior-first implementation.
+Multiverse has moved from design-first specification into behavior-first implementation through a sequence of narrow slices.
 
 The implementation approach is:
 
@@ -32,9 +32,9 @@ Early slices should follow Node.js and TypeScript conventions for package struct
 
 Cross-runtime portability is not an implicit goal of the initial implementation. Do not introduce runtime-neutral abstractions unless a later decision explicitly requires them.
 
-## First Slice Objective
+## Initial Slice Objective
 
-The first executable slice should prove that the tool can:
+The initial executable slice was intended to prove that the tool can:
 
 - evaluate a valid repository configuration
 - recognize a worktree instance
@@ -42,7 +42,7 @@ The first executable slice should prove that the tool can:
 - derive one declared endpoint mapping
 - refuse when safe ownership or valid declaration cannot be established
 
-## Recommended First Slice
+## Initial Recommended Slice
 
 ### Slice name
 
@@ -50,7 +50,7 @@ Resolve one worktree instance into one isolated resource plan and one endpoint m
 
 ### Why this slice
 
-This slice exercises the most important business boundaries early:
+This slice exercised the most important business boundaries early:
 
 - worktree identity
 - declarative repository configuration
@@ -59,9 +59,9 @@ This slice exercises the most important business boundaries early:
 - endpoint isolation
 - refusal behavior
 
-It is small enough to implement quickly and meaningful enough to prove the architecture is real.
+It was small enough to implement quickly and meaningful enough to prove the architecture is real.
 
-## In Scope for the First Slice
+## In Scope for the Initial Slice
 
 - one repository
 - one machine
@@ -73,7 +73,7 @@ It is small enough to implement quickly and meaningful enough to prove the archi
 - different derived values for different worktree instances
 - refusal for invalid configuration or unsafe scope
 
-## Out of Scope for the First Slice
+## Out of Scope for the Initial Slice
 
 - provider inference
 - managed object inference
@@ -102,16 +102,32 @@ Do not create new packages for speculative reuse or abstract neatness.
 
 A new package should be introduced only when a real responsibility boundary or dependency-direction need requires it.
 
-## Expected Deliverables for the First Slice
+## Expected Deliverables for the Initial Slice
 
 - executable acceptance tests for the selected in-scope behavior
 - minimal provider contract tests required by the slice
 - minimal production code needed to satisfy those tests
 - no speculative abstractions beyond the current slice
 
+## Current Progress Note
+
+The repository has progressed beyond the initial slice-planning stage.
+
+Current `main` includes implemented slices covering:
+
+- one-worktree deterministic derive orchestration
+- validated worktree identity admission
+- validated repository-configuration admission
+- explicit capability-intent refusal behavior
+- refusal propagation from providers
+- explicit reset and cleanup core paths
+- thin CLI validation plus explicit provider-wired derive, reset, and cleanup commands
+
+The purpose of this document is still to preserve implementation posture and first-phase boundaries, not to serve as the complete change log for every later slice.
+
 ## Refusal Requirements
 
-Refusal must be present in the first implementation slice.
+Refusal must be present from the first implementation slice onward.
 
 At minimum, the slice should refuse when:
 
