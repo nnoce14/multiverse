@@ -1,0 +1,19 @@
+{
+  "resources": [
+    {
+      "name": "app-db",
+      "provider": "path-scoped",
+      "isolationStrategy": "path-scoped",
+      "scopedValidate": false,
+      "scopedReset": true,
+      "scopedCleanup": true
+    }
+  ],
+  "endpoints": [
+    {
+      "name": "http",
+      "role": "application-http",
+      "provider": "local-port"
+    }
+  ]
+}
