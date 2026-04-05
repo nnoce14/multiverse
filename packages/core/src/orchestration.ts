@@ -24,7 +24,7 @@ import {
 } from "./refusals";
 import { validateWorktreeIdentity } from "./worktree-identity";
 
-export interface ResolvedWorktree {
+interface ResolvedWorktree {
   id: string;
   label?: string;
   branch?: string;
