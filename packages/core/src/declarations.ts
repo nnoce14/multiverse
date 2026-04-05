@@ -4,7 +4,6 @@ import type {
   ResourceDeclaration
 } from "@multiverse/provider-contracts";
 
-import { invalidConfiguration, type FailureResult } from "./refusals";
 
 export interface DeclarationValidationError {
   path: string;
@@ -190,38 +189,3 @@ export function validateIndexedEndpointDeclaration(input: {
   };
 }
 
-export function toValidatedResource(
-  resource: ResourceDeclaration
-): ValidatedResourceDeclaration | FailureResult {
-  const validation = validateResourceDeclaration({
-    resource,
-    index: 0
-  });
-
-  if (!validation.ok) {
-    return invalidConfiguration("Resource declaration is invalid.");
-  }
-
-  return validation.value;
-}
-
-export function toValidatedEndpoint(
-  endpoint: EndpointDeclaration
-): ValidatedEndpointDeclaration | FailureResult {
-  const validation = validateEndpointDeclaration(endpoint);
-
-  if (!validation.ok) {
-    return invalidConfiguration("Endpoint declaration is invalid.");
-  }
-
-  return validation.value;
-}
-
-export function isFailureResult(
-  value:
-    | ValidatedResourceDeclaration
-    | ValidatedEndpointDeclaration
-    | FailureResult
-): value is FailureResult {
-  return "ok" in value && value.ok === false;
-}

@@ -10,14 +10,20 @@ This map is meant to support the current implementation phase. It is not a commi
 
 ## Current Repository State
 
-The repository currently contains behavior-first design artifacts, including:
+The repository contains behavior-first design artifacts and a working implementation:
 
 - specifications under `docs/spec/`
 - scenarios under `docs/scenarios/`
 - ADRs under `docs/adr/`
 - development guidance under `docs/development/`
+- core business logic in `packages/core/`
+- provider contracts in `packages/provider-contracts/`
+- three concrete resource providers: `provider-name-scoped`, `provider-path-scoped`, `provider-local-port`
+- a test provider registry in `packages/providers-testkit/`
+- a thin CLI in `apps/cli/`
+- 150+ tests across acceptance, contract, and unit layers
 
-Implementation is beginning through narrow vertical slices.
+Implementation has progressed through 20 development slices. The full lifecycle (derive, validate, reset, cleanup) is implemented for all declared resources and endpoints, with multi-resource support throughout.
 
 ## Implementation Model
 
@@ -62,13 +68,16 @@ Applications may parse input, invoke core behavior, and present results, but mus
 
 Reusable implementation packages with explicit responsibility boundaries.
 
-Initial intended packages:
+Current packages:
 
-- `packages/core/`
-- `packages/provider-contracts/`
-- `packages/providers-testkit/`
+- `packages/core/` — business logic, orchestration, validation, refusal enforcement
+- `packages/provider-contracts/` — shared TypeScript interfaces between core and providers
+- `packages/providers-testkit/` — fake providers and test fixtures
+- `packages/provider-name-scoped/` — name-scoped resource isolation (derive, reset, cleanup)
+- `packages/provider-path-scoped/` — path-scoped resource isolation (derive, reset, cleanup)
+- `packages/provider-local-port/` — local-port endpoint isolation (derive)
 
-Additional packages may be introduced later when justified by real implementation boundaries.
+Additional packages may be introduced when justified by real implementation boundaries.
 
 ### `tests/`
 
@@ -149,9 +158,9 @@ Must not:
 
 ## Future Package Candidates
 
-These should be added only when justified by real slices:
+These should be added only when justified by real implementation needs:
 
-- concrete provider packages under `packages/provider-*`
+- additional provider packages under `packages/provider-*` as new isolation strategies are required
 - a configuration-model package if configuration concerns become large enough to justify isolation
 - shared test utilities if test support grows beyond the provider testkit role
 
@@ -226,11 +235,9 @@ Primary code targets as implementation begins:
 
 Current implementation work should follow the active development slice document under `docs/development/`.
 
-At the time of writing, the first active slice is:
+Slices 01–20 are complete. The backlog for upcoming work is tracked in `.claude/data/backlog.md`.
 
-- `docs/development/dev-slice-01.md`
-
-Contributors and coding agents should use that slice document to determine what behavior is currently in scope.
+Contributors and coding agents should use the active slice document and backlog to determine what behavior is currently in scope.
 
 ## Practical Rules
 
