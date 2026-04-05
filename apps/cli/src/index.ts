@@ -4,6 +4,7 @@ import process from "node:process";
 import { pathToFileURL } from "node:url";
 
 import {
+  cleanupOneResource,
   resetOneResource,
   resolveSlice01,
   validateRepositoryConfiguration,
@@ -142,6 +143,17 @@ async function resetFromFiles(input: {
   });
 }
 
+async function cleanupFromFiles(input: {
+  configPath: string;
+  worktreeId: string;
+  providersModulePath: string;
+}): Promise<CliResult> {
+  return executeOperationFromFiles({
+    ...input,
+    operation: cleanupOneResource
+  });
+}
+
 async function executeOperationFromFiles(input: {
   configPath: string;
   worktreeId: string;
@@ -242,6 +254,29 @@ async function handleReset(args: string[]): Promise<CliResult> {
   });
 }
 
+async function handleCleanup(args: string[]): Promise<CliResult> {
+  const configPath = readRequiredOption(args, "--config");
+  if (isCliResult(configPath)) {
+    return configPath;
+  }
+
+  const worktreeId = readRequiredOption(args, "--worktree-id");
+  if (isCliResult(worktreeId)) {
+    return worktreeId;
+  }
+
+  const providersModulePath = readRequiredOption(args, "--providers");
+  if (isCliResult(providersModulePath)) {
+    return providersModulePath;
+  }
+
+  return cleanupFromFiles({
+    configPath,
+    worktreeId,
+    providersModulePath
+  });
+}
+
 export async function runCli(args: string[]): Promise<CliResult> {
   const [command] = args;
 
@@ -261,8 +296,12 @@ export async function runCli(args: string[]): Promise<CliResult> {
     return handleReset(args);
   }
 
+  if (command === "cleanup") {
+    return handleCleanup(args);
+  }
+
   return usage(
-    "Usage: multiverse <validate-worktree --worktree-id VALUE | validate-repository --config PATH | derive --config PATH --worktree-id VALUE --providers MODULE | reset --config PATH --worktree-id VALUE --providers MODULE>"
+    "Usage: multiverse <validate-worktree --worktree-id VALUE | validate-repository --config PATH | derive --config PATH --worktree-id VALUE --providers MODULE | reset --config PATH --worktree-id VALUE --providers MODULE | cleanup --config PATH --worktree-id VALUE --providers MODULE>"
   );
 }
 
