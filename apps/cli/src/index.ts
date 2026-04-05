@@ -1,16 +1,30 @@
 import { readFile } from "node:fs/promises";
+import path from "node:path";
 import process from "node:process";
+import { pathToFileURL } from "node:url";
 
 import {
+  resolveSlice01,
   validateRepositoryConfiguration,
   validateWorktreeIdentity
 } from "@multiverse/core";
-import type { RepositoryConfiguration } from "@multiverse/provider-contracts";
+import type {
+  ProviderRegistry,
+  RepositoryConfiguration
+} from "@multiverse/provider-contracts";
 
 export interface CliResult {
   exitCode: number;
   stdout: string[];
   stderr: string[];
+}
+
+function isCliResult(value: unknown): value is CliResult {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "exitCode" in value
+  );
 }
 
 function success(value: unknown): CliResult {
@@ -46,43 +60,150 @@ function readOption(args: string[], name: string): string | undefined {
   return args[index + 1];
 }
 
+function readRequiredOption(
+  args: string[],
+  name: string
+): string | CliResult {
+  const value = readOption(args, name);
+
+  if (value === undefined) {
+    return usage(`Missing required option ${name}`);
+  }
+
+  return value;
+}
+
 async function validateRepositoryFromFile(configPath: string): Promise<CliResult> {
-  const raw = await readFile(configPath, "utf8");
-  const parsed = JSON.parse(raw) as RepositoryConfiguration;
+  const parsed = await readRepositoryConfiguration(configPath);
   const result = validateRepositoryConfiguration(parsed);
 
   return result.ok ? success(result) : failure(result);
+}
+
+async function readRepositoryConfiguration(
+  configPath: string
+): Promise<RepositoryConfiguration> {
+  const raw = await readFile(configPath, "utf8");
+  return JSON.parse(raw) as RepositoryConfiguration;
+}
+
+function isProviderRegistry(value: unknown): value is ProviderRegistry {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "resources" in value &&
+    "endpoints" in value &&
+    typeof value.resources === "object" &&
+    value.resources !== null &&
+    typeof value.endpoints === "object" &&
+    value.endpoints !== null
+  );
+}
+
+async function loadProviderRegistry(
+  providersModulePath: string
+): Promise<ProviderRegistry | CliResult> {
+  const moduleUrl = pathToFileURL(path.resolve(providersModulePath)).href;
+  const moduleExports = (await import(moduleUrl)) as {
+    default?: unknown;
+    providers?: unknown;
+  };
+  const candidate = moduleExports.providers ?? moduleExports.default;
+
+  if (!isProviderRegistry(candidate)) {
+    return usage(
+      'Providers module must export a ProviderRegistry as named export "providers" or default export'
+    );
+  }
+
+  return candidate;
+}
+
+async function deriveFromFiles(input: {
+  configPath: string;
+  worktreeId: string;
+  providersModulePath: string;
+}): Promise<CliResult> {
+  const parsed = await readRepositoryConfiguration(input.configPath);
+  const providers = await loadProviderRegistry(input.providersModulePath);
+
+  if ("exitCode" in providers) {
+    return providers;
+  }
+
+  const result = resolveSlice01({
+    repository: parsed,
+    worktree: {
+      id: input.worktreeId
+    },
+    providers
+  });
+
+  return result.ok ? success(result) : failure(result);
+}
+
+async function handleValidateWorktree(args: string[]): Promise<CliResult> {
+  const worktreeId = readRequiredOption(args, "--worktree-id");
+  if (isCliResult(worktreeId)) {
+    return worktreeId;
+  }
+
+  const result = validateWorktreeIdentity({
+    worktreeId
+  });
+
+  return result.ok ? success(result) : failure(result);
+}
+
+async function handleValidateRepository(args: string[]): Promise<CliResult> {
+  const configPath = readRequiredOption(args, "--config");
+  if (isCliResult(configPath)) {
+    return configPath;
+  }
+
+  return validateRepositoryFromFile(configPath);
+}
+
+async function handleDerive(args: string[]): Promise<CliResult> {
+  const configPath = readRequiredOption(args, "--config");
+  if (isCliResult(configPath)) {
+    return configPath;
+  }
+
+  const worktreeId = readRequiredOption(args, "--worktree-id");
+  if (isCliResult(worktreeId)) {
+    return worktreeId;
+  }
+
+  const providersModulePath = readRequiredOption(args, "--providers");
+  if (isCliResult(providersModulePath)) {
+    return providersModulePath;
+  }
+
+  return deriveFromFiles({
+    configPath,
+    worktreeId,
+    providersModulePath
+  });
 }
 
 export async function runCli(args: string[]): Promise<CliResult> {
   const [command] = args;
 
   if (command === "validate-worktree") {
-    const worktreeId = readOption(args, "--worktree-id");
-
-    if (worktreeId === undefined) {
-      return usage("Missing required option --worktree-id");
-    }
-
-    const result = validateWorktreeIdentity({
-      worktreeId
-    });
-
-    return result.ok ? success(result) : failure(result);
+    return handleValidateWorktree(args);
   }
 
   if (command === "validate-repository") {
-    const configPath = readOption(args, "--config");
+    return handleValidateRepository(args);
+  }
 
-    if (configPath === undefined) {
-      return usage("Missing required option --config");
-    }
-
-    return validateRepositoryFromFile(configPath);
+  if (command === "derive") {
+    return handleDerive(args);
   }
 
   return usage(
-    "Usage: multiverse <validate-worktree --worktree-id VALUE | validate-repository --config PATH>"
+    "Usage: multiverse <validate-worktree --worktree-id VALUE | validate-repository --config PATH | derive --config PATH --worktree-id VALUE --providers MODULE>"
   );
 }
 
