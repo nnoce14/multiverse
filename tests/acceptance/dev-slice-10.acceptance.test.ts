@@ -1,6 +1,7 @@
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { afterEach, describe, expect, it } from "vitest";
 
@@ -15,6 +16,10 @@ describe("Development Slice 10 acceptance", () => {
     );
     tempDirs.length = 0;
   });
+
+  const providersModulePath = fileURLToPath(
+    new URL("./fixtures/explicit-test-providers.ts", import.meta.url)
+  );
 
   it("accepts valid raw worktree identity input through the CLI", async () => {
     const outcome = await runCli([
@@ -176,6 +181,116 @@ describe("Development Slice 10 acceptance", () => {
         })
       ],
       stderr: []
+    });
+  });
+
+  it("derives one explicit scoped resource plan and endpoint mapping through the CLI", async () => {
+    const tempDir = await mkdtemp(path.join(tmpdir(), "multiverse-cli-"));
+    tempDirs.push(tempDir);
+    const configPath = path.join(tempDir, "repository.json");
+
+    await writeFile(
+      configPath,
+      JSON.stringify({
+        resources: [
+          {
+            name: "primary-db",
+            provider: "test-resource-provider",
+            isolationStrategy: "name-scoped",
+            scopedValidate: false,
+            scopedReset: false,
+            scopedCleanup: false
+          }
+        ],
+        endpoints: [
+          {
+            name: "app-base-url",
+            role: "application-base-url",
+            provider: "test-endpoint-provider"
+          }
+        ]
+      })
+    );
+
+    const outcome = await runCli([
+      "derive",
+      "--config",
+      configPath,
+      "--worktree-id",
+      "wt-cli-derive",
+      "--providers",
+      providersModulePath
+    ]);
+
+    expect(outcome).toEqual({
+      exitCode: 0,
+      stdout: [
+        JSON.stringify({
+          ok: true,
+          resourcePlans: [
+            {
+              resourceName: "primary-db",
+              provider: "test-resource-provider",
+              isolationStrategy: "name-scoped",
+              worktreeId: "wt-cli-derive",
+              handle: "primary-db--wt-cli-derive"
+            }
+          ],
+          endpointMappings: [
+            {
+              endpointName: "app-base-url",
+              provider: "test-endpoint-provider",
+              role: "application-base-url",
+              worktreeId: "wt-cli-derive",
+              address: "http://wt-cli-derive.local/app-base-url"
+            }
+          ]
+        })
+      ],
+      stderr: []
+    });
+  });
+
+  it("requires an explicit providers module for derive instead of falling back implicitly", async () => {
+    const tempDir = await mkdtemp(path.join(tmpdir(), "multiverse-cli-"));
+    tempDirs.push(tempDir);
+    const configPath = path.join(tempDir, "repository.json");
+
+    await writeFile(
+      configPath,
+      JSON.stringify({
+        resources: [
+          {
+            name: "primary-db",
+            provider: "test-resource-provider",
+            isolationStrategy: "name-scoped",
+            scopedValidate: false,
+            scopedReset: false,
+            scopedCleanup: false
+          }
+        ],
+        endpoints: [
+          {
+            name: "app-base-url",
+            role: "application-base-url",
+            provider: "test-endpoint-provider"
+          }
+        ]
+      })
+    );
+
+    const outcome = await runCli([
+      "derive",
+      "--config",
+      configPath,
+      "--worktree-id",
+      "wt-cli-derive"
+    ]);
+
+    expect(outcome).toEqual({
+      exitCode: 1,
+      stdout: [],
+      stderr: ["Missing required option --providers"]
     });
   });
 });
