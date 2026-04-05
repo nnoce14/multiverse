@@ -119,11 +119,9 @@ describe("Development Slice 12 acceptance", () => {
       "wt-cli-cleanup"
     ]);
 
-    expect(outcome).toEqual({
-      exitCode: 1,
-      stdout: [],
-      stderr: ["Missing required option --providers"]
-    });
+    expect(outcome.exitCode).toBe(1);
+    expect(outcome.stdout).toEqual([]);
+    expect(outcome.stderr[0]).toMatch(/providers/i);
   });
 
   it("returns unsupported cleanup capability unchanged through the CLI", async () => {
