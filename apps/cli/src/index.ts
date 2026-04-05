@@ -23,6 +23,17 @@ export interface CliResult {
   stderr: string[];
 }
 
+export type ChildProcessRunner = (input: {
+  cmd: string;
+  args: string[];
+  env: Record<string, string>;
+}) => Promise<{ exitCode: number }>;
+
+export interface RunCliOptions {
+  cwd?: string;
+  runner?: ChildProcessRunner;
+}
+
 function isCliResult(value: unknown): value is CliResult {
   return (
     typeof value === "object" &&
@@ -47,6 +58,14 @@ function failure(value: unknown): CliResult {
   };
 }
 
+function runFailure(value: unknown): CliResult {
+  return {
+    exitCode: 1,
+    stdout: [],
+    stderr: [JSON.stringify(value)]
+  };
+}
+
 function toEnvKey(prefix: string, name: string): string {
   return `${prefix}_${name.toUpperCase().replace(/-/g, "_")}`;
 }
@@ -60,6 +79,21 @@ function formatEnv(result: Extract<DeriveOneResult, { ok: true }>): CliResult {
     lines.push(`${toEnvKey("MULTIVERSE_ENDPOINT", mapping.endpointName)}=${mapping.address}`);
   }
   return { exitCode: 0, stdout: lines, stderr: [] };
+}
+
+function buildRunEnv(
+  worktreeId: string,
+  result: Extract<DeriveOneResult, { ok: true }>
+): Record<string, string> {
+  const env: Record<string, string> = {};
+  env["MULTIVERSE_WORKTREE_ID"] = worktreeId;
+  for (const plan of result.resourcePlans) {
+    env[toEnvKey("MULTIVERSE_RESOURCE", plan.resourceName)] = plan.handle;
+  }
+  for (const mapping of result.endpointMappings) {
+    env[toEnvKey("MULTIVERSE_ENDPOINT", mapping.endpointName)] = mapping.address;
+  }
+  return env;
 }
 
 function usage(message: string): CliResult {
@@ -92,18 +126,38 @@ function readRequiredOption(
   return value;
 }
 
+interface CommonOptions {
+  configPath: string;
+  worktreeId: string;
+  providersModulePath: string;
+}
+
+function readCommonOptions(args: string[], cwd: string): CommonOptions | CliResult {
+  const worktreeId = readRequiredOption(args, "--worktree-id");
+  if (isCliResult(worktreeId)) return worktreeId;
+  return {
+    configPath: readOption(args, "--config") ?? path.resolve(cwd, "multiverse.json"),
+    worktreeId,
+    providersModulePath: readOption(args, "--providers") ?? path.resolve(cwd, "providers.ts")
+  };
+}
+
 async function validateRepositoryFromFile(configPath: string): Promise<CliResult> {
   const parsed = await readRepositoryConfiguration(configPath);
+  if (isCliResult(parsed)) return parsed;
   const result = validateRepositoryConfiguration(parsed);
-
   return result.ok ? success(result) : failure(result);
 }
 
 async function readRepositoryConfiguration(
   configPath: string
-): Promise<RepositoryConfiguration> {
-  const raw = await readFile(configPath, "utf8");
-  return JSON.parse(raw) as RepositoryConfiguration;
+): Promise<RepositoryConfiguration | CliResult> {
+  try {
+    const raw = await readFile(configPath, "utf8");
+    return JSON.parse(raw) as RepositoryConfiguration;
+  } catch {
+    return usage(`Cannot read config file: ${configPath}`);
+  }
 }
 
 function isProviderRegistry(value: unknown): value is ProviderRegistry {
@@ -122,11 +176,14 @@ function isProviderRegistry(value: unknown): value is ProviderRegistry {
 async function loadProviderRegistry(
   providersModulePath: string
 ): Promise<ProviderRegistry | CliResult> {
-  const moduleUrl = pathToFileURL(path.resolve(providersModulePath)).href;
-  const moduleExports = (await import(moduleUrl)) as {
-    default?: unknown;
-    providers?: unknown;
-  };
+  let moduleExports: { default?: unknown; providers?: unknown };
+  try {
+    const moduleUrl = pathToFileURL(path.resolve(providersModulePath)).href;
+    moduleExports = (await import(moduleUrl)) as { default?: unknown; providers?: unknown };
+  } catch {
+    return usage(`Cannot load providers module: ${providersModulePath}`);
+  }
+
   const candidate = moduleExports.providers ?? moduleExports.default;
 
   if (!isProviderRegistry(candidate)) {
@@ -144,6 +201,7 @@ async function executeDeriveOperation(input: {
   providersModulePath: string;
 }): Promise<DeriveOneResult | CliResult> {
   const parsed = await readRepositoryConfiguration(input.configPath);
+  if (isCliResult(parsed)) return parsed;
   const providers = await loadProviderRegistry(input.providersModulePath);
   if (isCliResult(providers)) return providers;
   return deriveOne({ repository: parsed, worktree: { id: input.worktreeId }, providers });
@@ -195,6 +253,7 @@ async function executeOperationFromFiles(input: {
   }) => { ok: boolean } | Promise<{ ok: boolean }>;
 }): Promise<CliResult> {
   const parsed = await readRepositoryConfiguration(input.configPath);
+  if (isCliResult(parsed)) return parsed;
   const providers = await loadProviderRegistry(input.providersModulePath);
 
   if ("exitCode" in providers) {
@@ -212,6 +271,21 @@ async function executeOperationFromFiles(input: {
   );
 
   return result.ok ? success(result) : failure(result);
+}
+
+async function defaultChildProcessRunner(input: {
+  cmd: string;
+  args: string[];
+  env: Record<string, string>;
+}): Promise<{ exitCode: number }> {
+  const { spawn } = await import("node:child_process");
+  return new Promise((resolve) => {
+    const child = spawn(input.cmd, input.args, {
+      env: { ...process.env, ...input.env },
+      stdio: "inherit"
+    });
+    child.on("close", (code) => resolve({ exitCode: code ?? 1 }));
+  });
 }
 
 async function handleValidateWorktree(args: string[]): Promise<CliResult> {
@@ -236,28 +310,16 @@ async function handleValidateRepository(args: string[]): Promise<CliResult> {
   return validateRepositoryFromFile(configPath);
 }
 
-async function handleDerive(args: string[]): Promise<CliResult> {
-  const configPath = readRequiredOption(args, "--config");
-  if (isCliResult(configPath)) {
-    return configPath;
-  }
-
-  const worktreeId = readRequiredOption(args, "--worktree-id");
-  if (isCliResult(worktreeId)) {
-    return worktreeId;
-  }
-
-  const providersModulePath = readRequiredOption(args, "--providers");
-  if (isCliResult(providersModulePath)) {
-    return providersModulePath;
-  }
+async function handleDerive(args: string[], cwd: string): Promise<CliResult> {
+  const opts = readCommonOptions(args, cwd);
+  if (isCliResult(opts)) return opts;
 
   const format = readOption(args, "--format") ?? "json";
   if (format !== "json" && format !== "env") {
     return usage(`Unknown --format value "${format}". Supported values: json, env`);
   }
 
-  const result = await executeDeriveOperation({ configPath, worktreeId, providersModulePath });
+  const result = await executeDeriveOperation(opts);
   if (isCliResult(result)) return result;
 
   if (!result.ok) return failure(result);
@@ -265,76 +327,64 @@ async function handleDerive(args: string[]): Promise<CliResult> {
   return success(result);
 }
 
-async function handleValidate(args: string[]): Promise<CliResult> {
-  const configPath = readRequiredOption(args, "--config");
-  if (isCliResult(configPath)) {
-    return configPath;
-  }
-
-  const worktreeId = readRequiredOption(args, "--worktree-id");
-  if (isCliResult(worktreeId)) {
-    return worktreeId;
-  }
-
-  const providersModulePath = readRequiredOption(args, "--providers");
-  if (isCliResult(providersModulePath)) {
-    return providersModulePath;
-  }
-
-  return validateFromFiles({
-    configPath,
-    worktreeId,
-    providersModulePath
-  });
+async function handleValidate(args: string[], cwd: string): Promise<CliResult> {
+  const opts = readCommonOptions(args, cwd);
+  if (isCliResult(opts)) return opts;
+  return validateFromFiles(opts);
 }
 
-async function handleReset(args: string[]): Promise<CliResult> {
-  const configPath = readRequiredOption(args, "--config");
-  if (isCliResult(configPath)) {
-    return configPath;
-  }
-
-  const worktreeId = readRequiredOption(args, "--worktree-id");
-  if (isCliResult(worktreeId)) {
-    return worktreeId;
-  }
-
-  const providersModulePath = readRequiredOption(args, "--providers");
-  if (isCliResult(providersModulePath)) {
-    return providersModulePath;
-  }
-
-  return resetFromFiles({
-    configPath,
-    worktreeId,
-    providersModulePath
-  });
+async function handleReset(args: string[], cwd: string): Promise<CliResult> {
+  const opts = readCommonOptions(args, cwd);
+  if (isCliResult(opts)) return opts;
+  return resetFromFiles(opts);
 }
 
-async function handleCleanup(args: string[]): Promise<CliResult> {
-  const configPath = readRequiredOption(args, "--config");
-  if (isCliResult(configPath)) {
-    return configPath;
-  }
-
-  const worktreeId = readRequiredOption(args, "--worktree-id");
-  if (isCliResult(worktreeId)) {
-    return worktreeId;
-  }
-
-  const providersModulePath = readRequiredOption(args, "--providers");
-  if (isCliResult(providersModulePath)) {
-    return providersModulePath;
-  }
-
-  return cleanupFromFiles({
-    configPath,
-    worktreeId,
-    providersModulePath
-  });
+async function handleCleanup(args: string[], cwd: string): Promise<CliResult> {
+  const opts = readCommonOptions(args, cwd);
+  if (isCliResult(opts)) return opts;
+  return cleanupFromFiles(opts);
 }
 
-export async function runCli(args: string[]): Promise<CliResult> {
+async function handleRun(
+  args: string[],
+  cwd: string,
+  runner: ChildProcessRunner
+): Promise<CliResult> {
+  const opts = readCommonOptions(args, cwd);
+  if (isCliResult(opts)) return opts;
+
+  const { configPath, worktreeId, providersModulePath } = opts;
+  const separatorIndex = args.indexOf("--");
+  if (separatorIndex === -1) {
+    return usage('Missing -- separator. Usage: multiverse run [options] -- <cmd> [args...]');
+  }
+
+  const childArgs = args.slice(separatorIndex + 1);
+  if (childArgs.length === 0) {
+    return usage('No command provided after --. Usage: multiverse run [options] -- <cmd> [args...]');
+  }
+
+  const [cmd, ...restArgs] = childArgs as [string, ...string[]];
+
+  const deriveResult = await executeDeriveOperation({ configPath, worktreeId, providersModulePath });
+  if (isCliResult(deriveResult)) return deriveResult;
+
+  if (!deriveResult.ok) return runFailure(deriveResult);
+
+  const multiverseEnv = buildRunEnv(worktreeId, deriveResult);
+  const mergedEnv: Record<string, string> = {};
+  for (const [k, v] of Object.entries(process.env)) {
+    if (v !== undefined) mergedEnv[k] = v;
+  }
+  Object.assign(mergedEnv, multiverseEnv);
+
+  const { exitCode } = await runner({ cmd, args: restArgs, env: mergedEnv });
+  return { exitCode, stdout: [], stderr: [] };
+}
+
+export async function runCli(args: string[], options: RunCliOptions = {}): Promise<CliResult> {
+  const cwd = options.cwd ?? process.cwd();
+  const runner = options.runner ?? defaultChildProcessRunner;
   const [command] = args;
 
   if (command === "validate-worktree") {
@@ -346,23 +396,27 @@ export async function runCli(args: string[]): Promise<CliResult> {
   }
 
   if (command === "derive") {
-    return handleDerive(args);
+    return handleDerive(args, cwd);
   }
 
   if (command === "validate") {
-    return handleValidate(args);
+    return handleValidate(args, cwd);
   }
 
   if (command === "reset") {
-    return handleReset(args);
+    return handleReset(args, cwd);
   }
 
   if (command === "cleanup") {
-    return handleCleanup(args);
+    return handleCleanup(args, cwd);
+  }
+
+  if (command === "run") {
+    return handleRun(args, cwd, runner);
   }
 
   return usage(
-    "Usage: multiverse <validate-worktree --worktree-id VALUE | validate-repository --config PATH | derive --config PATH --worktree-id VALUE --providers MODULE | validate --config PATH --worktree-id VALUE --providers MODULE | reset --config PATH --worktree-id VALUE --providers MODULE | cleanup --config PATH --worktree-id VALUE --providers MODULE>"
+    "Usage: multiverse <validate-worktree --worktree-id VALUE | validate-repository --config PATH | derive [--config PATH] [--providers MODULE] --worktree-id VALUE | validate [--config PATH] [--providers MODULE] --worktree-id VALUE | reset [--config PATH] [--providers MODULE] --worktree-id VALUE | cleanup [--config PATH] [--providers MODULE] --worktree-id VALUE | run [--config PATH] [--providers MODULE] --worktree-id VALUE -- <cmd> [args...]>"
   );
 }
 

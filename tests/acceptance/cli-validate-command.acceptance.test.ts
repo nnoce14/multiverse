@@ -250,13 +250,17 @@ describe("CLI validate command", () => {
     });
   });
 
-  it("returns usage error when required options are missing", async () => {
-    const outcome = await runCli(["validate", "--worktree-id", "wt-cli-validate"]);
+  it("returns usage error when --worktree-id is missing", async () => {
+    const outcome = await runCli(["validate", "--config", "/nonexistent/path.json", "--providers", providersModulePath]);
 
-    expect(outcome).toEqual({
-      exitCode: 1,
-      stdout: [],
-      stderr: ["Missing required option --config"]
-    });
+    expect(outcome.exitCode).toBe(1);
+    expect(outcome.stderr[0]).toMatch(/--worktree-id/);
+  });
+
+  it("fails with config file error when --config is omitted and ./multiverse.json does not exist", async () => {
+    const outcome = await runCli(["validate", "--worktree-id", "wt-cli-validate", "--providers", providersModulePath]);
+
+    expect(outcome.exitCode).toBe(1);
+    expect(outcome.stderr[0]).toMatch(/multiverse\.json/);
   });
 });
