@@ -1,117 +1,162 @@
 # Multiverse
 
-**Multiverse** is currently a project codename for a local runtime isolation tool for parallel development across git worktrees of the same repository on one machine.
+**Multiverse** is a local runtime isolation tool for parallel development across multiple git worktrees of the same repository on one machine.
 
-## Purpose
+It is being developed behavior-first: the repository defines business rules, scenarios, and architecture explicitly, then implements them through small acceptance-driven slices.
 
-Multiverse is a design-first effort to define deterministic local runtime isolation across multiple git worktrees of the same repository.
+## What problem this solves
 
-The tool is intended to support both human developers and coding agents by ensuring that concurrent local execution does not collide through shared resources or misrouted local endpoints.
+When multiple worktrees of the same repository run locally at the same time, they can collide through shared mutable resources or misrouted local endpoints.
 
-## Current Phase
+Multiverse aims to prevent that by making local isolation:
 
-The repository has moved from design into implementation slices driven by executable acceptance tests.
+* deterministic
+* explicit
+* inspectable
+* safe by default
 
-This repository currently focuses on:
+The tool is intended to support both human developers and coding agents.
 
-- accepted product and behavior specifications
-- domain vocabulary and architectural decisions
-- scenario documents that drive acceptance-first TDD
-- implementation slices, provider contracts, and focused unit coverage
+## Current scope
 
-## Design Approach
+Multiverse currently focuses on one repository on one machine with multiple git worktrees.
 
-The repository follows a behavior-first approach. Business rules, scenarios, and architectural decisions were defined before implementation so development can proceed through acceptance-first TDD rather than ad hoc local-development assumptions.
+Its core responsibility is **local isolation**. It is not intended to be:
 
-## Implementation Structure
+* a package manager
+* a deployment tool
+* a generic process orchestrator
+* an agent-specific framework
 
-Multiverse is implemented as a pnpm workspace monorepo using TypeScript on Node.js. The codebase uses a small set of workspace packages to preserve explicit boundaries between core behavior, provider contracts, and test support:
+## Current implementation status
 
-- `packages/core/`
-- `packages/provider-contracts/`
-- `packages/providers-testkit/`
-- `tests/acceptance/`
-- `tests/contracts/`
-- `tests/unit/`
+The repository has moved from design into implementation.
 
-## Development Docs
+Today’s repo includes:
 
-Implementation is guided by the repository’s development and agent-facing documents:
+* a thin CLI application in `apps/cli/`
+* a sample Express application in `apps/sample-express/`
+* core business logic in `packages/core/`
+* explicit provider contracts in `packages/provider-contracts/`
+* test support in `packages/providers-testkit/`
+* concrete providers for:
 
-- `AGENTS.md`
-- `docs/development/testing-strategy.md`
-- `docs/development/implementation-strategy.md`
-- `docs/development/dev-slice-*.md`
-- `docs/development/repo-map.md`
+  * name-scoped resources
+  * path-scoped resources
+  * local-port endpoints
+* acceptance, contract, unit, and integration tests
 
-## Repository Layout
+## Current behavior being proven
 
-The implementation grows primarily through:
+The current implementation proves the core loop for explicit declarations and deterministic derivation.
 
-- `packages/` — core and provider-related workspace packages
-- `tests/` — acceptance, contract, and unit tests
-- `docs/` — specifications, scenarios, ADRs, and development guidance
+That includes:
 
-## Document Map
+* worktree identity resolution
+* explicit repository configuration
+* validation and refusal behavior
+* derived isolation for:
 
-This repository is currently organized around behavior-first design artifacts.
+  * name-scoped resources
+  * path-scoped resources
+  * local-port endpoints
+* multi-resource and multi-endpoint support
+* lifecycle support:
 
-### Specifications
+  * name-scoped reset/cleanup as scope confirmation only
+  * path-scoped reset/cleanup as effectful operations for provider-managed filesystem state
 
-Business rules, guarantees, and domain concepts:
+## Design principles
 
-- `docs/spec/endpoint-model.md`
-- `docs/spec/glossary.md`
-- `docs/spec/product-spec.md`
-- `docs/spec/provider-model.md`
-- `docs/spec/repository-configuration.md`
-- `docs/spec/resource-isolation.md`
-- `docs/spec/safety-and-refusal.md`
-- `docs/spec/system-boundary.md`
-- `docs/spec/worktree-identity.md`
+Multiverse is intentionally strict about boundaries.
 
-### Scenarios
+* repository configuration is explicit
+* providers are explicit
+* refusal is a first-class behavior
+* core coordinates behavior and safety
+* providers implement technology-specific isolation through contracts
+* ambiguity is refused rather than guessed
 
-Behavior-oriented scenarios intended to evolve into acceptance-test inputs for TDD:
+This keeps the tool predictable and avoids hidden behavior around consequential operations.
 
-- `docs/scenarios/endpoint-model.scenarios.md`
-- `docs/scenarios/provider-model.scenarios.md`
-- `docs/scenarios/repository-configuration.scenarios.md`
-- `docs/scenarios/resource-isolation.scenarios.md`
-- `docs/scenarios/safety-and-refusal.scenarios.md`
-- `docs/scenarios/system-boundary.scenarios.md`
-- `docs/scenarios/worktree-identity.scenarios.md`
+## Repository layout
 
-### ADRs
+### Applications
 
-Accepted architectural decisions that close alternatives:
+* `apps/cli/` — thin command-line entrypoint
+* `apps/sample-express/` — sample application used for end-to-end integration proof
 
-- `docs/adr/0001-git-worktrees-only-v1.md`
-- `docs/adr/0002-branch-name-is-metadata.md`
-- `docs/adr/0003-main-checkout-uses-reserved-main-identity.md`
-- `docs/adr/0004-resource-isolation-strategies.md`
-- `docs/adr/0005-providers-implement-isolation-contracts.md`
-- `docs/adr/0006-endpoints-are-declared-communication-objects.md`
-- `docs/adr/0007-repository-configuration-is-explicit-in-1-0.md`
-- `docs/adr/0008-unsafe-operations-are-refused-in-1-0.md`
-- `docs/adr/0009-core-provider-repository-and-application-boundaries-are-explicit.md`
-- `docs/adr/0010-pnpm-workspace-monorepo-for-implementation.md`
-- `docs/adr/0011-typescript-nodejs-for-initial-implementation.md`
+### Packages
 
-## Core Constraint
+* `packages/core/` — business rules, orchestration, validation, refusal
+* `packages/provider-contracts/` — shared contracts between core and providers
+* `packages/providers-testkit/` — test-oriented providers and fixtures
+* `packages/provider-name-scoped/` — name-scoped resource provider
+* `packages/provider-path-scoped/` — path-scoped resource provider
+* `packages/provider-local-port/` — local-port endpoint provider
 
-The tool's core responsibility is isolation.
+### Tests
 
-It is not currently intended to be:
+* `tests/acceptance/`
+* `tests/contracts/`
+* `tests/unit/`
+* `tests/integration/`
 
-- a package manager
-- a deployment tool
-- a process orchestrator
-- an agent-specific framework
+### Documentation
 
-## Initial Scope
+* `docs/spec/` — specifications
+* `docs/scenarios/` — behavior-oriented source material for acceptance tests
+* `docs/adr/` — accepted architectural decisions
+* `docs/development/` — implementation guidance and slice/task planning
 
-- one repository
-- one machine
-- multiple git worktrees
-- deterministic local runtime isolation
+## Common commands
+
+From the repository root:
+
+```bash
+pnpm test
+pnpm test:acceptance
+pnpm test:contracts
+pnpm test:unit
+pnpm typecheck
+pnpm cli
+```
+
+## Source-of-truth order
+
+When implementation questions arise, precedence is:
+
+1. `docs/adr/`
+2. `docs/spec/`
+3. `docs/scenarios/`
+4. `docs/development/`
+
+Business truth should come from those documents, not be invented in code.
+
+## Key docs
+
+Start here:
+
+* `AGENTS.md`
+* `docs/development/repo-map.md`
+* `docs/development/implementation-strategy.md`
+* `docs/development/testing-strategy.md`
+
+Core product and architecture docs:
+
+* `docs/spec/product-spec.md`
+* `docs/spec/resource-isolation.md`
+* `docs/spec/provider-model.md`
+* `docs/spec/endpoint-model.md`
+* `docs/spec/safety-and-refusal.md`
+* `docs/adr/0001-git-worktrees-only-1.0.md`
+* `docs/adr/0004-resource-isolation-strategies.md`
+* `docs/adr/0005-providers-implement-isolation-contracts.md`
+* `docs/adr/0008-unsafe-operations-are-refused-in-1-0.md`
+* `docs/adr/0009-core-provider-repository-and-application-boundaries-are-explicit.md`
+
+## Notes on maturity
+
+This project is still in active implementation.
+
+The architecture and behavioral boundaries are established, but the repository is still proving the model against more realistic development workflows and integration targets.
