@@ -3,3 +3,5 @@ dist
 
 .codex/*
 !.codex/config.toml
+
+.claude/data/
