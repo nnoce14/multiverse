@@ -11,7 +11,7 @@ import type {
   ResourceValidation,
   WorktreeInstanceInput
 } from "@multiverse/provider-contracts";
-import { invalidConfiguration, isRefusal, unsupportedCapability } from "./refusals";
+import { invalidConfiguration, isFailureOutcome, isRefusal, unsupportedCapability } from "./refusals";
 import {
   resolveSlicePreflight,
   resolveSliceExecution,
@@ -30,21 +30,6 @@ export {
   validateRepositoryConfiguration,
   withValidatedRepositoryConfiguration
 } from "./repository-configuration";
-
-function isFailureOutcome(
-  value: ResolvedSliceExecution | Extract<DeriveOneResult, { ok: false }>
-): value is Extract<DeriveOneResult, { ok: false }> {
-  return "ok" in value && value.ok === false;
-}
-
-function isFailureResult(value: unknown): value is Extract<DeriveOneResult, { ok: false }> {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "ok" in value &&
-    value.ok === false
-  );
-}
 
 function validateResourcePlan(input: {
   provider: ResolvedSliceExecution["providers"]["resource"];
@@ -208,7 +193,7 @@ export function resetOneResource(input: {
     endpointCountReason: "Reset requires exactly one declared managed endpoint."
   });
 
-  if (isFailureResult(preflight)) {
+  if (isFailureOutcome(preflight)) {
     return preflight;
   }
 
@@ -237,7 +222,7 @@ export function resetOneResource(input: {
     worktree: preflight.worktree
   });
 
-  if (isFailureResult(reset)) {
+  if (isFailureOutcome(reset)) {
     return reset;
   }
 
@@ -266,7 +251,7 @@ export function cleanupOneResource(input: {
     endpointCountReason: "Cleanup requires exactly one declared managed endpoint."
   });
 
-  if (isFailureResult(preflight)) {
+  if (isFailureOutcome(preflight)) {
     return preflight;
   }
 
@@ -295,7 +280,7 @@ export function cleanupOneResource(input: {
     worktree: preflight.worktree
   });
 
-  if (isFailureResult(cleanup)) {
+  if (isFailureOutcome(cleanup)) {
     return cleanup;
   }
 

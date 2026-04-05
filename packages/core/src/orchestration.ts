@@ -17,6 +17,7 @@ import {
 } from "./repository-configuration";
 import {
   invalidConfiguration,
+  isFailureOutcome,
   isRefusal,
   unsupportedCapability,
   unsafeScope,
@@ -53,15 +54,6 @@ export interface ResolvedSliceDerivedValues {
 
 export interface ResolvedSliceExecution extends ResolvedSlicePreflight {
   derived: ResolvedSliceDerivedValues;
-}
-
-function isFailureOutcome(value: unknown): value is FailureResult {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "ok" in value &&
-    value.ok === false
-  );
 }
 
 export function resolveSlicePreflight(input: {

@@ -38,6 +38,15 @@ export function unsupportedCapability(
   };
 }
 
+export function isFailureOutcome(value: unknown): value is FailureResult {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "ok" in value &&
+    (value as { ok: unknown }).ok === false
+  );
+}
+
 export function isRefusal(value: unknown): value is Refusal {
   return (
     typeof value === "object" &&
