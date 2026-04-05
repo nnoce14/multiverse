@@ -34,7 +34,7 @@ export function createNameScopedProvider(): ResourceProvider {
       };
     },
 
-    resetResource({ resource, derived, worktree }): ResourceReset | Refusal {
+    async resetResource({ resource, derived, worktree }): Promise<ResourceReset | Refusal> {
       if (!worktree.id) {
         return unsafeScope();
       }
@@ -47,7 +47,7 @@ export function createNameScopedProvider(): ResourceProvider {
       };
     },
 
-    cleanupResource({ resource, derived, worktree }): ResourceCleanup | Refusal {
+    async cleanupResource({ resource, derived, worktree }): Promise<ResourceCleanup | Refusal> {
       if (!worktree.id) {
         return unsafeScope();
       }

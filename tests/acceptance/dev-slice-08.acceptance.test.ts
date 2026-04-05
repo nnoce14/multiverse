@@ -9,8 +9,8 @@ import {
 } from "@multiverse/providers-testkit";
 
 describe("Development Slice 08 acceptance", () => {
-  it("executes one explicit scoped reset when reset is supported", () => {
-    const outcome = resetOneResource({
+  it("executes one explicit scoped reset when reset is supported", async () => {
+    const outcome = await resetOneResource({
       repository: createValidRepositoryConfiguration({
         resources: [
           {
@@ -51,14 +51,14 @@ describe("Development Slice 08 acceptance", () => {
     });
   });
 
-  it("refuses unsupported reset intent explicitly", () => {
+  it("refuses unsupported reset intent explicitly", async () => {
     const providers = createExplicitTestProviders();
     const deriveResource = vi.spyOn(
       providers.resources["test-resource-provider"],
       "deriveResource"
     );
 
-    const outcome = resetOneResource({
+    const outcome = await resetOneResource({
       repository: createValidRepositoryConfiguration({
         resources: [
           {
@@ -86,14 +86,14 @@ describe("Development Slice 08 acceptance", () => {
     expect(deriveResource).not.toHaveBeenCalled();
   });
 
-  it("refuses reset when repository intent does not enable scoped reset", () => {
+  it("refuses reset when repository intent does not enable scoped reset", async () => {
     const providers = createExplicitTestProviders();
     const deriveResource = vi.spyOn(
       providers.resources["test-resource-provider-with-reset"],
       "deriveResource"
     );
 
-    const outcome = resetOneResource({
+    const outcome = await resetOneResource({
       repository: createValidRepositoryConfiguration({
         resources: [
           {
@@ -121,8 +121,8 @@ describe("Development Slice 08 acceptance", () => {
     expect(deriveResource).not.toHaveBeenCalled();
   });
 
-  it("refuses reset when safe scope cannot be established", () => {
-    const outcome = resetOneResource({
+  it("refuses reset when safe scope cannot be established", async () => {
+    const outcome = await resetOneResource({
       repository: createValidRepositoryConfiguration({
         resources: [
           {
@@ -179,8 +179,8 @@ describe("Development Slice 08 acceptance", () => {
     expect(resetResource).not.toHaveBeenCalled();
   });
 
-  it("returns provider-originated unsafe scope during reset unchanged", () => {
-    const outcome = resetOneResource({
+  it("returns provider-originated unsafe scope during reset unchanged", async () => {
+    const outcome = await resetOneResource({
       repository: createValidRepositoryConfiguration({
         resources: [
           {
@@ -211,8 +211,8 @@ describe("Development Slice 08 acceptance", () => {
     });
   });
 
-  it("returns provider-originated provider failure during reset unchanged", () => {
-    const outcome = resetOneResource({
+  it("returns provider-originated provider failure during reset unchanged", async () => {
+    const outcome = await resetOneResource({
       repository: createValidRepositoryConfiguration({
         resources: [
           {

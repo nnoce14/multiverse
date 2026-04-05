@@ -6,7 +6,7 @@ import {
 } from "@multiverse/providers-testkit";
 
 describe("resource provider cleanup contract", () => {
-  it("declares cleanup support explicitly and cleans up one worktree instance", () => {
+  it("declares cleanup support explicitly and cleans up one worktree instance", async () => {
     const providers = createExplicitTestProviders();
     const resourceProvider = providers.resources["test-resource-provider-with-cleanup"];
 
@@ -18,7 +18,7 @@ describe("resource provider cleanup contract", () => {
       throw new Error("Expected cleanupResource to be defined.");
     }
 
-    const cleanup = resourceProvider.cleanupResource({
+    const cleanup = await resourceProvider.cleanupResource({
       resource: {
         name: "primary-db",
         provider: "test-resource-provider-with-cleanup",
@@ -47,7 +47,7 @@ describe("resource provider cleanup contract", () => {
     });
   });
 
-  it("refuses cleanup when provider-level scope safety cannot be established", () => {
+  it("refuses cleanup when provider-level scope safety cannot be established", async () => {
     const providers = createExplicitTestProviders();
     const resourceProvider = providers.resources["test-resource-provider-with-cleanup"];
 
@@ -55,7 +55,7 @@ describe("resource provider cleanup contract", () => {
       throw new Error("Expected cleanupResource to be defined.");
     }
 
-    const cleanup = resourceProvider.cleanupResource({
+    const cleanup = await resourceProvider.cleanupResource({
       resource: {
         name: "primary-db",
         provider: "test-resource-provider-with-cleanup",
@@ -81,7 +81,7 @@ describe("resource provider cleanup contract", () => {
     });
   });
 
-  it("may refuse cleanup with provider failure distinctly from unsafe scope", () => {
+  it("may refuse cleanup with provider failure distinctly from unsafe scope", async () => {
     const providers = createProvidersWithResourceCleanupRefusal({
       category: "provider_failure",
       reason: "Provider cleanup failed after safe scope was established."
@@ -92,7 +92,7 @@ describe("resource provider cleanup contract", () => {
       throw new Error("Expected cleanupResource to be defined.");
     }
 
-    const cleanup = resourceProvider.cleanupResource({
+    const cleanup = await resourceProvider.cleanupResource({
       resource: {
         name: "primary-db",
         provider: "test-resource-provider-with-cleanup",

@@ -47,7 +47,7 @@ export function resetOneResource(input: {
   repository: RepositoryConfiguration;
   worktree: WorktreeInstanceInput;
   providers: ProviderRegistry;
-}): ResetOneResourceResult {
+}): Promise<ResetOneResourceResult> {
   return resolveAndResetAll(input);
 }
 
@@ -55,6 +55,6 @@ export function cleanupOneResource(input: {
   repository: RepositoryConfiguration;
   worktree: WorktreeInstanceInput;
   providers: ProviderRegistry;
-}): CleanupOneResourceResult {
+}): Promise<CleanupOneResourceResult> {
   return resolveAndCleanupAll(input);
 }

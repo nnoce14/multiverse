@@ -176,9 +176,7 @@ async function executeOperationFromFiles(input: {
       id: string;
     };
     providers: ProviderRegistry;
-  }) => {
-    ok: boolean;
-  };
+  }) => { ok: boolean } | Promise<{ ok: boolean }>;
 }): Promise<CliResult> {
   const parsed = await readRepositoryConfiguration(input.configPath);
   const providers = await loadProviderRegistry(input.providersModulePath);
@@ -187,13 +185,15 @@ async function executeOperationFromFiles(input: {
     return providers;
   }
 
-  const result = input.operation({
-    repository: parsed,
-    worktree: {
-      id: input.worktreeId
-    },
-    providers
-  });
+  const result = await Promise.resolve(
+    input.operation({
+      repository: parsed,
+      worktree: {
+        id: input.worktreeId
+      },
+      providers
+    })
+  );
 
   return result.ok ? success(result) : failure(result);
 }

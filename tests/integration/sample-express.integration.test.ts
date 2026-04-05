@@ -9,18 +9,17 @@
  *   2. State written through one worktree's server does not appear in the
  *      other worktree's server (runtime isolation).
  *   3. Both instances can run simultaneously without interference.
- *   4. Reset returns the correct resource handle for the target worktree
- *      only, and applying it clears that worktree's state without touching
- *      the other.
- *   5. Cleanup returns the correct resource handle for the target worktree
- *      only, and applying it removes that worktree's data file without
- *      touching the other.
+ *   4. Reset actually deletes the worktree's data file so the app starts
+ *      fresh, without touching the other worktree.
+ *   5. Cleanup actually deletes the worktree's data file, without touching
+ *      the other worktree's file.
  */
 
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { rm, access } from "node:fs/promises";
+import { access } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
+import { rm } from "node:fs/promises";
 
 import { deriveOne, resetOneResource, cleanupOneResource } from "@multiverse/core";
 import { createPathScopedProvider } from "@multiverse/provider-path-scoped";
@@ -214,8 +213,8 @@ describe("sample-express integration", () => {
 
   // -------------------------------------------------------------------------
   describe("lifecycle: reset", () => {
-    it("reset returns a successful result for a worktree with scopedReset declared", () => {
-      const result = resetOneResource({
+    it("reset returns a successful result for a worktree with scopedReset declared", async () => {
+      const result = await resetOneResource({
         repository,
         worktree: { id: "wt-int-a" },
         providers
@@ -229,8 +228,8 @@ describe("sample-express integration", () => {
       expect(result.resourceResets[0].worktreeId).toBe("wt-int-a");
     });
 
-    it("reset returns the same handle that was derived for that worktree", () => {
-      const result = resetOneResource({
+    it("reset returns the same handle that was derived for that worktree", async () => {
+      const result = await resetOneResource({
         repository,
         worktree: { id: "wt-int-a" },
         providers
@@ -242,9 +241,9 @@ describe("sample-express integration", () => {
       expect(result.resourcePlans[0].handle).toBe(dbPathA);
     });
 
-    it("reset handle for A and reset handle for B are different", () => {
-      const resultA = resetOneResource({ repository, worktree: { id: "wt-int-a" }, providers });
-      const resultB = resetOneResource({ repository, worktree: { id: "wt-int-b" }, providers });
+    it("reset handle for A and reset handle for B are different", async () => {
+      const resultA = await resetOneResource({ repository, worktree: { id: "wt-int-a" }, providers });
+      const resultB = await resetOneResource({ repository, worktree: { id: "wt-int-b" }, providers });
 
       expect(resultA.ok && resultB.ok).toBe(true);
       if (!resultA.ok || !resultB.ok) return;
@@ -252,21 +251,15 @@ describe("sample-express integration", () => {
       expect(resultA.resourcePlans[0].handle).not.toBe(resultB.resourcePlans[0].handle);
     });
 
-    it("resetting A's resource clears A's state and leaves B's state intact", async () => {
+    it("resetting A's resource deletes A's data file and leaves B's state intact", async () => {
       await postItem(addrA, "before-reset-a");
       await postItem(addrB, "stays-in-b");
 
-      // Get the confirmed handle from multiverse reset
-      const result = resetOneResource({ repository, worktree: { id: "wt-int-a" }, providers });
+      // resetOneResource now actually deletes A's file on disk
+      const result = await resetOneResource({ repository, worktree: { id: "wt-int-a" }, providers });
       expect(result.ok).toBe(true);
-      if (!result.ok) return;
 
-      // The app manager uses the confirmed handle to clear A's resource.
-      // Here the test acts as the app manager: it clears A's state via the
-      // server's management endpoint (which writes an empty store to the
-      // confirmed file path — the same path multiverse just confirmed).
-      await clearItems(addrA);
-
+      // A's file is gone — server returns empty store on next read
       const itemsA = await getItems(addrA);
       const itemsB = await getItems(addrB);
 
@@ -278,8 +271,8 @@ describe("sample-express integration", () => {
 
   // -------------------------------------------------------------------------
   describe("lifecycle: cleanup", () => {
-    it("cleanup returns a successful result for a worktree with scopedCleanup declared", () => {
-      const result = cleanupOneResource({
+    it("cleanup returns a successful result for a worktree with scopedCleanup declared", async () => {
+      const result = await cleanupOneResource({
         repository,
         worktree: { id: "wt-int-a" },
         providers
@@ -293,8 +286,8 @@ describe("sample-express integration", () => {
       expect(result.resourceCleanups[0].worktreeId).toBe("wt-int-a");
     });
 
-    it("cleanup returns the same handle that was derived for that worktree", () => {
-      const result = cleanupOneResource({
+    it("cleanup returns the same handle that was derived for that worktree", async () => {
+      const result = await cleanupOneResource({
         repository,
         worktree: { id: "wt-int-a" },
         providers
@@ -306,9 +299,9 @@ describe("sample-express integration", () => {
       expect(result.resourcePlans[0].handle).toBe(dbPathA);
     });
 
-    it("cleanup handle for A and cleanup handle for B are different", () => {
-      const resultA = cleanupOneResource({ repository, worktree: { id: "wt-int-a" }, providers });
-      const resultB = cleanupOneResource({ repository, worktree: { id: "wt-int-b" }, providers });
+    it("cleanup handle for A and cleanup handle for B are different", async () => {
+      const resultA = await cleanupOneResource({ repository, worktree: { id: "wt-int-a" }, providers });
+      const resultB = await cleanupOneResource({ repository, worktree: { id: "wt-int-b" }, providers });
 
       expect(resultA.ok && resultB.ok).toBe(true);
       if (!resultA.ok || !resultB.ok) return;
@@ -316,7 +309,7 @@ describe("sample-express integration", () => {
       expect(resultA.resourcePlans[0].handle).not.toBe(resultB.resourcePlans[0].handle);
     });
 
-    it("removing A's data file via the confirmed handle does not affect B's data file", async () => {
+    it("cleaning up A's resource deletes A's data file without affecting B's data file", async () => {
       // Write data to both — ensures both files exist on disk
       await postItem(addrA, "will-be-cleaned");
       await postItem(addrB, "survives-cleanup");
@@ -324,16 +317,9 @@ describe("sample-express integration", () => {
       expect(await fileExists(dbPathA)).toBe(true);
       expect(await fileExists(dbPathB)).toBe(true);
 
-      // Get cleanup confirmation from multiverse — it tells us A's path
-      const result = cleanupOneResource({ repository, worktree: { id: "wt-int-a" }, providers });
+      // cleanupOneResource now actually deletes A's file on disk
+      const result = await cleanupOneResource({ repository, worktree: { id: "wt-int-a" }, providers });
       expect(result.ok).toBe(true);
-      if (!result.ok) return;
-
-      const confirmedPath = result.resourcePlans[0].handle;
-      expect(confirmedPath).toBe(dbPathA);
-
-      // App manager deletes the confirmed file (simulating real cleanup)
-      await rm(confirmedPath, { force: true });
 
       // A's file is gone; B's file is untouched
       expect(await fileExists(dbPathA)).toBe(false);

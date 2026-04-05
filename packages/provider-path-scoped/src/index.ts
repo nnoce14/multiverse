@@ -1,4 +1,5 @@
 import { join } from "node:path";
+import { rm } from "node:fs/promises";
 import type {
   ResourceProvider,
   DerivedResourcePlan,
@@ -39,10 +40,12 @@ export function createPathScopedProvider(config: PathScopedProviderConfig): Reso
       };
     },
 
-    resetResource({ resource, derived, worktree }): ResourceReset | Refusal {
+    async resetResource({ resource, derived, worktree }): Promise<ResourceReset | Refusal> {
       if (!worktree.id) {
         return unsafeScope();
       }
+
+      await rm(derived.handle, { recursive: true, force: true });
 
       return {
         resourceName: resource.name,
@@ -52,10 +55,12 @@ export function createPathScopedProvider(config: PathScopedProviderConfig): Reso
       };
     },
 
-    cleanupResource({ resource, derived, worktree }): ResourceCleanup | Refusal {
+    async cleanupResource({ resource, derived, worktree }): Promise<ResourceCleanup | Refusal> {
       if (!worktree.id) {
         return unsafeScope();
       }
+
+      await rm(derived.handle, { recursive: true, force: true });
 
       return {
         resourceName: resource.name,
