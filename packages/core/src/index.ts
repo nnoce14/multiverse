@@ -3,19 +3,15 @@ import type {
   DeriveAndValidateOneResult,
   DeriveOneResult,
   ProviderRegistry,
-  Refusal,
   ResetOneResourceResult,
   RepositoryConfiguration,
-  ResourceValidation,
   WorktreeInstanceInput
 } from "@multiverse/provider-contracts";
-import { isFailureOutcome, isRefusal, unsupportedCapability } from "./refusals";
 import {
   resolveAndDeriveAll,
+  resolveAndDeriveAllWithValidation,
   resolveAndResetAll,
-  resolveAndCleanupAll,
-  resolveSliceExecution,
-  type ResolvedSliceExecution
+  resolveAndCleanupAll
 } from "./orchestration";
 
 export {
@@ -31,30 +27,6 @@ export {
   withValidatedRepositoryConfiguration
 } from "./repository-configuration";
 
-function validateResourcePlan(input: {
-  provider: ResolvedSliceExecution["providers"]["resource"];
-  resource: ResolvedSliceExecution["declarations"]["resource"];
-  derived: ResolvedSliceExecution["derived"]["resourcePlan"];
-  worktree: {
-    id?: string;
-    label?: string;
-    branch?: string;
-  };
-}): ResourceValidation | Refusal {
-  if (!input.provider.capabilities?.validate || !input.provider.validateResource) {
-    return {
-      category: "unsupported_capability",
-      reason: `Resource provider "${input.resource.provider}" does not support validate.`
-    };
-  }
-
-  return input.provider.validateResource({
-    resource: input.resource,
-    derived: input.derived,
-    worktree: input.worktree
-  });
-}
-
 export function deriveOne(input: {
   repository: RepositoryConfiguration;
   worktree: WorktreeInstanceInput;
@@ -68,46 +40,7 @@ export function deriveAndValidateOne(input: {
   worktree: WorktreeInstanceInput;
   providers: ProviderRegistry;
 }): DeriveAndValidateOneResult {
-  const execution = resolveSliceExecution({
-    ...input,
-    resourceCountReason: "Slice 02 requires exactly one declared managed resource.",
-    endpointCountReason: "Slice 02 requires exactly one declared managed endpoint."
-  });
-
-  if (isFailureOutcome(execution)) {
-    return execution;
-  }
-
-  const resourceValidations: ResourceValidation[] = [];
-
-  if (execution.declarations.resource.scopedValidate) {
-    const validation = validateResourcePlan({
-      provider: execution.providers.resource,
-      resource: execution.declarations.resource,
-      derived: execution.derived.resourcePlan,
-      worktree: execution.worktree
-    });
-
-    if (isRefusal(validation)) {
-      if (validation.category === "unsupported_capability") {
-        return unsupportedCapability(validation.reason);
-      }
-
-      return {
-        ok: false,
-        refusal: validation
-      };
-    }
-
-    resourceValidations.push(validation);
-  }
-
-  return {
-    ok: true,
-    resourcePlans: [execution.derived.resourcePlan],
-    endpointMappings: [execution.derived.endpointMapping],
-    resourceValidations
-  };
+  return resolveAndDeriveAllWithValidation(input);
 }
 
 export function resetOneResource(input: {
