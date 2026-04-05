@@ -212,7 +212,7 @@ describe("Development Slice 12 acceptance", () => {
           refusal: {
             category: "invalid_configuration",
             reason:
-              'Resource "primary-db" does not declare scoped cleanup intent.'
+              "No resources declare scoped cleanup intent. Cleanup requires at least one resource with scopedCleanup: true."
           }
         })
       ],
