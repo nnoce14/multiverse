@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { createExplicitTestProviders } from "@multiverse/providers-testkit";
 
 describe("resource provider reset contract", () => {
-  it("declares reset support explicitly and resets one worktree instance", () => {
+  it("declares reset support explicitly and resets one worktree instance", async () => {
     const providers = createExplicitTestProviders();
     const resourceProvider = providers.resources["test-resource-provider-with-reset"];
 
@@ -15,7 +15,7 @@ describe("resource provider reset contract", () => {
       throw new Error("Expected resetResource to be defined.");
     }
 
-    const reset = resourceProvider.resetResource({
+    const reset = await resourceProvider.resetResource({
       resource: {
         name: "primary-db",
         provider: "test-resource-provider-with-reset",
@@ -44,7 +44,7 @@ describe("resource provider reset contract", () => {
     });
   });
 
-  it("refuses reset when provider-level scope safety cannot be established", () => {
+  it("refuses reset when provider-level scope safety cannot be established", async () => {
     const providers = createExplicitTestProviders();
     const resourceProvider = providers.resources["test-resource-provider-with-reset"];
 
@@ -52,7 +52,7 @@ describe("resource provider reset contract", () => {
       throw new Error("Expected resetResource to be defined.");
     }
 
-    const reset = resourceProvider.resetResource({
+    const reset = await resourceProvider.resetResource({
       resource: {
         name: "primary-db",
         provider: "test-resource-provider-with-reset",

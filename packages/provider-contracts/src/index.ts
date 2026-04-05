@@ -131,7 +131,7 @@ export interface ResourceProvider {
       label?: string;
       branch?: string;
     };
-  }): ResourceReset | Refusal;
+  }): Promise<ResourceReset | Refusal>;
   cleanupResource?(input: {
     resource: {
       name: string;
@@ -147,7 +147,7 @@ export interface ResourceProvider {
       label?: string;
       branch?: string;
     };
-  }): ResourceCleanup | Refusal;
+  }): Promise<ResourceCleanup | Refusal>;
 }
 
 export interface EndpointProvider {

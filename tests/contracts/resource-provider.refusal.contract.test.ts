@@ -44,7 +44,7 @@ describe("resource provider refusal contract", () => {
     });
   });
 
-  it("may refuse reset with provider failure distinctly from unsafe scope", () => {
+  it("may refuse reset with provider failure distinctly from unsafe scope", async () => {
     const providers = createProvidersWithResourceResetRefusal({
       category: "provider_failure",
       reason: "Provider reset failed after safe scope was established."
@@ -55,7 +55,7 @@ describe("resource provider refusal contract", () => {
       throw new Error("Expected resetResource to be defined.");
     }
 
-    const reset = resourceProvider.resetResource({
+    const reset = await resourceProvider.resetResource({
       resource: {
         name: "primary-db",
         provider: "test-resource-provider-with-reset",

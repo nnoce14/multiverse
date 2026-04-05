@@ -57,14 +57,14 @@ function deriveScopedResource(input: {
   };
 }
 
-function resetScopedResource(input: {
+async function resetScopedResource(input: {
   resource: {
     name: string;
     provider: string;
   };
   derived: DerivedResourcePlan;
   worktree: WorktreeInstanceInput;
-}): ResourceReset | Refusal {
+}): Promise<ResourceReset | Refusal> {
   if (!input.worktree.id) {
     return unsafeScope("Safe worktree scope cannot be determined.");
   }
@@ -77,14 +77,14 @@ function resetScopedResource(input: {
   };
 }
 
-function cleanupScopedResource(input: {
+async function cleanupScopedResource(input: {
   resource: {
     name: string;
     provider: string;
   };
   derived: DerivedResourcePlan;
   worktree: WorktreeInstanceInput;
-}): ResourceCleanup | Refusal {
+}): Promise<ResourceCleanup | Refusal> {
   if (!input.worktree.id) {
     return unsafeScope("Safe worktree scope cannot be determined.");
   }
@@ -234,7 +234,7 @@ export function createProvidersWithResourceResetRefusal(
 
   providers.resources["test-resource-provider-with-reset"] = {
     ...providers.resources["test-resource-provider-with-reset"],
-    resetResource() {
+    async resetResource() {
       return refusal;
     }
   };
@@ -249,7 +249,7 @@ export function createProvidersWithResourceCleanupRefusal(
 
   providers.resources["test-resource-provider-with-cleanup"] = {
     ...providers.resources["test-resource-provider-with-cleanup"],
-    cleanupResource() {
+    async cleanupResource() {
       return refusal;
     }
   };
