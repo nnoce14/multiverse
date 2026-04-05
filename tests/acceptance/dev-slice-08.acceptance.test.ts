@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { resetOneResource, resolveSlice01 } from "@multiverse/core";
+import { resetOneResource, deriveOne } from "@multiverse/core";
 import {
   createExplicitTestProviders,
   createProvidersWithResourceResetRefusal,
@@ -156,7 +156,7 @@ describe("Development Slice 08 acceptance", () => {
       "resetResource"
     );
 
-    const outcome = resolveSlice01({
+    const outcome = deriveOne({
       repository: createValidRepositoryConfiguration({
         resources: [
           {

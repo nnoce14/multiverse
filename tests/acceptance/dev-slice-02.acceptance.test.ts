@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { resolveSlice02 } from "@multiverse/core";
+import { deriveAndValidateOne } from "@multiverse/core";
 import {
   createExplicitTestProviders,
   createValidRepositoryConfiguration,
@@ -9,7 +9,7 @@ import {
 
 describe("Development Slice 02 acceptance", () => {
   it("accepts an explicitly supported validate capability request", () => {
-    const outcome = resolveSlice02({
+    const outcome = deriveAndValidateOne({
       repository: createValidRepositoryConfiguration({
         resources: [
           {
@@ -55,7 +55,7 @@ describe("Development Slice 02 acceptance", () => {
       "deriveResource"
     );
 
-    const outcome = resolveSlice02({
+    const outcome = deriveAndValidateOne({
       repository: createValidRepositoryConfiguration({
         resources: [
           {
@@ -85,7 +85,7 @@ describe("Development Slice 02 acceptance", () => {
   });
 
   it("refuses validation when safe scope cannot be established", () => {
-    const outcome = resolveSlice02({
+    const outcome = deriveAndValidateOne({
       repository: createValidRepositoryConfiguration({
         resources: [
           {
@@ -120,7 +120,7 @@ describe("Development Slice 02 acceptance", () => {
       "deriveResource"
     );
 
-    const outcome = resolveSlice02({
+    const outcome = deriveAndValidateOne({
       repository: createValidRepositoryConfiguration({
         resources: [
           {
@@ -155,7 +155,7 @@ describe("Development Slice 02 acceptance", () => {
       "deriveResource"
     );
 
-    const outcome = resolveSlice02({
+    const outcome = deriveAndValidateOne({
       repository: createValidRepositoryConfiguration({
         resources: [
           {

@@ -1,11 +1,11 @@
 import type {
   CleanupOneResourceResult,
+  DeriveAndValidateOneResult,
+  DeriveOneResult,
   ProviderRegistry,
   Refusal,
   ResourceCleanup,
   ResetOneResourceResult,
-  ResolveSlice01Result,
-  ResolveSlice02Result,
   RepositoryConfiguration,
   ResourceReset,
   ResourceValidation,
@@ -32,12 +32,12 @@ export {
 } from "./repository-configuration";
 
 function isFailureOutcome(
-  value: ResolvedSliceExecution | Extract<ResolveSlice01Result, { ok: false }>
-): value is Extract<ResolveSlice01Result, { ok: false }> {
+  value: ResolvedSliceExecution | Extract<DeriveOneResult, { ok: false }>
+): value is Extract<DeriveOneResult, { ok: false }> {
   return "ok" in value && value.ok === false;
 }
 
-function isFailureResult(value: unknown): value is Extract<ResolveSlice01Result, { ok: false }> {
+function isFailureResult(value: unknown): value is Extract<DeriveOneResult, { ok: false }> {
   return (
     typeof value === "object" &&
     value !== null &&
@@ -128,11 +128,11 @@ function cleanupResourcePlan(input: {
   });
 }
 
-export function resolveSlice01(input: {
+export function deriveOne(input: {
   repository: RepositoryConfiguration;
   worktree: WorktreeInstanceInput;
   providers: ProviderRegistry;
-}): ResolveSlice01Result {
+}): DeriveOneResult {
   const execution = resolveSliceExecution({
     ...input,
     resourceCountReason: "Slice 01 requires exactly one declared managed resource.",
@@ -150,11 +150,11 @@ export function resolveSlice01(input: {
   };
 }
 
-export function resolveSlice02(input: {
+export function deriveAndValidateOne(input: {
   repository: RepositoryConfiguration;
   worktree: WorktreeInstanceInput;
   providers: ProviderRegistry;
-}): ResolveSlice02Result {
+}): DeriveAndValidateOneResult {
   const execution = resolveSliceExecution({
     ...input,
     resourceCountReason: "Slice 02 requires exactly one declared managed resource.",

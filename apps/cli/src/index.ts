@@ -6,7 +6,7 @@ import { pathToFileURL } from "node:url";
 import {
   cleanupOneResource,
   resetOneResource,
-  resolveSlice01,
+  deriveOne,
   validateRepositoryConfiguration,
   validateWorktreeIdentity
 } from "@multiverse/core";
@@ -128,7 +128,7 @@ async function deriveFromFiles(input: {
 }): Promise<CliResult> {
   return executeOperationFromFiles({
     ...input,
-    operation: resolveSlice01
+    operation: deriveOne
   });
 }
 

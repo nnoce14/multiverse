@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { resolveSlice01 } from "@multiverse/core";
+import { deriveOne } from "@multiverse/core";
 import {
   createExplicitTestProviders,
   createValidRepositoryConfiguration,
@@ -9,7 +9,7 @@ import {
 
 describe("Development Slice 05 acceptance", () => {
   it("accepts valid raw endpoint declarations through the current orchestration path", () => {
-    const outcome = resolveSlice01({
+    const outcome = deriveOne({
       repository: createValidRepositoryConfiguration(),
       worktree: createWorktreeInstance({
         id: "wt-valid-endpoint-declaration"
@@ -21,7 +21,7 @@ describe("Development Slice 05 acceptance", () => {
   });
 
   it("rejects an endpoint missing a name", () => {
-    const outcome = resolveSlice01({
+    const outcome = deriveOne({
       repository: createValidRepositoryConfiguration({
         endpoints: [
           {
@@ -45,7 +45,7 @@ describe("Development Slice 05 acceptance", () => {
   });
 
   it("rejects an endpoint missing a role", () => {
-    const outcome = resolveSlice01({
+    const outcome = deriveOne({
       repository: createValidRepositoryConfiguration({
         endpoints: [
           {
@@ -69,7 +69,7 @@ describe("Development Slice 05 acceptance", () => {
   });
 
   it("rejects an endpoint missing a provider", () => {
-    const outcome = resolveSlice01({
+    const outcome = deriveOne({
       repository: createValidRepositoryConfiguration({
         endpoints: [
           {
@@ -99,7 +99,7 @@ describe("Development Slice 05 acceptance", () => {
       "deriveEndpoint"
     );
 
-    const outcome = resolveSlice01({
+    const outcome = deriveOne({
       repository: createValidRepositoryConfiguration({
         endpoints: [
           {
