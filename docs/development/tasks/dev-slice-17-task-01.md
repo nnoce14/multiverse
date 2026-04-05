@@ -9,7 +9,6 @@ Add reset and cleanup capabilities to the path-scoped resource provider
 - `docs/spec/provider-model.md`
 - `docs/spec/resource-isolation.md`
 - `docs/spec/safety-and-refusal.md`
-- `docs/development/dev-slice-16.md` (pattern reference)
 - `docs/development/dev-slice-17.md`
 
 ## In scope
@@ -22,12 +21,16 @@ Add reset and cleanup capabilities to the path-scoped resource provider
 ## Out of scope
 
 - validate capability
-- filesystem operations
 - name-scoped or other providers
+- generic orchestration or consumer hooks for destructive actions
+- non-filesystem destructive behavior
 
 ## Acceptance criteria
 
 - `resetOneResource` succeeds with structured result for path-scoped resource
 - `cleanupOneResource` succeeds with structured result for path-scoped resource
+- reset deletes the derived path for the targeted worktree instance
+- cleanup deletes the derived path for the targeted worktree instance
+- another worktree's derived path remains unaffected
 - unsafe_scope returned when worktree ID absent
 - all existing 110 tests remain green
