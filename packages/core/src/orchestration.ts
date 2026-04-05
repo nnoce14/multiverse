@@ -1,10 +1,14 @@
 import type {
+  CleanupOneResourceResult,
   DerivedEndpointMapping,
   DerivedResourcePlan,
   EndpointProvider,
   ProviderRegistry,
   RepositoryConfiguration,
+  ResourceCleanup,
   ResourceProvider,
+  ResourceReset,
+  ResetOneResourceResult,
   WorktreeInstanceInput
 } from "@multiverse/provider-contracts";
 import {
@@ -321,4 +325,136 @@ export function resolveAndDeriveAll(input: {
   }
 
   return { ok: true, resourcePlans, endpointMappings };
+}
+
+export function resolveAndResetAll(input: {
+  repository: RepositoryConfiguration;
+  worktree: WorktreeInstanceInput;
+  providers: ProviderRegistry;
+}): ResetOneResourceResult {
+  const resolvedWorktree = requireResolvedWorktree(input.worktree);
+  if (isFailureOutcome(resolvedWorktree)) {
+    return resolvedWorktree;
+  }
+
+  const repoValidation = withValidatedRepositoryConfiguration(
+    input.repository,
+    (repository) => repository
+  );
+  if (!repoValidation.ok) {
+    return invalidConfiguration("Repository configuration is invalid.");
+  }
+
+  const repo = repoValidation.value;
+  const resetTargets = repo.resources.filter((r) => r.scopedReset);
+
+  if (resetTargets.length === 0) {
+    return invalidConfiguration(
+      "No resources declare scoped reset intent. Reset requires at least one resource with scopedReset: true."
+    );
+  }
+
+  const resourcePlans: DerivedResourcePlan[] = [];
+  const resourceResets: ResourceReset[] = [];
+
+  for (const resourceDecl of resetTargets) {
+    const resourceProvider = input.providers.resources[resourceDecl.provider];
+    if (!resourceProvider) {
+      return invalidConfiguration(
+        `No resource provider is registered for "${resourceDecl.provider}".`
+      );
+    }
+
+    if (!resourceProvider.capabilities?.reset || !resourceProvider.resetResource) {
+      return { ok: false, refusal: { category: "unsupported_capability", reason: `Resource provider "${resourceDecl.provider}" does not support reset.` } };
+    }
+
+    const plan = resourceProvider.deriveResource({
+      resource: resourceDecl,
+      worktree: resolvedWorktree
+    });
+    if (isRefusal(plan)) {
+      return { ok: false, refusal: plan };
+    }
+
+    const reset = resourceProvider.resetResource({
+      resource: resourceDecl,
+      derived: plan,
+      worktree: resolvedWorktree
+    });
+    if (isRefusal(reset)) {
+      return { ok: false, refusal: reset };
+    }
+
+    resourcePlans.push(plan);
+    resourceResets.push(reset);
+  }
+
+  return { ok: true, resourcePlans, resourceResets };
+}
+
+export function resolveAndCleanupAll(input: {
+  repository: RepositoryConfiguration;
+  worktree: WorktreeInstanceInput;
+  providers: ProviderRegistry;
+}): CleanupOneResourceResult {
+  const resolvedWorktree = requireResolvedWorktree(input.worktree);
+  if (isFailureOutcome(resolvedWorktree)) {
+    return resolvedWorktree;
+  }
+
+  const repoValidation = withValidatedRepositoryConfiguration(
+    input.repository,
+    (repository) => repository
+  );
+  if (!repoValidation.ok) {
+    return invalidConfiguration("Repository configuration is invalid.");
+  }
+
+  const repo = repoValidation.value;
+  const cleanupTargets = repo.resources.filter((r) => r.scopedCleanup);
+
+  if (cleanupTargets.length === 0) {
+    return invalidConfiguration(
+      "No resources declare scoped cleanup intent. Cleanup requires at least one resource with scopedCleanup: true."
+    );
+  }
+
+  const resourcePlans: DerivedResourcePlan[] = [];
+  const resourceCleanups: ResourceCleanup[] = [];
+
+  for (const resourceDecl of cleanupTargets) {
+    const resourceProvider = input.providers.resources[resourceDecl.provider];
+    if (!resourceProvider) {
+      return invalidConfiguration(
+        `No resource provider is registered for "${resourceDecl.provider}".`
+      );
+    }
+
+    if (!resourceProvider.capabilities?.cleanup || !resourceProvider.cleanupResource) {
+      return { ok: false, refusal: { category: "unsupported_capability", reason: `Resource provider "${resourceDecl.provider}" does not support cleanup.` } };
+    }
+
+    const plan = resourceProvider.deriveResource({
+      resource: resourceDecl,
+      worktree: resolvedWorktree
+    });
+    if (isRefusal(plan)) {
+      return { ok: false, refusal: plan };
+    }
+
+    const cleanup = resourceProvider.cleanupResource({
+      resource: resourceDecl,
+      derived: plan,
+      worktree: resolvedWorktree
+    });
+    if (isRefusal(cleanup)) {
+      return { ok: false, refusal: cleanup };
+    }
+
+    resourcePlans.push(plan);
+    resourceCleanups.push(cleanup);
+  }
+
+  return { ok: true, resourcePlans, resourceCleanups };
 }
