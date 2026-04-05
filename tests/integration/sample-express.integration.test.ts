@@ -16,7 +16,7 @@
  */
 
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { access } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { rm } from "node:fs/promises";
@@ -208,6 +208,15 @@ describe("sample-express integration", () => {
 
       expect(await fileExists(dbPathA)).toBe(true);
       expect(await fileExists(dbPathB)).toBe(true);
+    });
+
+    it("database files are SQLite format, not JSON", async () => {
+      await postItem(addrA, "sqlite-proof");
+
+      // SQLite files start with the magic header "SQLite format 3\0"
+      const header = await readFile(dbPathA);
+      const magic = header.subarray(0, 16).toString("utf8");
+      expect(magic).toBe("SQLite format 3\0");
     });
   });
 

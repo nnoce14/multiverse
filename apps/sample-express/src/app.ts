@@ -1,10 +1,11 @@
 import express from "express";
-import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
+import { DatabaseSync } from "node:sqlite";
 import type { Server } from "node:http";
 
 export interface AppConfig {
-  /** Absolute path to the JSON data file. Derived by multiverse path-scoped provider. */
+  /** Absolute path to the SQLite database file. Derived by multiverse path-scoped provider. */
   dbPath: string;
   /** Port to listen on. Derived by multiverse local-port provider. */
   port: number;
@@ -15,23 +16,24 @@ interface Item {
   name: string;
 }
 
-interface Store {
-  items: Item[];
-  nextId: number;
-}
-
-async function readStore(dbPath: string): Promise<Store> {
+/**
+ * Open the database at dbPath for the duration of fn, then close it.
+ * Creates the parent directory and schema on first access.
+ * Using per-call open/close so that after a reset/cleanup (file deletion),
+ * the next call recreates a fresh empty database at the same path.
+ */
+function withDb<T>(dbPath: string, fn: (db: DatabaseSync) => T): T {
+  mkdirSync(dirname(dbPath), { recursive: true });
+  const db = new DatabaseSync(dbPath);
   try {
-    const raw = await readFile(dbPath, "utf-8");
-    return JSON.parse(raw) as Store;
-  } catch {
-    return { items: [], nextId: 1 };
+    db.exec("PRAGMA journal_mode = DELETE");
+    db.exec(
+      "CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL)"
+    );
+    return fn(db);
+  } finally {
+    db.close();
   }
-}
-
-async function writeStore(dbPath: string, store: Store): Promise<void> {
-  await mkdir(dirname(dbPath), { recursive: true });
-  await writeFile(dbPath, JSON.stringify(store, null, 2), "utf-8");
 }
 
 export function createApp(config: AppConfig): express.Application {
@@ -42,26 +44,30 @@ export function createApp(config: AppConfig): express.Application {
     res.json({ ok: true, dbPath: config.dbPath, port: config.port });
   });
 
-  app.get("/items", async (_req, res) => {
-    const store = await readStore(config.dbPath);
-    res.json(store.items);
+  app.get("/items", (_req, res) => {
+    const items = withDb(config.dbPath, (db) =>
+      db.prepare("SELECT id, name FROM items").all() as unknown as Item[]
+    );
+    res.json(items);
   });
 
-  app.post("/items", async (req, res) => {
+  app.post("/items", (req, res) => {
     const { name } = req.body as { name?: string };
     if (!name) {
       res.status(400).json({ error: "name is required" });
       return;
     }
-    const store = await readStore(config.dbPath);
-    const item: Item = { id: store.nextId++, name };
-    store.items.push(item);
-    await writeStore(config.dbPath, store);
+    const item = withDb(config.dbPath, (db) => {
+      const result = db.prepare("INSERT INTO items (name) VALUES (?)").run(name);
+      return { id: result.lastInsertRowid as number, name };
+    });
     res.status(201).json(item);
   });
 
-  app.delete("/items", async (_req, res) => {
-    await writeStore(config.dbPath, { items: [], nextId: 1 });
+  app.delete("/items", (_req, res) => {
+    withDb(config.dbPath, (db) => {
+      db.exec("DELETE FROM items");
+    });
     res.json({ ok: true });
   });
 
