@@ -3,8 +3,8 @@ import type { EndpointProvider, DerivedEndpointMapping, Refusal } from "@multive
 
 const PORT_RANGE = 1000;
 
-function derivePort(worktreeId: string, basePort: number): number {
-  const hash = createHash("sha256").update(worktreeId).digest();
+function derivePort(worktreeId: string, endpointName: string, basePort: number): number {
+  const hash = createHash("sha256").update(worktreeId).update(endpointName).digest();
   const offset = hash.readUInt32BE(0) % PORT_RANGE;
   return basePort + offset;
 }
@@ -23,7 +23,7 @@ export function createLocalPortProvider(config: LocalPortProviderConfig): Endpoi
         };
       }
 
-      const port = derivePort(worktree.id, config.basePort);
+      const port = derivePort(worktree.id, endpoint.name, config.basePort);
 
       return {
         endpointName: endpoint.name,
