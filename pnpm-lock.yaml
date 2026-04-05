@@ -23,6 +23,9 @@ importers:
       '@multiverse/provider-name-scoped':
         specifier: workspace:*
         version: link:packages/provider-name-scoped
+      '@multiverse/provider-path-scoped':
+        specifier: workspace:*
+        version: link:packages/provider-path-scoped
       '@multiverse/providers-testkit':
         specifier: workspace:*
         version: link:packages/providers-testkit
@@ -63,6 +66,12 @@ importers:
         version: link:../provider-contracts
 
   packages/provider-name-scoped:
+    dependencies:
+      '@multiverse/provider-contracts':
+        specifier: workspace:*
+        version: link:../provider-contracts
+
+  packages/provider-path-scoped:
     dependencies:
       '@multiverse/provider-contracts':
         specifier: workspace:*
