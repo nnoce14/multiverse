@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import type { DerivedResourcePlan, Refusal } from "@multiverse/provider-contracts";
+import type { DerivedResourcePlan, ResourceReset, ResourceCleanup, Refusal } from "@multiverse/provider-contracts";
 import { createNameScopedProvider } from "@multiverse/provider-name-scoped";
 
 function isDerivedResourcePlan(value: DerivedResourcePlan | Refusal): value is DerivedResourcePlan {
@@ -53,5 +53,87 @@ describe("resource provider contract: name-scoped derive", () => {
 
     expect(result.handle).toContain(validInput.resource.name);
     expect(result.handle).toContain(validInput.worktree.id);
+  });
+});
+
+describe("resource provider contract: name-scoped reset", () => {
+  const provider = createNameScopedProvider();
+
+  const resourceInput = {
+    name: "primary-db",
+    provider: "name-scoped",
+    isolationStrategy: "name-scoped" as const,
+    scopedValidate: false,
+    scopedReset: true,
+    scopedCleanup: false
+  };
+
+  const derived = {
+    resourceName: "primary-db",
+    provider: "name-scoped",
+    isolationStrategy: "name-scoped" as const,
+    worktreeId: "feature-login",
+    handle: "primary-db_feature-login"
+  };
+
+  it("declares reset capability", () => {
+    expect(provider.capabilities?.reset).toBe(true);
+  });
+
+  it("returns a ResourceReset for valid input", () => {
+    expect(provider.resetResource).toBeDefined();
+    if (!provider.resetResource) return;
+
+    const result = provider.resetResource({
+      resource: resourceInput,
+      derived,
+      worktree: { id: "feature-login" }
+    });
+
+    const reset = result as ResourceReset;
+    expect(reset.capability).toBe("reset");
+    expect(reset.resourceName).toBe("primary-db");
+    expect(reset.worktreeId).toBe("feature-login");
+  });
+});
+
+describe("resource provider contract: name-scoped cleanup", () => {
+  const provider = createNameScopedProvider();
+
+  const resourceInput = {
+    name: "primary-db",
+    provider: "name-scoped",
+    isolationStrategy: "name-scoped" as const,
+    scopedValidate: false,
+    scopedReset: false,
+    scopedCleanup: true
+  };
+
+  const derived = {
+    resourceName: "primary-db",
+    provider: "name-scoped",
+    isolationStrategy: "name-scoped" as const,
+    worktreeId: "feature-login",
+    handle: "primary-db_feature-login"
+  };
+
+  it("declares cleanup capability", () => {
+    expect(provider.capabilities?.cleanup).toBe(true);
+  });
+
+  it("returns a ResourceCleanup for valid input", () => {
+    expect(provider.cleanupResource).toBeDefined();
+    if (!provider.cleanupResource) return;
+
+    const result = provider.cleanupResource({
+      resource: resourceInput,
+      derived,
+      worktree: { id: "feature-login" }
+    });
+
+    const cleanup = result as ResourceCleanup;
+    expect(cleanup.capability).toBe("cleanup");
+    expect(cleanup.resourceName).toBe("primary-db");
+    expect(cleanup.worktreeId).toBe("feature-login");
   });
 });
