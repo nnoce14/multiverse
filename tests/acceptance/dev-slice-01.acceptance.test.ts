@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { resolveSlice01 } from "@multiverse/core";
+import { deriveOne } from "@multiverse/core";
 import {
   createExplicitTestProviders,
   createValidRepositoryConfiguration,
@@ -9,7 +9,7 @@ import {
 
 describe("Development Slice 01 acceptance", () => {
   it("resolves successfully for a valid declared worktree instance", () => {
-    const outcome = resolveSlice01({
+    const outcome = deriveOne({
       repository: createValidRepositoryConfiguration(),
       worktree: createWorktreeInstance({
         id: "wt-feature-a",
@@ -52,14 +52,14 @@ describe("Development Slice 01 acceptance", () => {
     });
     const providers = createExplicitTestProviders();
 
-    const first = resolveSlice01({ repository, worktree, providers });
-    const second = resolveSlice01({ repository, worktree, providers });
+    const first = deriveOne({ repository, worktree, providers });
+    const second = deriveOne({ repository, worktree, providers });
 
     expect(first).toEqual(second);
   });
 
   it("resolves successfully for the reserved main worktree identity", () => {
-    const outcome = resolveSlice01({
+    const outcome = deriveOne({
       repository: createValidRepositoryConfiguration(),
       worktree: createWorktreeInstance({
         id: "main",
@@ -86,7 +86,7 @@ describe("Development Slice 01 acceptance", () => {
     const repository = createValidRepositoryConfiguration();
     const providers = createExplicitTestProviders();
 
-    const first = resolveSlice01({
+    const first = deriveOne({
       repository,
       worktree: createWorktreeInstance({
         id: "wt-first",
@@ -95,7 +95,7 @@ describe("Development Slice 01 acceptance", () => {
       }),
       providers
     });
-    const second = resolveSlice01({
+    const second = deriveOne({
       repository,
       worktree: createWorktreeInstance({
         id: "wt-second",
@@ -117,7 +117,7 @@ describe("Development Slice 01 acceptance", () => {
   });
 
   it("refuses when provider assignment is missing", () => {
-    const outcome = resolveSlice01({
+    const outcome = deriveOne({
       repository: createValidRepositoryConfiguration({
         resources: [
           {
@@ -144,7 +144,7 @@ describe("Development Slice 01 acceptance", () => {
   });
 
   it("refuses when required declaration data is invalid or missing", () => {
-    const outcome = resolveSlice01({
+    const outcome = deriveOne({
       repository: createValidRepositoryConfiguration({
         endpoints: [
           {
@@ -169,7 +169,7 @@ describe("Development Slice 01 acceptance", () => {
   });
 
   it("refuses when safe scope is ambiguous or unsafe", () => {
-    const outcome = resolveSlice01({
+    const outcome = deriveOne({
       repository: createValidRepositoryConfiguration(),
       worktree: {
         label: "ambiguous-scope",
@@ -197,7 +197,7 @@ describe("Development Slice 01 acceptance", () => {
       "deriveEndpoint"
     );
 
-    const outcome = resolveSlice01({
+    const outcome = deriveOne({
       repository: createValidRepositoryConfiguration(),
       worktree: createWorktreeInstance({
         id: "   ",

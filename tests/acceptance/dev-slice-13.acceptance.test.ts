@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { resolveSlice01 } from "@multiverse/core";
+import { deriveOne } from "@multiverse/core";
 import { createLocalPortProvider } from "@multiverse/provider-local-port";
 import { createExplicitTestProviders } from "@multiverse/providers-testkit";
 
@@ -37,7 +37,7 @@ describe("dev-slice-13: local port endpoint provider", () => {
   };
 
   it("derives a local HTTP address for a valid worktree instance", () => {
-    const result = resolveSlice01({
+    const result = deriveOne({
       repository,
       worktree: { id: "feature-login" },
       providers: makeProviders()
@@ -51,7 +51,7 @@ describe("dev-slice-13: local port endpoint provider", () => {
   });
 
   it("derives an address with port in the configured base port range", () => {
-    const result = resolveSlice01({
+    const result = deriveOne({
       repository,
       worktree: { id: "feature-login" },
       providers: makeProviders()
@@ -68,13 +68,13 @@ describe("dev-slice-13: local port endpoint provider", () => {
   });
 
   it("derives the same address for the same worktree ID on repeated calls", () => {
-    const first = resolveSlice01({
+    const first = deriveOne({
       repository,
       worktree: { id: "feature-payments" },
       providers: makeProviders()
     });
 
-    const second = resolveSlice01({
+    const second = deriveOne({
       repository,
       worktree: { id: "feature-payments" },
       providers: makeProviders()
@@ -88,13 +88,13 @@ describe("dev-slice-13: local port endpoint provider", () => {
   });
 
   it("derives distinct addresses for distinct worktree IDs", () => {
-    const resultA = resolveSlice01({
+    const resultA = deriveOne({
       repository,
       worktree: { id: "worktree-a" },
       providers: makeProviders()
     });
 
-    const resultB = resolveSlice01({
+    const resultB = deriveOne({
       repository,
       worktree: { id: "worktree-b" },
       providers: makeProviders()
@@ -108,7 +108,7 @@ describe("dev-slice-13: local port endpoint provider", () => {
   });
 
   it("returns a refusal when worktree ID is absent", () => {
-    const result = resolveSlice01({
+    const result = deriveOne({
       repository,
       worktree: {},
       providers: makeProviders()

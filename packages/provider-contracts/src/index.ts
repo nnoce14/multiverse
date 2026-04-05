@@ -170,7 +170,7 @@ export interface ProviderRegistry {
   endpoints: Record<string, EndpointProvider>;
 }
 
-export type ResolveSlice01Result =
+export type DeriveOneResult =
   | {
       ok: true;
       resourcePlans: DerivedResourcePlan[];
@@ -181,7 +181,7 @@ export type ResolveSlice01Result =
       refusal: Refusal;
     };
 
-export type ResolveSlice02Result =
+export type DeriveAndValidateOneResult =
   | {
       ok: true;
       resourcePlans: DerivedResourcePlan[];

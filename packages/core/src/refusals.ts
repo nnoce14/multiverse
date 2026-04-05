@@ -1,10 +1,10 @@
 import type {
   Refusal,
-  ResolveSlice01Result,
-  ResolveSlice02Result
+  DeriveOneResult,
+  DeriveAndValidateOneResult
 } from "@multiverse/provider-contracts";
 
-export type FailureResult = Extract<ResolveSlice01Result, { ok: false }>;
+export type FailureResult = Extract<DeriveOneResult, { ok: false }>;
 
 export function invalidConfiguration(reason: string): FailureResult {
   return {
@@ -28,7 +28,7 @@ export function unsafeScope(reason: string): FailureResult {
 
 export function unsupportedCapability(
   reason: string
-): Extract<ResolveSlice02Result, { ok: false }> {
+): Extract<DeriveAndValidateOneResult, { ok: false }> {
   return {
     ok: false,
     refusal: {

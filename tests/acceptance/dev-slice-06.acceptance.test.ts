@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { resolveSlice01, resolveSlice02 } from "@multiverse/core";
+import { deriveOne, deriveAndValidateOne } from "@multiverse/core";
 import {
   createProvidersWithEndpointDeriveRefusal,
   createProvidersWithResourceDeriveRefusal,
@@ -11,7 +11,7 @@ import {
 
 describe("Development Slice 06 acceptance", () => {
   it("returns provider-originated unsafe scope during derive unchanged", () => {
-    const outcome = resolveSlice01({
+    const outcome = deriveOne({
       repository: createValidRepositoryConfiguration(),
       worktree: createWorktreeInstance({
         id: "wt-provider-unsafe-derive"
@@ -32,7 +32,7 @@ describe("Development Slice 06 acceptance", () => {
   });
 
   it("returns provider-originated provider failure during derive unchanged", () => {
-    const outcome = resolveSlice01({
+    const outcome = deriveOne({
       repository: createValidRepositoryConfiguration(),
       worktree: createWorktreeInstance({
         id: "wt-provider-failure-derive"
@@ -53,7 +53,7 @@ describe("Development Slice 06 acceptance", () => {
   });
 
   it("returns provider-originated unsafe scope during validate unchanged", () => {
-    const outcome = resolveSlice02({
+    const outcome = deriveAndValidateOne({
       repository: createValidRepositoryConfiguration({
         resources: [
           {
@@ -85,7 +85,7 @@ describe("Development Slice 06 acceptance", () => {
   });
 
   it("returns provider-originated provider failure during validate unchanged", () => {
-    const outcome = resolveSlice02({
+    const outcome = deriveAndValidateOne({
       repository: createValidRepositoryConfiguration({
         resources: [
           {

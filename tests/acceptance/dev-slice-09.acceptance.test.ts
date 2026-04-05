@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { cleanupOneResource, resolveSlice01 } from "@multiverse/core";
+import { cleanupOneResource, deriveOne } from "@multiverse/core";
 import {
   createExplicitTestProviders,
   createProvidersWithResourceCleanupRefusal,
@@ -156,7 +156,7 @@ describe("Development Slice 09 acceptance", () => {
       "cleanupResource"
     );
 
-    const outcome = resolveSlice01({
+    const outcome = deriveOne({
       repository: createValidRepositoryConfiguration({
         resources: [
           {
