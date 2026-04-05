@@ -12,6 +12,7 @@ import {
   validateWorktreeIdentity
 } from "@multiverse/core";
 import type {
+  DeriveOneResult,
   ProviderRegistry,
   RepositoryConfiguration
 } from "@multiverse/provider-contracts";
@@ -44,6 +45,21 @@ function failure(value: unknown): CliResult {
     stdout: [JSON.stringify(value)],
     stderr: []
   };
+}
+
+function toEnvKey(prefix: string, name: string): string {
+  return `${prefix}_${name.toUpperCase().replace(/-/g, "_")}`;
+}
+
+function formatEnv(result: Extract<DeriveOneResult, { ok: true }>): CliResult {
+  const lines: string[] = [];
+  for (const plan of result.resourcePlans) {
+    lines.push(`${toEnvKey("MULTIVERSE_RESOURCE", plan.resourceName)}=${plan.handle}`);
+  }
+  for (const mapping of result.endpointMappings) {
+    lines.push(`${toEnvKey("MULTIVERSE_ENDPOINT", mapping.endpointName)}=${mapping.address}`);
+  }
+  return { exitCode: 0, stdout: lines, stderr: [] };
 }
 
 function usage(message: string): CliResult {
@@ -122,15 +138,15 @@ async function loadProviderRegistry(
   return candidate;
 }
 
-async function deriveFromFiles(input: {
+async function executeDeriveOperation(input: {
   configPath: string;
   worktreeId: string;
   providersModulePath: string;
-}): Promise<CliResult> {
-  return executeOperationFromFiles({
-    ...input,
-    operation: deriveOne
-  });
+}): Promise<DeriveOneResult | CliResult> {
+  const parsed = await readRepositoryConfiguration(input.configPath);
+  const providers = await loadProviderRegistry(input.providersModulePath);
+  if (isCliResult(providers)) return providers;
+  return deriveOne({ repository: parsed, worktree: { id: input.worktreeId }, providers });
 }
 
 async function validateFromFiles(input: {
@@ -236,11 +252,17 @@ async function handleDerive(args: string[]): Promise<CliResult> {
     return providersModulePath;
   }
 
-  return deriveFromFiles({
-    configPath,
-    worktreeId,
-    providersModulePath
-  });
+  const format = readOption(args, "--format") ?? "json";
+  if (format !== "json" && format !== "env") {
+    return usage(`Unknown --format value "${format}". Supported values: json, env`);
+  }
+
+  const result = await executeDeriveOperation({ configPath, worktreeId, providersModulePath });
+  if (isCliResult(result)) return result;
+
+  if (!result.ok) return failure(result);
+  if (format === "env") return formatEnv(result);
+  return success(result);
 }
 
 async function handleValidate(args: string[]): Promise<CliResult> {
