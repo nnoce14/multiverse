@@ -253,3 +253,72 @@ function deriveSliceValues(
     endpointMapping
   };
 }
+
+export function resolveAndDeriveAll(input: {
+  repository: RepositoryConfiguration;
+  worktree: WorktreeInstanceInput;
+  providers: ProviderRegistry;
+}): { ok: true; resourcePlans: DerivedResourcePlan[]; endpointMappings: DerivedEndpointMapping[] } | FailureResult {
+  const resolvedWorktree = requireResolvedWorktree(input.worktree);
+  if (isFailureOutcome(resolvedWorktree)) {
+    return resolvedWorktree;
+  }
+
+  const repoValidation = withValidatedRepositoryConfiguration(
+    input.repository,
+    (repository) => repository
+  );
+  if (!repoValidation.ok) {
+    return invalidConfiguration("Repository configuration is invalid.");
+  }
+
+  const repo = repoValidation.value;
+  const resourcePlans: DerivedResourcePlan[] = [];
+  const endpointMappings: DerivedEndpointMapping[] = [];
+
+  for (const resourceDecl of repo.resources) {
+    const resourceProvider = input.providers.resources[resourceDecl.provider];
+    if (!resourceProvider) {
+      return invalidConfiguration(
+        `No resource provider is registered for "${resourceDecl.provider}".`
+      );
+    }
+
+    const capabilityCheck = validateCapabilityIntent({
+      resource: resourceDecl,
+      provider: resourceProvider
+    });
+    if (isFailureOutcome(capabilityCheck)) {
+      return capabilityCheck;
+    }
+
+    const plan = resourceProvider.deriveResource({
+      resource: resourceDecl,
+      worktree: resolvedWorktree
+    });
+    if (isRefusal(plan)) {
+      return { ok: false, refusal: plan };
+    }
+    resourcePlans.push(plan);
+  }
+
+  for (const endpointDecl of repo.endpoints) {
+    const endpointProvider = input.providers.endpoints[endpointDecl.provider];
+    if (!endpointProvider) {
+      return invalidConfiguration(
+        `No endpoint provider is registered for "${endpointDecl.provider}".`
+      );
+    }
+
+    const mapping = endpointProvider.deriveEndpoint({
+      endpoint: endpointDecl,
+      worktree: resolvedWorktree
+    });
+    if (isRefusal(mapping)) {
+      return { ok: false, refusal: mapping };
+    }
+    endpointMappings.push(mapping);
+  }
+
+  return { ok: true, resourcePlans, endpointMappings };
+}

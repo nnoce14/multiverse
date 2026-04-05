@@ -13,6 +13,7 @@ import type {
 } from "@multiverse/provider-contracts";
 import { invalidConfiguration, isFailureOutcome, isRefusal, unsupportedCapability } from "./refusals";
 import {
+  resolveAndDeriveAll,
   resolveSlicePreflight,
   resolveSliceExecution,
   type ResolvedSliceExecution
@@ -118,21 +119,7 @@ export function deriveOne(input: {
   worktree: WorktreeInstanceInput;
   providers: ProviderRegistry;
 }): DeriveOneResult {
-  const execution = resolveSliceExecution({
-    ...input,
-    resourceCountReason: "Slice 01 requires exactly one declared managed resource.",
-    endpointCountReason: "Slice 01 requires exactly one declared managed endpoint."
-  });
-
-  if (isFailureOutcome(execution)) {
-    return execution;
-  }
-
-  return {
-    ok: true,
-    resourcePlans: [execution.derived.resourcePlan],
-    endpointMappings: [execution.derived.endpointMapping]
-  };
+  return resolveAndDeriveAll(input);
 }
 
 export function deriveAndValidateOne(input: {
