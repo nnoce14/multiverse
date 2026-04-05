@@ -123,7 +123,21 @@ Current `main` includes implemented slices covering:
 - explicit capability-intent refusal behavior
 - refusal propagation from providers
 - explicit reset and cleanup core paths
-- thin CLI validation plus explicit provider-wired derive, reset, and cleanup commands
+- thin CLI with derive, validate, reset, cleanup, and validate-repository commands
+- multi-resource and multi-endpoint support across all core paths
+- path-scoped provider with effectful reset and cleanup (filesystem state)
+- name-scoped provider with scope-confirmation reset and cleanup
+- local-port endpoint provider
+- sample Express application for end-to-end integration proof
+- CI pipeline with acceptance, contract, unit, and integration test jobs
+- `derive --format=env` for shell-sourceable KEY=VALUE output
+
+Phase 1 work in progress (targeting 0.2.x):
+
+- ADR-0012: explicit process wrapper (`multiverse run`)
+- ADR-0013: runtime env variable naming convention
+- ADR-0014: strict conventional defaults for `--config` and `--providers`
+- Implementation of `multiverse run` and conventional defaults
 
 The purpose of this document is still to preserve implementation posture and first-phase boundaries, not to serve as the complete change log for every later slice.
 

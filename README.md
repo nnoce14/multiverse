@@ -65,6 +65,8 @@ That includes:
 
   * name-scoped reset/cleanup as scope confirmation only
   * path-scoped reset/cleanup as effectful operations for provider-managed filesystem state
+* `derive --format=env` for shell-sourceable KEY=VALUE output
+* sample Express application end-to-end integration proof
 
 ## Design principles
 
@@ -121,6 +123,28 @@ pnpm test:unit
 pnpm typecheck
 pnpm cli
 ```
+
+## CLI usage
+
+```bash
+# Derive isolated values as JSON (explicit paths)
+multiverse derive --config multiverse.json --providers providers.ts --worktree-id <id>
+
+# Derive as shell-sourceable KEY=VALUE pairs
+multiverse derive --config multiverse.json --providers providers.ts --worktree-id <id> --format=env
+
+# Run a command with derived values injected as env vars
+multiverse run --worktree-id <id> -- node server.js
+
+# Validate derived values against running resources
+multiverse validate --worktree-id <id> -- ...
+
+# Reset or clean up isolated state
+multiverse reset --worktree-id <id>
+multiverse cleanup --worktree-id <id>
+```
+
+`--config` defaults to `./multiverse.json` and `--providers` defaults to `./providers.ts` when not specified. `--worktree-id` is always required.
 
 ## Source-of-truth order
 
