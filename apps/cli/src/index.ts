@@ -4,6 +4,7 @@ import process from "node:process";
 import { pathToFileURL } from "node:url";
 
 import {
+  resetOneResource,
   resolveSlice01,
   validateRepositoryConfiguration,
   validateWorktreeIdentity
@@ -124,6 +125,37 @@ async function deriveFromFiles(input: {
   worktreeId: string;
   providersModulePath: string;
 }): Promise<CliResult> {
+  return executeOperationFromFiles({
+    ...input,
+    operation: resolveSlice01
+  });
+}
+
+async function resetFromFiles(input: {
+  configPath: string;
+  worktreeId: string;
+  providersModulePath: string;
+}): Promise<CliResult> {
+  return executeOperationFromFiles({
+    ...input,
+    operation: resetOneResource
+  });
+}
+
+async function executeOperationFromFiles(input: {
+  configPath: string;
+  worktreeId: string;
+  providersModulePath: string;
+  operation: (input: {
+    repository: RepositoryConfiguration;
+    worktree: {
+      id: string;
+    };
+    providers: ProviderRegistry;
+  }) => {
+    ok: boolean;
+  };
+}): Promise<CliResult> {
   const parsed = await readRepositoryConfiguration(input.configPath);
   const providers = await loadProviderRegistry(input.providersModulePath);
 
@@ -131,7 +163,7 @@ async function deriveFromFiles(input: {
     return providers;
   }
 
-  const result = resolveSlice01({
+  const result = input.operation({
     repository: parsed,
     worktree: {
       id: input.worktreeId
@@ -187,6 +219,29 @@ async function handleDerive(args: string[]): Promise<CliResult> {
   });
 }
 
+async function handleReset(args: string[]): Promise<CliResult> {
+  const configPath = readRequiredOption(args, "--config");
+  if (isCliResult(configPath)) {
+    return configPath;
+  }
+
+  const worktreeId = readRequiredOption(args, "--worktree-id");
+  if (isCliResult(worktreeId)) {
+    return worktreeId;
+  }
+
+  const providersModulePath = readRequiredOption(args, "--providers");
+  if (isCliResult(providersModulePath)) {
+    return providersModulePath;
+  }
+
+  return resetFromFiles({
+    configPath,
+    worktreeId,
+    providersModulePath
+  });
+}
+
 export async function runCli(args: string[]): Promise<CliResult> {
   const [command] = args;
 
@@ -202,8 +257,12 @@ export async function runCli(args: string[]): Promise<CliResult> {
     return handleDerive(args);
   }
 
+  if (command === "reset") {
+    return handleReset(args);
+  }
+
   return usage(
-    "Usage: multiverse <validate-worktree --worktree-id VALUE | validate-repository --config PATH | derive --config PATH --worktree-id VALUE --providers MODULE>"
+    "Usage: multiverse <validate-worktree --worktree-id VALUE | validate-repository --config PATH | derive --config PATH --worktree-id VALUE --providers MODULE | reset --config PATH --worktree-id VALUE --providers MODULE>"
   );
 }
 
