@@ -97,6 +97,13 @@ The `baseDir` is where isolated resource directories are created. Each worktree 
 
 When `pnpm cli run` starts your app, it injects isolated values as environment variables. Your application reads these instead of hardcoded configuration.
 
+For the current `0.3.x` common-case direction, there are now two explicit consumer patterns:
+
+- read the canonical `MULTIVERSE_*` transport vars directly
+- declare app-native aliases with `appEnv` and read those at one application-owned runtime-config boundary
+
+The second pattern is the preferred proving direction for composed applications because it avoids scattering Multiverse-specific names throughout application code.
+
 **Environment variables injected by `pnpm cli run`:**
 
 | Variable | Content | Example |
@@ -132,6 +139,35 @@ const port = parseInt(new URL(endpointAddress).port, 10);
 // start your server on `port`, use `dbPath` for your database file
 ```
 
+If you prefer app-owned names, declare `appEnv` in `multiverse.json`. Then `pnpm cli run` injects both the canonical `MULTIVERSE_*` variable and the alias with the same derived string value.
+
+Example:
+
+```json
+{
+  "resources": [
+    {
+      "name": "app-db",
+      "provider": "path-scoped",
+      "isolationStrategy": "path-scoped",
+      "scopedReset": true,
+      "scopedCleanup": true,
+      "appEnv": "DATABASE_PATH"
+    }
+  ],
+  "endpoints": [
+    {
+      "name": "http",
+      "role": "application-http",
+      "provider": "local-port",
+      "appEnv": "APP_HTTP_URL"
+    }
+  ]
+}
+```
+
+An application-owned runtime-config boundary can then read `DATABASE_PATH` and `APP_HTTP_URL` instead of the raw canonical names.
+
 ---
 
 ## Step 4 — Run your application
@@ -156,6 +192,7 @@ Multiverse will:
 1. Load `./multiverse.json` and `./providers.ts`
 2. Derive isolated values for `feature-login`
 3. Inject `MULTIVERSE_RESOURCE_APP_DB`, `MULTIVERSE_ENDPOINT_HTTP`, and `MULTIVERSE_WORKTREE_ID` into the process environment
+   If `appEnv` aliases are declared, inject those aliases too
 4. Start `node server.js` with those values
 5. Pass the process's stdout and stderr through unchanged
 6. Exit with the same exit code as `node server.js`

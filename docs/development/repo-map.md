@@ -18,13 +18,14 @@ The repository contains behavior-first design artifacts and a working implementa
 * development guidance under `docs/development/`
 * core business logic in `packages/core/`
 * provider contracts in `packages/provider-contracts/`
-* three concrete provider packages: `provider-name-scoped`, `provider-path-scoped`, and `provider-local-port`
+* five concrete provider packages: `provider-name-scoped`, `provider-path-scoped`, `provider-local-port`, `provider-process-scoped`, and `provider-process-port-scoped`
 * a test provider registry in `packages/providers-testkit/`
 * a thin CLI in `apps/cli/`
 * a sample Express application in `apps/sample-express/`
+* a composed proving application in `apps/sample-compose/`
 * acceptance, contract, unit, and integration tests under `tests/`
 
-Implementation has progressed through 20 development slices. The core lifecycle (derive, validate, reset, cleanup) is implemented across the current declared resource and endpoint model, with multi-resource and multi-endpoint support in place.
+Implementation has progressed through 29 development slices. The core lifecycle (derive, validate, reset, cleanup) is implemented across the current declared resource and endpoint model, with multi-resource and multi-endpoint support in place, and the current `0.3.x` work is refining the composed-application consumer workflow.
 
 ## Implementation Model
 
@@ -63,6 +64,7 @@ Current application areas:
 
 * `apps/cli/` — thin CLI entrypoint for invoking Multiverse behavior
 * `apps/sample-express/` — sample application used for end-to-end integration proof
+* `apps/sample-compose/` — composed proving application for the current consumer-workflow phase
 
 Applications may parse input, invoke core behavior, and present results, but must not become the home of business rules.
 
@@ -78,6 +80,8 @@ Current packages:
 * `packages/provider-name-scoped/` — name-scoped resource isolation (derive, reset, cleanup confirmation only)
 * `packages/provider-path-scoped/` — path-scoped resource isolation (derive, effectful reset, effectful cleanup for provider-managed filesystem state)
 * `packages/provider-local-port/` — local-port endpoint isolation (derive)
+* `packages/provider-process-scoped/` — process-backed resource lifecycle as a declared isolation seam
+* `packages/provider-process-port-scoped/` — process-backed resource seam with deterministic local address handles
 
 Additional packages may be introduced when justified by real implementation boundaries.
 
@@ -238,19 +242,22 @@ Primary code targets in the current implementation phase include:
 
 * `apps/cli/`
 * `apps/sample-express/`
+* `apps/sample-compose/`
 * `packages/core/`
 * `packages/provider-contracts/`
 * `packages/providers-testkit/`
 * `packages/provider-name-scoped/`
 * `packages/provider-path-scoped/`
 * `packages/provider-local-port/`
+* `packages/provider-process-scoped/`
+* `packages/provider-process-port-scoped/`
 * `tests/`
 
 ## Development Slice Alignment
 
 Current implementation work should follow the active development slice and task documents under `docs/development/`.
 
-Slices 01–20 have been implemented. Subsequent work is tracked through current development documents and the repository’s open issues.
+Slices 01–29 have been implemented. Subsequent work is tracked through current development documents and the repository’s open issues.
 
 Contributors and agents should use those sources to determine what behavior is currently in scope.
 
