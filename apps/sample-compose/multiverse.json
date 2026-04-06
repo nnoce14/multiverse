@@ -1,0 +1,27 @@
+{
+  "resources": [
+    {
+      "name": "app-db",
+      "provider": "path-scoped",
+      "isolationStrategy": "path-scoped",
+      "scopedValidate": false,
+      "scopedReset": true,
+      "scopedCleanup": true
+    },
+    {
+      "name": "cache-sidecar",
+      "provider": "process-port-scoped",
+      "isolationStrategy": "process-port-scoped",
+      "scopedValidate": false,
+      "scopedReset": true,
+      "scopedCleanup": true
+    }
+  ],
+  "endpoints": [
+    {
+      "name": "http",
+      "role": "application-http",
+      "provider": "local-port"
+    }
+  ]
+}
