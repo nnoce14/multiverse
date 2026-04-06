@@ -5,7 +5,6 @@
   "exports": {
     ".": {
       "types": "./index.ts",
-      "source": "./index.ts",
       "default": "./dist/index.js"
     }
   },
