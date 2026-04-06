@@ -142,7 +142,7 @@ Phase 2 in progress (targeting 0.2.x):
 
 - ADR-0015: process-scoped providers manage explicitly requested child processes only
 - Slice 21: `@multiverse/provider-process-scoped` — handle derivation (process state directory)
-- Slice 22: process-scoped lifecycle — launch, readiness, cleanup (planned)
+- Slice 22: process-scoped lifecycle — launch, liveness readiness, cleanup — implemented
 
 The purpose of this document is still to preserve implementation posture and first-phase boundaries, not to serve as the complete change log for every later slice.
 
