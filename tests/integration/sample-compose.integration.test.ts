@@ -18,9 +18,10 @@
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { existsSync } from "node:fs";
-import { rm } from "node:fs/promises";
+import { spawn, type ChildProcess } from "node:child_process";
+import { readFile, rm } from "node:fs/promises";
 import { join } from "node:path";
-import { tmpdir } from "node:os";
+import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 
@@ -29,19 +30,24 @@ import { createPathScopedProvider } from "@multiverse/provider-path-scoped";
 import { createLocalPortProvider } from "@multiverse/provider-local-port";
 import { createProcessPortScopedProvider } from "@multiverse/provider-process-port-scoped";
 
+import { runCli, type ChildProcessRunner } from "../../apps/cli/src/index";
 import { startApp, type AppHandle } from "../../apps/sample-compose/src/app.js";
 
 // ---------------------------------------------------------------------------
 // Shared configuration
 // ---------------------------------------------------------------------------
 
-const TEST_BASE_DIR = join(tmpdir(), "multiverse-integration-compose");
+const root = resolve(fileURLToPath(new URL(".", import.meta.url)), "../../");
+const TEST_BASE_DIR = resolve(root, ".codex", "test-state", "integration", "sample-compose");
 const TEST_BASE_PORT_HTTP = 5400;
 const TEST_BASE_PORT_SIDECAR = 6400;
-
-const root = resolve(fileURLToPath(new URL(".", import.meta.url)), "../../");
-const tsx = resolve(root, "node_modules/.bin/tsx");
+const tsxCliPath = resolve(root, "node_modules/tsx/dist/cli.mjs");
 const sidecarPath = resolve(root, "apps/sample-compose/src/sidecar.ts");
+const sampleComposeConfigPath = resolve(root, "apps/sample-compose/multiverse.json");
+const sampleComposeEntrypointPath = resolve(root, "apps/sample-compose/src/index.ts");
+const sampleComposeProvidersModulePath = fileURLToPath(
+  new URL("./fixtures/sample-compose-test-providers.ts", import.meta.url)
+);
 
 const providers = {
   resources: {
@@ -51,7 +57,7 @@ const providers = {
     "process-port-scoped": createProcessPortScopedProvider({
       baseDir: join(TEST_BASE_DIR, "sidecar"),
       basePort: TEST_BASE_PORT_SIDECAR,
-      command: [tsx, sidecarPath, "--port", "{PORT}"]
+      command: [process.execPath, tsxCliPath, sidecarPath, "--port", "{PORT}"]
     })
   },
   endpoints: {
@@ -67,7 +73,8 @@ const repository = {
       isolationStrategy: "path-scoped" as const,
       scopedValidate: false,
       scopedReset: true,
-      scopedCleanup: true
+      scopedCleanup: true,
+      appEnv: "DATABASE_PATH"
     },
     {
       name: "cache-sidecar",
@@ -75,14 +82,16 @@ const repository = {
       isolationStrategy: "process-port-scoped" as const,
       scopedValidate: false,
       scopedReset: true,
-      scopedCleanup: true
+      scopedCleanup: true,
+      appEnv: "CACHE_ADDR"
     }
   ],
   endpoints: [
     {
       name: "http",
       role: "application-http",
-      provider: "local-port"
+      provider: "local-port",
+      appEnv: "APP_HTTP_URL"
     }
   ]
 };
@@ -109,6 +118,37 @@ async function waitForSidecar(cacheAddr: string, timeoutMs = 3000): Promise<void
     await new Promise((r) => setTimeout(r, 50));
   }
   throw new Error(`Sidecar at ${cacheAddr} did not become ready within ${timeoutMs}ms: ${String(lastError)}`);
+}
+
+async function waitForApp(address: string, timeoutMs = 3000): Promise<void> {
+  const url = `${address}/health`;
+  const deadline = Date.now() + timeoutMs;
+  let lastError: unknown;
+  while (Date.now() < deadline) {
+    try {
+      const res = await fetch(url);
+      if (res.ok) return;
+    } catch (err) {
+      lastError = err;
+    }
+    await new Promise((r) => setTimeout(r, 50));
+  }
+  throw new Error(`App at ${address} did not become ready within ${timeoutMs}ms: ${String(lastError)}`);
+}
+
+async function readSampleComposeRepository() {
+  return JSON.parse(await readFile(sampleComposeConfigPath, "utf8")) as typeof repository;
+}
+
+async function terminateChildProcess(child: ChildProcess | undefined): Promise<void> {
+  if (!child || child.exitCode !== null || child.killed) {
+    return;
+  }
+
+  await new Promise<void>((resolve) => {
+    child.once("exit", () => resolve());
+    child.kill("SIGTERM");
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -159,6 +199,109 @@ describe("sample-compose: mixed-provider composition", () => {
     it("cache-sidecar handles are scheme-free localhost addresses", () => {
       expect(cacheAddrA).toMatch(/^localhost:\d+$/);
       expect(cacheAddrB).toMatch(/^localhost:\d+$/);
+    });
+  });
+
+  describe("app-native env consumer path", () => {
+    const worktreeId = "wt-compose-appenv";
+    let child: ChildProcess | undefined;
+    let appAddress = "";
+    let repositoryConfig: typeof repository;
+
+    beforeAll(async () => {
+      repositoryConfig = await readSampleComposeRepository();
+
+      const derived = deriveOne({ repository: repositoryConfig, worktree: { id: worktreeId }, providers });
+      if (!derived.ok) {
+        throw new Error("Derivation failed during appEnv test setup");
+      }
+
+      const cacheAddr = derived.resourcePlans.find((plan) => plan.resourceName === "cache-sidecar")!.handle;
+      appAddress = derived.endpointMappings.find((mapping) => mapping.endpointName === "http")!.address;
+
+      const resetResult = await resetOneResource({
+        repository: repositoryConfig,
+        worktree: { id: worktreeId },
+        providers
+      });
+      expect(resetResult.ok).toBe(true);
+      await waitForSidecar(cacheAddr);
+
+      const runner: ChildProcessRunner = async ({ cmd, args, env }) => {
+        child = spawn(cmd, args, {
+          env,
+          stdio: ["ignore", "ignore", "pipe"]
+        });
+
+        let stderr = "";
+        child.stderr?.on("data", (chunk) => {
+          stderr += String(chunk);
+        });
+
+        try {
+          await waitForApp(appAddress);
+        } catch (error) {
+          throw new Error(
+            `sample-compose did not start through multiverse run: ${String(error)} stderr=${stderr}`
+          );
+        }
+        return { exitCode: 0 };
+      };
+
+      const outcome = await runCli(
+        [
+          "run",
+          "--config",
+          sampleComposeConfigPath,
+          "--providers",
+          sampleComposeProvidersModulePath,
+          "--worktree-id",
+          worktreeId,
+          "--",
+          process.execPath,
+          tsxCliPath,
+          sampleComposeEntrypointPath
+        ],
+        {
+          cwd: root,
+          parentEnv: {},
+          runner
+        }
+      );
+
+      expect(outcome.exitCode).toBe(0);
+    });
+
+    afterAll(async () => {
+      await terminateChildProcess(child);
+      if (repositoryConfig) {
+        await cleanupOneResource({
+          repository: repositoryConfig,
+          worktree: { id: worktreeId },
+          providers
+        });
+      }
+    });
+
+    it("launches sample-compose through app-native env aliases instead of raw MULTIVERSE_* reads", async () => {
+      const res = await fetch(`${appAddress}/health`);
+      const body = await res.json() as { ok: boolean; dbPath: string; cacheAddr: string; port: number };
+      expect(body.ok).toBe(true);
+
+      const derived = deriveOne({ repository: repositoryConfig, worktree: { id: worktreeId }, providers });
+      if (!derived.ok) {
+        throw new Error("Derivation failed during appEnv assertions");
+      }
+
+      expect(body.dbPath).toBe(
+        derived.resourcePlans.find((plan) => plan.resourceName === "app-db")!.handle
+      );
+      expect(body.cacheAddr).toBe(
+        derived.resourcePlans.find((plan) => plan.resourceName === "cache-sidecar")!.handle
+      );
+      expect(body.port).toBe(
+        extractPort(derived.endpointMappings.find((mapping) => mapping.endpointName === "http")!.address)
+      );
     });
   });
 

@@ -34,12 +34,14 @@ export interface ResourceDeclaration {
   scopedValidate?: boolean;
   scopedReset?: boolean;
   scopedCleanup?: boolean;
+  appEnv?: string;
 }
 
 export interface EndpointDeclaration {
   name?: string;
   role?: string;
   provider?: string;
+  appEnv?: string;
 }
 
 export interface RepositoryConfiguration {

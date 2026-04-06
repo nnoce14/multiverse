@@ -7,7 +7,7 @@ import type {
 
 export interface DeclarationValidationError {
   path: string;
-  code: "required";
+  code: "required" | "invalid_env_var_name" | "reserved_name" | "duplicate_appenv";
 }
 
 export interface ValidatedResourceDeclaration {
@@ -17,17 +17,19 @@ export interface ValidatedResourceDeclaration {
   scopedValidate: boolean;
   scopedReset: boolean;
   scopedCleanup: boolean;
+  appEnv?: string;
 }
 
 export interface ValidatedEndpointDeclaration {
   name: string;
   role: string;
   provider: string;
+  appEnv?: string;
 }
 
 export interface EndpointDeclarationValidationError {
-  path: "name" | "role" | "provider";
-  code: "required";
+  path: "name" | "role" | "provider" | "appEnv";
+  code: "required" | "invalid_env_var_name" | "reserved_name";
 }
 
 export type EndpointDeclarationValidationResult<T> =
@@ -40,20 +42,51 @@ export type EndpointDeclarationValidationResult<T> =
       errors: EndpointDeclarationValidationError[];
     };
 
+/** Pattern for a valid environment variable name (POSIX-like). */
+const ENV_VAR_NAME_PATTERN = /^[A-Za-z_][A-Za-z0-9_]*$/;
+const RESERVED_PREFIX = "MULTIVERSE_";
+
+function isValidEnvVarName(name: string): boolean {
+  return ENV_VAR_NAME_PATTERN.test(name);
+}
+
+function isReservedEnvVarName(name: string): boolean {
+  return name.startsWith(RESERVED_PREFIX);
+}
+
 function requiredError(path: string): DeclarationValidationError {
-  return {
-    path,
-    code: "required"
-  };
+  return { path, code: "required" };
 }
 
 function requiredEndpointError(
   path: EndpointDeclarationValidationError["path"]
 ): EndpointDeclarationValidationError {
-  return {
-    path,
-    code: "required"
-  };
+  return { path, code: "required" };
+}
+
+function appEnvErrors(
+  value: string,
+  pathPrefix: string
+): DeclarationValidationError[] {
+  const errors: DeclarationValidationError[] = [];
+  if (!isValidEnvVarName(value)) {
+    errors.push({ path: `${pathPrefix}.appEnv`, code: "invalid_env_var_name" });
+  } else if (isReservedEnvVarName(value)) {
+    errors.push({ path: `${pathPrefix}.appEnv`, code: "reserved_name" });
+  }
+  return errors;
+}
+
+function endpointAppEnvErrors(
+  value: string
+): EndpointDeclarationValidationError[] {
+  const errors: EndpointDeclarationValidationError[] = [];
+  if (!isValidEnvVarName(value)) {
+    errors.push({ path: "appEnv", code: "invalid_env_var_name" });
+  } else if (isReservedEnvVarName(value)) {
+    errors.push({ path: "appEnv", code: "reserved_name" });
+  }
+  return errors;
 }
 
 export function validateResourceDeclaration(input: {
@@ -91,11 +124,12 @@ export function validateResourceDeclaration(input: {
     errors.push(requiredError(`resources[${index}].scopedCleanup`));
   }
 
+  if (resource.appEnv !== undefined) {
+    errors.push(...appEnvErrors(resource.appEnv, `resources[${index}]`));
+  }
+
   if (errors.length > 0) {
-    return {
-      ok: false,
-      errors
-    };
+    return { ok: false, errors };
   }
 
   return {
@@ -106,7 +140,8 @@ export function validateResourceDeclaration(input: {
       isolationStrategy: resource.isolationStrategy!,
       scopedValidate: resource.scopedValidate === true,
       scopedReset: resource.scopedReset!,
-      scopedCleanup: resource.scopedCleanup!
+      scopedCleanup: resource.scopedCleanup!,
+      ...(resource.appEnv !== undefined ? { appEnv: resource.appEnv } : {})
     }
   };
 }
@@ -128,11 +163,12 @@ export function validateEndpointDeclaration(
     errors.push(requiredEndpointError("provider"));
   }
 
+  if (input.appEnv !== undefined) {
+    errors.push(...endpointAppEnvErrors(input.appEnv));
+  }
+
   if (errors.length > 0) {
-    return {
-      ok: false,
-      errors
-    };
+    return { ok: false, errors };
   }
 
   return {
@@ -140,7 +176,8 @@ export function validateEndpointDeclaration(
     value: {
       name: input.name!,
       role: input.role!,
-      provider: input.provider!
+      provider: input.provider!,
+      ...(input.appEnv !== undefined ? { appEnv: input.appEnv } : {})
     }
   };
 }
@@ -177,9 +214,10 @@ export function validateIndexedEndpointDeclaration(input: {
   if (!validation.ok) {
     return {
       ok: false,
-      errors: validation.errors.map((error) =>
-        requiredError(`endpoints[${input.index}].${error.path}`)
-      )
+      errors: validation.errors.map((error) => ({
+        path: `endpoints[${input.index}].${error.path}`,
+        code: error.code as DeclarationValidationError["code"]
+      }))
     };
   }
 
@@ -188,4 +226,3 @@ export function validateIndexedEndpointDeclaration(input: {
     value: validation.value
   };
 }
-

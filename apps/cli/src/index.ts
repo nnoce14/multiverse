@@ -32,6 +32,8 @@ export type ChildProcessRunner = (input: {
 export interface RunCliOptions {
   cwd?: string;
   runner?: ChildProcessRunner;
+  /** Override the parent environment used for conflict checks and env merging. Defaults to process.env. */
+  parentEnv?: NodeJS.ProcessEnv;
 }
 
 function isCliResult(value: unknown): value is CliResult {
@@ -94,6 +96,46 @@ function buildRunEnv(
     env[toEnvKey("MULTIVERSE_ENDPOINT", mapping.endpointName)] = mapping.address;
   }
   return env;
+}
+
+/**
+ * Collect appEnv aliases declared in the raw repository configuration.
+ * Correlates each declaration's appEnv name with the derived value from the derive result.
+ * Returns a map of appEnv name → derived value.
+ */
+function collectAppEnvAliases(
+  repository: RepositoryConfiguration,
+  result: Extract<DeriveOneResult, { ok: true }>
+): Record<string, string> {
+  const aliases: Record<string, string> = {};
+
+  for (const resource of repository.resources) {
+    if (!resource.appEnv || !resource.name) continue;
+    const plan = result.resourcePlans.find((p) => p.resourceName === resource.name);
+    if (plan) aliases[resource.appEnv] = plan.handle;
+  }
+
+  for (const endpoint of repository.endpoints) {
+    if (!endpoint.appEnv || !endpoint.name) continue;
+    const mapping = result.endpointMappings.find((m) => m.endpointName === endpoint.name);
+    if (mapping) aliases[endpoint.appEnv] = mapping.address;
+  }
+
+  return aliases;
+}
+
+/**
+ * Check whether any appEnv alias name already exists in the parent environment.
+ * Returns the first conflicting name, or undefined if there are no conflicts.
+ */
+function findAppEnvConflict(
+  aliases: Record<string, string>,
+  parentEnv: NodeJS.ProcessEnv
+): string | undefined {
+  for (const name of Object.keys(aliases)) {
+    if (name in parentEnv) return name;
+  }
+  return undefined;
 }
 
 function usage(message: string): CliResult {
@@ -348,7 +390,8 @@ async function handleCleanup(args: string[], cwd: string): Promise<CliResult> {
 async function handleRun(
   args: string[],
   cwd: string,
-  runner: ChildProcessRunner
+  runner: ChildProcessRunner,
+  parentEnv: NodeJS.ProcessEnv
 ): Promise<CliResult> {
   const opts = readCommonOptions(args, cwd);
   if (isCliResult(opts)) return opts;
@@ -366,17 +409,46 @@ async function handleRun(
 
   const [cmd, ...restArgs] = childArgs as [string, ...string[]];
 
-  const deriveResult = await executeDeriveOperation({ configPath, worktreeId, providersModulePath });
-  if (isCliResult(deriveResult)) return deriveResult;
+  // Read raw config explicitly — needed for appEnv alias lookup after derivation.
+  const parsedConfig = await readRepositoryConfiguration(configPath);
+  if (isCliResult(parsedConfig)) return parsedConfig;
+
+  const providers = await loadProviderRegistry(providersModulePath);
+  if (isCliResult(providers)) return providers;
+
+  const deriveResult = deriveOne({
+    repository: parsedConfig,
+    worktree: { id: worktreeId },
+    providers
+  });
 
   if (!deriveResult.ok) return runFailure(deriveResult);
 
+  // Build canonical MULTIVERSE_* env vars.
   const multiverseEnv = buildRunEnv(worktreeId, deriveResult);
+
+  // Collect appEnv aliases declared in the repository configuration.
+  const appEnvAliases = collectAppEnvAliases(parsedConfig, deriveResult);
+
+  // Refuse if any appEnv name already exists in the parent environment.
+  const conflict = findAppEnvConflict(appEnvAliases, parentEnv);
+  if (conflict !== undefined) {
+    return runFailure({
+      ok: false,
+      refusal: {
+        category: "invalid_configuration",
+        reason: `Cannot inject app-native env var "${conflict}": it already exists in the parent environment. Multiverse will not silently override existing environment variables.`
+      }
+    });
+  }
+
+  // Build merged env: parent → canonical MULTIVERSE_* → appEnv aliases.
   const mergedEnv: Record<string, string> = {};
-  for (const [k, v] of Object.entries(process.env)) {
+  for (const [k, v] of Object.entries(parentEnv)) {
     if (v !== undefined) mergedEnv[k] = v;
   }
   Object.assign(mergedEnv, multiverseEnv);
+  Object.assign(mergedEnv, appEnvAliases);
 
   const { exitCode } = await runner({ cmd, args: restArgs, env: mergedEnv });
   return { exitCode, stdout: [], stderr: [] };
@@ -385,6 +457,7 @@ async function handleRun(
 export async function runCli(args: string[], options: RunCliOptions = {}): Promise<CliResult> {
   const cwd = options.cwd ?? process.cwd();
   const runner = options.runner ?? defaultChildProcessRunner;
+  const parentEnv = options.parentEnv ?? process.env;
   const [command] = args;
 
   if (command === "validate-worktree") {
@@ -412,7 +485,7 @@ export async function runCli(args: string[], options: RunCliOptions = {}): Promi
   }
 
   if (command === "run") {
-    return handleRun(args, cwd, runner);
+    return handleRun(args, cwd, runner, parentEnv);
   }
 
   return usage(
