@@ -25,7 +25,7 @@ The repository contains behavior-first design artifacts and a working implementa
 * a composed proving application in `apps/sample-compose/`
 * acceptance, contract, unit, and integration tests under `tests/`
 
-Implementation has progressed through 29 development slices. The core lifecycle (derive, validate, reset, cleanup) is implemented across the current declared resource and endpoint model, with multi-resource and multi-endpoint support in place, and the current `0.3.x` work is refining the composed-application consumer workflow.
+Implementation has progressed through 30 development slices. The core lifecycle (derive, validate, reset, cleanup) is implemented across the current declared resource and endpoint model, with multi-resource and multi-endpoint support in place, and the current `0.3.x` work has now proven the main composed-application consumer workflow.
 
 ## Implementation Model
 
@@ -257,7 +257,7 @@ Primary code targets in the current implementation phase include:
 
 Current implementation work should follow the active development slice and task documents under `docs/development/`.
 
-Slices 01–29 have been implemented. Subsequent work is tracked through current development documents and the repository’s open issues.
+Slices 01–30 have been implemented. Subsequent work is tracked through current development documents and the repository’s open issues.
 
 Contributors and agents should use those sources to determine what behavior is currently in scope.
 

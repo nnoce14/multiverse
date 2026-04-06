@@ -51,7 +51,7 @@ Today’s repo includes:
 
 ## Current behavior being proven
 
-The current implementation proves the core loop for explicit declarations and deterministic derivation, plus the current `0.3.0-alpha.2` consumer-workflow refinement direction.
+The current implementation proves the core loop for explicit declarations and deterministic derivation, plus the current `0.3.0-alpha.3` consumer-workflow refinement direction.
 
 That includes:
 
@@ -74,6 +74,7 @@ That includes:
 * `derive --format=env` for shell-sourceable KEY=VALUE output
 * sample Express application end-to-end integration proof
 * app-native env alias injection during `run`
+* typed endpoint app-native env injection for `url` and `port`
 * a composed `sample-compose` proof for mixed-provider consumption in one app
 * an application-owned runtime-config boundary for the composed sample app
 
@@ -166,7 +167,7 @@ pnpm cli cleanup --worktree-id <id>
 
 `--config` defaults to `./multiverse.json` and `--providers` defaults to `./providers.ts` when not specified. `--worktree-id` is always required.
 
-For the current common-case `0.3.x` proving path, `run` can inject both canonical `MULTIVERSE_*` transport vars and explicit app-native aliases declared with `appEnv`. The preferred application pattern is to read those app-owned names at one runtime-config boundary rather than scatter direct `MULTIVERSE_*` reads through the app.
+For the current common-case `0.3.x` proving path, `run` can inject both canonical `MULTIVERSE_*` transport vars and explicit app-native values declared with `appEnv`. For endpoints, that now includes explicit typed mapping for `url` and `port`. The preferred application pattern is to read those app-owned names at one runtime-config boundary rather than scatter direct `MULTIVERSE_*` reads through the app.
 
 ## Source-of-truth order
 
