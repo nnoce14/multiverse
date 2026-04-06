@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed
+Accepted
 
 ## Context
 
@@ -151,6 +151,34 @@ Out of scope for the first process-scoped slice:
 * hidden background orchestration
 * framework-specific command inference
 
+### 9. The launch command belongs in provider configuration, not in repository declarations
+
+The command used to launch a process-scoped process is provider configuration supplied at registration time, not a field in the repository configuration file (`multiverse.json`).
+
+`multiverse.json` declares what the repository needs (a named process-scoped resource).
+Provider registration decides how that declared need is satisfied (which command to launch, under which runtime).
+
+This preserves the declarative nature of repository configuration and keeps raw launch commands out of the shared config file.
+
+### 10. The public handle for a process-scoped resource is the provider-managed process state directory
+
+The `DerivedResourcePlan.handle` for a process-scoped resource is the path to the provider-managed process state directory:
+
+```
+{baseDir}/{resourceName}/{worktreeId}/
+```
+
+This directory is the provider's owned workspace for that worktree instance. The provider may store implementation artifacts inside it, including:
+
+* PID file
+* readiness metadata
+* log files
+* other provider-owned state
+
+The PID file and any other internal artifacts are implementation details of the provider. They must not appear as the public handle.
+
+This keeps the public contract stable and extensible across future lifecycle slices, and avoids leaking provider implementation details into the consumer-visible API surface.
+
 ## Consequences
 
 ### Positive
@@ -185,6 +213,26 @@ The implementation should avoid:
 * implicit supervision
 * speculative restart behavior
 * framework-specific heuristics
+
+### First slice scope (derive only)
+
+The first implementation slice covers handle derivation only.
+
+A process-scoped provider:
+
+* accepts `{ baseDir: string; command: string[] }` as provider configuration
+* derives the process state directory handle: `{baseDir}/{resourceName}/{worktreeId}/`
+* refuses with `unsafe_scope` when worktree ID is absent
+* satisfies the `ResourceProvider` contract for the derive capability
+
+Process launch, readiness checks, and cleanup are deferred to subsequent slices.
+
+### Second slice scope (lifecycle)
+
+The second implementation slice adds `reset` and `cleanup` capabilities.
+
+Reset relaunches the process under the isolated configuration, using the state directory for provider-managed artifacts (PID file, etc.).
+Cleanup terminates the tracked process and removes provider-managed state.
 
 ## Related
 

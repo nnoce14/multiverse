@@ -132,12 +132,17 @@ Current `main` includes implemented slices covering:
 - CI pipeline with acceptance, contract, unit, and integration test jobs
 - `derive --format=env` for shell-sourceable KEY=VALUE output
 
-Phase 1 work in progress (targeting 0.2.x):
+Phase 1 complete (0.2.x):
 
-- ADR-0012: explicit process wrapper (`multiverse run`)
-- ADR-0013: runtime env variable naming convention
-- ADR-0014: strict conventional defaults for `--config` and `--providers`
-- Implementation of `multiverse run` and conventional defaults
+- ADR-0012: explicit process wrapper (`multiverse run`) — implemented
+- ADR-0013: runtime env variable naming convention — implemented
+- ADR-0014: strict conventional defaults for `--config` and `--providers` — implemented
+
+Phase 2 in progress (targeting 0.2.x):
+
+- ADR-0015: process-scoped providers manage explicitly requested child processes only
+- Slice 21: `@multiverse/provider-process-scoped` — handle derivation (process state directory)
+- Slice 22: process-scoped lifecycle — launch, readiness, cleanup (planned)
 
 The purpose of this document is still to preserve implementation posture and first-phase boundaries, not to serve as the complete change log for every later slice.
 
