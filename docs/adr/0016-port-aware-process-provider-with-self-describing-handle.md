@@ -2,7 +2,11 @@
 
 ## Status
 
-Proposed
+Accepted
+
+Settled open questions:
+- Host: `localhost`-only for 1.0. No configurable host in the initial implementation.
+- Readiness: liveness-only for the initial slice. Port-reachability is a named future extension.
 
 ## Context
 
