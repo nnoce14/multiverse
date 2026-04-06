@@ -39,7 +39,7 @@ What that means:
   * explicit app-native env mapping for resources and endpoints
   * typed endpoint mapping for `url` and `port`
   * an application-owned runtime-config boundary proof in `sample-compose`
-* the current focus is confirming that the common-case workflow is now credible enough to transition toward `0.4.x` extensibility proof
+* the common-case workflow is now credible enough that the first `0.4.x` extensibility slice can begin
 
 ## Version roadmap
 

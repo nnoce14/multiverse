@@ -97,4 +97,34 @@ describe("repository configuration boundary validation", () => {
     });
     expect(downstream).not.toHaveBeenCalled();
   });
+
+  it("prefixes fixed-host-port declaration errors with the endpoint index path", () => {
+    expect(
+      validateRepositoryConfiguration(
+        createValidRepositoryConfiguration({
+          endpoints: [
+            {
+              name: "http",
+              role: "application-http",
+              provider: "fixed-host-port",
+              host: "",
+              basePort: 70000
+            }
+          ]
+        })
+      )
+    ).toEqual({
+      ok: false,
+      errors: [
+        {
+          path: "endpoints[0].host",
+          code: "invalid_value"
+        },
+        {
+          path: "endpoints[0].basePort",
+          code: "invalid_value"
+        }
+      ]
+    });
+  });
 });

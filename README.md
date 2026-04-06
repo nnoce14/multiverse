@@ -45,13 +45,14 @@ Today’s repo includes:
   * name-scoped resources
   * path-scoped resources
   * local-port endpoints
+  * fixed-host-port endpoints
   * process-scoped resources
   * process-port-scoped resources
 * acceptance, contract, unit, and integration tests
 
 ## Current behavior being proven
 
-The current implementation proves the core loop for explicit declarations and deterministic derivation, plus the current `0.3.0-alpha.3` consumer-workflow refinement direction.
+The current implementation proves the core loop for explicit declarations and deterministic derivation, plus the current `0.3.0-alpha.3` consumer-workflow path and the first `0.4.x` endpoint-provider extensibility proof.
 
 That includes:
 
@@ -63,6 +64,7 @@ That includes:
   * name-scoped resources
   * path-scoped resources
   * local-port endpoints
+  * fixed-host-port endpoints
   * process-scoped resources
   * process-port-scoped resources
 * multi-resource and multi-endpoint support
@@ -107,6 +109,7 @@ This keeps the tool predictable and avoids hidden behavior around consequential 
 * `packages/provider-name-scoped/` — name-scoped resource provider
 * `packages/provider-path-scoped/` — path-scoped resource provider
 * `packages/provider-local-port/` — local-port endpoint provider
+* `packages/provider-fixed-host-port/` — fixed-host plus derived-port endpoint provider
 * `packages/provider-process-scoped/` — process-backed resource provider
 * `packages/provider-process-port-scoped/` — process-backed resource-with-address provider
 
