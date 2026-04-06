@@ -1,6 +1,7 @@
+import { createHash } from "node:crypto";
 import { join } from "node:path";
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import type {
   ResourceProvider,
   DerivedResourcePlan,
@@ -9,9 +10,35 @@ import type {
   Refusal
 } from "@multiverse/provider-contracts";
 
-export interface ProcessScopedProviderConfig {
+export interface ProcessPortScopedProviderConfig {
   baseDir: string;
+  basePort: number;
   command: string[];
+}
+
+const PORT_RANGE = 1000;
+
+function derivePort(worktreeId: string, resourceName: string, basePort: number): number {
+  const hash = createHash("sha256").update(worktreeId).update(resourceName).digest();
+  const offset = hash.readUInt32BE(0) % PORT_RANGE;
+  return basePort + offset;
+}
+
+function deriveHandle(port: number): string {
+  return `localhost:${port}`;
+}
+
+function deriveStateDir(baseDir: string, resourceName: string, worktreeId: string): string {
+  return join(baseDir, resourceName, worktreeId) + "/";
+}
+
+function pidFilePath(stateDir: string): string {
+  return join(stateDir, "pid");
+}
+
+function substitutePort(command: string[], port: number): string[] {
+  const portStr = String(port);
+  return command.map((arg) => arg.replace(/{PORT}/g, portStr));
 }
 
 function unsafeScope(): Refusal {
@@ -22,18 +49,7 @@ function unsafeScope(): Refusal {
 }
 
 function providerFailure(reason: string): Refusal {
-  return {
-    category: "provider_failure",
-    reason
-  };
-}
-
-function deriveStateDir(baseDir: string, resourceName: string, worktreeId: string): string {
-  return join(baseDir, resourceName, worktreeId) + "/";
-}
-
-function pidFilePath(stateDir: string): string {
-  return join(stateDir, "pid");
+  return { category: "provider_failure", reason };
 }
 
 function isProcessAlive(pid: number): boolean {
@@ -64,11 +80,9 @@ async function terminateIfRunning(stateDir: string): Promise<void> {
   try {
     process.kill(pid, "SIGTERM");
   } catch {
-    // process may have already exited between the check and the kill
     return;
   }
 
-  // Wait up to 500ms for graceful exit, then force-kill
   const deadline = Date.now() + 500;
   while (Date.now() < deadline && isProcessAlive(pid)) {
     await new Promise<void>((resolve) => setTimeout(resolve, 25));
@@ -83,9 +97,9 @@ async function terminateIfRunning(stateDir: string): Promise<void> {
   }
 }
 
-export function createProcessScopedProvider(config: ProcessScopedProviderConfig): ResourceProvider {
-  const [cmd, ...cmdArgs] = config.command;
-
+export function createProcessPortScopedProvider(
+  config: ProcessPortScopedProviderConfig
+): ResourceProvider {
   return {
     capabilities: {
       reset: true,
@@ -97,26 +111,33 @@ export function createProcessScopedProvider(config: ProcessScopedProviderConfig)
         return unsafeScope();
       }
 
+      const port = derivePort(worktree.id, resource.name, config.basePort);
+
       return {
         resourceName: resource.name,
         provider: resource.provider,
-        isolationStrategy: "process-scoped",
+        isolationStrategy: "process-port-scoped",
         worktreeId: worktree.id,
-        handle: deriveStateDir(config.baseDir, resource.name, worktree.id)
+        handle: deriveHandle(port)
       };
     },
 
-    async resetResource({ resource, derived, worktree }): Promise<ResourceReset | Refusal> {
+    async resetResource({ resource, worktree }): Promise<ResourceReset | Refusal> {
       if (!worktree.id) {
         return unsafeScope();
       }
 
-      const stateDir = derived.handle;
+      const port = derivePort(worktree.id, resource.name, config.basePort);
+      const stateDir = deriveStateDir(config.baseDir, resource.name, worktree.id);
+
       await terminateIfRunning(stateDir);
       await mkdir(stateDir, { recursive: true });
 
+      const resolvedCommand = substitutePort(config.command, port);
+      const [cmd, ...args] = resolvedCommand as [string, ...string[]];
+
       const { spawn } = await import("node:child_process");
-      const child = spawn(cmd ?? config.command[0], cmdArgs, {
+      const child = spawn(cmd, args, {
         detached: true,
         stdio: "ignore"
       });
@@ -153,24 +174,24 @@ export function createProcessScopedProvider(config: ProcessScopedProviderConfig)
       return {
         resourceName: resource.name,
         provider: resource.provider,
-        worktreeId: derived.worktreeId,
+        worktreeId: worktree.id,
         capability: "reset"
       };
     },
 
-    async cleanupResource({ resource, derived, worktree }): Promise<ResourceCleanup | Refusal> {
+    async cleanupResource({ resource, worktree }): Promise<ResourceCleanup | Refusal> {
       if (!worktree.id) {
         return unsafeScope();
       }
 
-      const stateDir = derived.handle;
+      const stateDir = deriveStateDir(config.baseDir, resource.name, worktree.id);
       await terminateIfRunning(stateDir);
       await rm(stateDir, { recursive: true, force: true });
 
       return {
         resourceName: resource.name,
         provider: resource.provider,
-        worktreeId: derived.worktreeId,
+        worktreeId: worktree.id,
         capability: "cleanup"
       };
     }

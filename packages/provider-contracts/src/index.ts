@@ -1,7 +1,8 @@
 export type IsolationStrategy =
   | "name-scoped"
   | "path-scoped"
-  | "process-scoped";
+  | "process-scoped"
+  | "process-port-scoped";
 
 export type RefusalCategory =
   | "invalid_configuration"
