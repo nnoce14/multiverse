@@ -57,6 +57,31 @@ importers:
         specifier: workspace:*
         version: link:../../packages/provider-contracts
 
+  apps/sample-compose:
+    dependencies:
+      '@multiverse/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@multiverse/provider-contracts':
+        specifier: workspace:*
+        version: link:../../packages/provider-contracts
+      '@multiverse/provider-local-port':
+        specifier: workspace:*
+        version: link:../../packages/provider-local-port
+      '@multiverse/provider-path-scoped':
+        specifier: workspace:*
+        version: link:../../packages/provider-path-scoped
+      '@multiverse/provider-process-port-scoped':
+        specifier: workspace:*
+        version: link:../../packages/provider-process-port-scoped
+      express:
+        specifier: ^4.21.0
+        version: 4.22.1
+    devDependencies:
+      '@types/express':
+        specifier: ^4.17.21
+        version: 4.17.25
+
   apps/sample-express:
     dependencies:
       '@multiverse/core':
