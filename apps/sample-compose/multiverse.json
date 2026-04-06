@@ -6,7 +6,8 @@
       "isolationStrategy": "path-scoped",
       "scopedValidate": false,
       "scopedReset": true,
-      "scopedCleanup": true
+      "scopedCleanup": true,
+      "appEnv": "DATABASE_PATH"
     },
     {
       "name": "cache-sidecar",
@@ -14,14 +15,16 @@
       "isolationStrategy": "process-port-scoped",
       "scopedValidate": false,
       "scopedReset": true,
-      "scopedCleanup": true
+      "scopedCleanup": true,
+      "appEnv": "CACHE_ADDR"
     }
   ],
   "endpoints": [
     {
       "name": "http",
       "role": "application-http",
-      "provider": "local-port"
+      "provider": "local-port",
+      "appEnv": "APP_HTTP_URL"
     }
   ]
 }
