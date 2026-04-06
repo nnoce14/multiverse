@@ -1,12 +1,13 @@
 import { describe, it, expect } from "vitest";
 import { deriveAndValidateOne } from "@multiverse/core";
 import { createNameScopedProvider } from "@multiverse/provider-name-scoped";
+import type { IsolationStrategy } from "@multiverse/provider-contracts";
 
 describe("dev-slice-20: multi-resource derive and validate", () => {
   const nameScopedProvider = createNameScopedProvider();
   const validateCapableProvider = {
     capabilities: { validate: true as const },
-    deriveResource(input: { resource: { name: string; provider: string; isolationStrategy: "name-scoped" | "path-scoped" | "process-scoped" }; worktree: { id: string } }) {
+    deriveResource(input: { resource: { name: string; provider: string; isolationStrategy: IsolationStrategy }; worktree: { id: string } }) {
       return {
         resourceName: input.resource.name,
         provider: input.resource.provider,
@@ -155,7 +156,7 @@ describe("dev-slice-20: multi-resource derive and validate", () => {
     it("returns refusal fail-fast when the second resource validation refuses", () => {
       const refusingValidateProvider = {
         capabilities: { validate: true as const },
-        deriveResource(input: { resource: { name: string; provider: string; isolationStrategy: "name-scoped" | "path-scoped" | "process-scoped" }; worktree: { id: string } }) {
+        deriveResource(input: { resource: { name: string; provider: string; isolationStrategy: IsolationStrategy }; worktree: { id: string } }) {
           return {
             resourceName: input.resource.name,
             provider: input.resource.provider,
