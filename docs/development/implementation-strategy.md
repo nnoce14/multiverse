@@ -131,18 +131,30 @@ Current `main` includes implemented slices covering:
 - sample Express application for end-to-end integration proof
 - CI pipeline with acceptance, contract, unit, and integration test jobs
 - `derive --format=env` for shell-sourceable KEY=VALUE output
+- `multiverse run` process wrapper with derived env injection
+- conventional defaults for `--config` and `--providers`
+- process-scoped provider: state-directory handle, full lifecycle (launch, liveness, cleanup)
+- CLI and integration test coverage for process-scoped lifecycle
 
-Phase 1 complete (0.2.x):
+Phase 1 complete (0.2.x / alpha.1):
 
 - ADR-0012: explicit process wrapper (`multiverse run`) — implemented
 - ADR-0013: runtime env variable naming convention — implemented
 - ADR-0014: strict conventional defaults for `--config` and `--providers` — implemented
 
-Phase 2 in progress (targeting 0.2.x):
+Phase 2 complete (0.2.x / alpha.2):
 
 - ADR-0015: process-scoped providers manage explicitly requested child processes only
-- Slice 21: `@multiverse/provider-process-scoped` — handle derivation (process state directory)
+- Slice 21: `@multiverse/provider-process-scoped` — handle derivation (process state directory) — implemented
 - Slice 22: process-scoped lifecycle — launch, liveness readiness, cleanup — implemented
+- Slice 23: CLI-level acceptance coverage for process-scoped lifecycle — implemented
+- Integration tests for process-scoped lifecycle — implemented
+
+Phase 3 in design (targeting 0.2.x):
+
+- ADR-0016 (proposed): port-aware process-backed provider with self-describing connection handle
+- Open question: a new `provider-process-port-scoped` that combines deterministic port assignment
+  with process lifecycle management, exposing `host:port` as the public resource handle
 
 The purpose of this document is still to preserve implementation posture and first-phase boundaries, not to serve as the complete change log for every later slice.
 
