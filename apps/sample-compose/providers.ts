@@ -10,6 +10,7 @@
  */
 
 import { join } from "node:path";
+import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { createPathScopedProvider } from "@multiverse/provider-path-scoped";
 import { createLocalPortProvider } from "@multiverse/provider-local-port";
@@ -18,6 +19,7 @@ import { createProcessPortScopedProvider } from "@multiverse/provider-process-po
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const root = fileURLToPath(new URL("../..", import.meta.url));
 const sidecarPath = join(__dirname, "src/sidecar.ts");
+const tsxCliPath = join(root, "node_modules", "tsx", "dist", "cli.mjs");
 const runtimeRoot = join(root, ".codex", "runtime", "sample-compose");
 
 export const providers = {
@@ -28,7 +30,7 @@ export const providers = {
     "process-port-scoped": createProcessPortScopedProvider({
       baseDir: join(runtimeRoot, "sidecar"),
       basePort: 6100,
-      command: ["tsx", sidecarPath, "--port", "{PORT}"]
+      command: [process.execPath, tsxCliPath, sidecarPath, "--port", "{PORT}"]
     })
   },
   endpoints: {

@@ -1,4 +1,5 @@
 import { join } from "node:path";
+import process from "node:process";
 import { fileURLToPath } from "node:url";
 
 import { createLocalPortProvider } from "@multiverse/provider-local-port";
@@ -7,7 +8,7 @@ import { createProcessPortScopedProvider } from "@multiverse/provider-process-po
 
 const root = fileURLToPath(new URL("../../..", import.meta.url));
 const sidecarPath = join(root, "apps/sample-compose/src/sidecar.ts");
-const tsxPath = join(root, "node_modules/.bin/tsx");
+const tsxCliPath = join(root, "node_modules", "tsx", "dist", "cli.mjs");
 const baseDir = join(root, ".codex", "test-state", "integration", "sample-compose");
 
 export const providers = {
@@ -18,7 +19,7 @@ export const providers = {
     "process-port-scoped": createProcessPortScopedProvider({
       baseDir: join(baseDir, "sidecar"),
       basePort: 6400,
-      command: [tsxPath, sidecarPath, "--port", "{PORT}"]
+      command: [process.execPath, tsxCliPath, sidecarPath, "--port", "{PORT}"]
     })
   },
   endpoints: {

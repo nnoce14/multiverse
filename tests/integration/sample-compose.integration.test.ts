@@ -21,6 +21,7 @@ import { existsSync } from "node:fs";
 import { spawn, type ChildProcess } from "node:child_process";
 import { readFile, rm } from "node:fs/promises";
 import { join } from "node:path";
+import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 
@@ -40,7 +41,7 @@ const root = resolve(fileURLToPath(new URL(".", import.meta.url)), "../../");
 const TEST_BASE_DIR = resolve(root, ".codex", "test-state", "integration", "sample-compose");
 const TEST_BASE_PORT_HTTP = 5400;
 const TEST_BASE_PORT_SIDECAR = 6400;
-const tsx = resolve(root, "node_modules/.bin/tsx");
+const tsxCliPath = resolve(root, "node_modules/tsx/dist/cli.mjs");
 const sidecarPath = resolve(root, "apps/sample-compose/src/sidecar.ts");
 const sampleComposeConfigPath = resolve(root, "apps/sample-compose/multiverse.json");
 const sampleComposeEntrypointPath = resolve(root, "apps/sample-compose/src/index.ts");
@@ -56,7 +57,7 @@ const providers = {
     "process-port-scoped": createProcessPortScopedProvider({
       baseDir: join(TEST_BASE_DIR, "sidecar"),
       basePort: TEST_BASE_PORT_SIDECAR,
-      command: [tsx, sidecarPath, "--port", "{PORT}"]
+      command: [process.execPath, tsxCliPath, sidecarPath, "--port", "{PORT}"]
     })
   },
   endpoints: {
@@ -257,7 +258,8 @@ describe("sample-compose: mixed-provider composition", () => {
           "--worktree-id",
           worktreeId,
           "--",
-          tsx,
+          process.execPath,
+          tsxCliPath,
           sampleComposeEntrypointPath
         ],
         {
