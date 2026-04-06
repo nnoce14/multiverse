@@ -21,6 +21,7 @@
     "@multiverse/provider-local-port": "workspace:*",
     "@multiverse/provider-name-scoped": "workspace:*",
     "@multiverse/provider-path-scoped": "workspace:*",
+    "@multiverse/provider-process-scoped": "workspace:*",
     "@multiverse/providers-testkit": "workspace:*",
     "@types/node": "^24.6.0",
     "tsx": "^4.20.6",
