@@ -5,6 +5,7 @@
  *   - "invalid_env_var_name" — appEnv is present but fails the valid name pattern
  *   - "reserved_name"        — appEnv begins with MULTIVERSE_
  *   - "duplicate_appenv"     — same appEnv value appears in more than one declaration
+ *   - "invalid_appenv_mapping_kind" — endpoint typed mapping uses an unsupported value kind
  */
 
 import { describe, expect, it } from "vitest";
@@ -240,6 +241,86 @@ describe("endpoint declaration appEnv validation", () => {
       expect.objectContaining({ code: "reserved_name" })
     );
   });
+
+  it("accepts a typed endpoint appEnv mapping with url and port", () => {
+    const result = validateEndpointDeclaration({
+      name: "http",
+      role: "application-http",
+      provider: "local-port",
+      appEnv: {
+        APP_HTTP_URL: "url",
+        PORT: "port"
+      }
+    });
+
+    expect(result.ok).toBe(true);
+  });
+
+  it("rejects an empty typed endpoint appEnv mapping", () => {
+    const result = validateEndpointDeclaration({
+      name: "http",
+      role: "application-http",
+      provider: "local-port",
+      appEnv: {}
+    });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({ code: "invalid_env_var_name" })
+    );
+  });
+
+  it("rejects a typed endpoint appEnv mapping with an invalid env name", () => {
+    const result = validateEndpointDeclaration({
+      name: "http",
+      role: "application-http",
+      provider: "local-port",
+      appEnv: {
+        "BAD-NAME": "port"
+      }
+    });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({ code: "invalid_env_var_name" })
+    );
+  });
+
+  it("rejects a typed endpoint appEnv mapping with a reserved env name", () => {
+    const result = validateEndpointDeclaration({
+      name: "http",
+      role: "application-http",
+      provider: "local-port",
+      appEnv: {
+        MULTIVERSE_PORT: "port"
+      }
+    });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({ code: "reserved_name" })
+    );
+  });
+
+  it("rejects a typed endpoint appEnv mapping with an unsupported value kind", () => {
+    const result = validateEndpointDeclaration({
+      name: "http",
+      role: "application-http",
+      provider: "local-port",
+      appEnv: {
+        PORT: "hostname"
+      } as unknown as NonNullable<Parameters<typeof validateEndpointDeclaration>[0]["appEnv"]>
+    });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({ code: "invalid_appenv_mapping_kind" })
+    );
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -333,6 +414,39 @@ describe("cross-declaration duplicate appEnv validation", () => {
     });
 
     expect(result.ok).toBe(true);
+  });
+
+  it("rejects a config where an endpoint typed appEnv name duplicates another declaration", () => {
+    const result = validateRepositoryConfiguration({
+      resources: [
+        {
+          name: "primary-db",
+          provider: "test-resource-provider",
+          isolationStrategy: "name-scoped",
+          scopedValidate: false,
+          scopedReset: false,
+          scopedCleanup: false,
+          appEnv: "PORT"
+        }
+      ],
+      endpoints: [
+        {
+          name: "http",
+          role: "application-http",
+          provider: "test-endpoint-provider",
+          appEnv: {
+            PORT: "port",
+            APP_HTTP_URL: "url"
+          }
+        }
+      ]
+    });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({ code: "duplicate_appenv" })
+    );
   });
 
   it("accepts a config where no declarations have appEnv (no duplicate check needed)", () => {

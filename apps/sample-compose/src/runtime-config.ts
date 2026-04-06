@@ -13,22 +13,22 @@ export function readRuntimeConfigFromEnv(env: NodeJS.ProcessEnv = process.env): 
     throw new Error("CACHE_ADDR is required");
   }
 
-  const appHttpUrl = env["APP_HTTP_URL"];
-  if (!appHttpUrl) {
-    throw new Error("APP_HTTP_URL is required");
+  const port = env["PORT"];
+  if (!port) {
+    throw new Error("PORT is required");
   }
 
   return {
     dbPath,
     cacheAddr,
-    port: parsePortFromUrl(appHttpUrl)
+    port: parsePort(port)
   };
 }
 
-function parsePortFromUrl(address: string): number {
-  const port = Number.parseInt(new URL(address).port, 10);
+function parsePort(value: string): number {
+  const port = Number.parseInt(value, 10);
   if (Number.isNaN(port)) {
-    throw new Error(`APP_HTTP_URL must include a numeric port: ${address}`);
+    throw new Error(`PORT must be a numeric string: ${value}`);
   }
   return port;
 }

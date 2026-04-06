@@ -1,14 +1,15 @@
 /**
- * Acceptance tests for ADR-0018: explicit app-native env mapping for `multiverse run`.
+ * Acceptance tests for ADR-0018 and ADR-0019: explicit app-native env mapping for `multiverse run`.
  *
  * Behavior under test:
  *   - `appEnv` on a resource declaration causes `run` to inject both the canonical
  *     MULTIVERSE_RESOURCE_<NAME> var and an alias under the declared app-native name
- *   - `appEnv` on an endpoint declaration causes the same alias behavior
- *   - The alias value equals the canonical derived string (alias-only, no extraction)
+ *   - `appEnv` on an endpoint declaration supports alias-only or explicit typed mapping behavior
+ *   - Typed endpoint mapping can inject both `url` and `port` values
  *   - Declarations without `appEnv` inject only the canonical var (no regression)
  *   - `run` refuses when a declared `appEnv` name already exists in the parent environment
- *   - Declaration validation refuses invalid, empty, reserved, and duplicate `appEnv` values
+ *   - `run` refuses when a typed endpoint value cannot be extracted
+ *   - Declaration validation refuses invalid, empty, reserved, unsupported, and duplicate `appEnv` values
  *   - `derive --format=env` is unaffected (canonical-only output)
  */
 
@@ -116,6 +117,40 @@ describe("CLI run — appEnv mapping (ADR-0018)", () => {
     expect(capturedEnv["MULTIVERSE_ENDPOINT_APP_BASE_URL"]).toBe("http://wt-appenv-endpoint.local/app-base-url");
     // alias injected with the same string value
     expect(capturedEnv["APP_URL"]).toBe("http://wt-appenv-endpoint.local/app-base-url");
+  });
+
+  it("injects typed endpoint appEnv values for both url and port", async () => {
+    const configPath = await writeConfig({
+      resources: [],
+      endpoints: [
+        {
+          name: "http",
+          role: "application-http",
+          provider: "test-port-endpoint-provider",
+          appEnv: {
+            APP_HTTP_URL: "url",
+            PORT: "port"
+          }
+        }
+      ]
+    });
+
+    let capturedEnv: Record<string, string> = {};
+    const runner: ChildProcessRunner = async ({ env }) => {
+      capturedEnv = { ...env };
+      return { exitCode: 0 };
+    };
+
+    const outcome = await runCli(
+      ["run", "--config", configPath, "--providers", providersModulePath,
+       "--worktree-id", "wt-typed-endpoint", "--", "node", "-e", "0"],
+      { runner, parentEnv: {} }
+    );
+
+    expect(outcome.exitCode).toBe(0);
+    expect(capturedEnv["MULTIVERSE_ENDPOINT_HTTP"]).toBe("http://127.0.0.1:5500");
+    expect(capturedEnv["APP_HTTP_URL"]).toBe("http://127.0.0.1:5500");
+    expect(capturedEnv["PORT"]).toBe("5500");
   });
 
   // ---------------------------------------------------------------------------
@@ -320,6 +355,77 @@ describe("CLI run — appEnv mapping (ADR-0018)", () => {
     expect(parsed.refusal?.category).toBe("invalid_configuration");
   });
 
+  it("refuses when a typed endpoint appEnv name already exists in the parent environment", async () => {
+    const configPath = await writeConfig({
+      resources: [],
+      endpoints: [
+        {
+          name: "http",
+          role: "application-http",
+          provider: "test-port-endpoint-provider",
+          appEnv: {
+            PORT: "port",
+            APP_HTTP_URL: "url"
+          }
+        }
+      ]
+    });
+
+    let runnerCalled = false;
+    const runner: ChildProcessRunner = async () => {
+      runnerCalled = true;
+      return { exitCode: 0 };
+    };
+
+    const outcome = await runCli(
+      ["run", "--config", configPath, "--providers", providersModulePath,
+       "--worktree-id", "wt-typed-endpoint-conflict", "--", "node", "-e", "0"],
+      { runner, parentEnv: { PORT: "3000" } }
+    );
+
+    expect(outcome.exitCode).toBe(1);
+    expect(runnerCalled).toBe(false);
+    const parsed = JSON.parse(outcome.stderr[0]!) as { ok: boolean; refusal?: { category: string; reason: string } };
+    expect(parsed.ok).toBe(false);
+    expect(parsed.refusal?.category).toBe("invalid_configuration");
+    expect(parsed.refusal?.reason).toMatch(/PORT/);
+  });
+
+  it("refuses when typed endpoint port extraction cannot be performed", async () => {
+    const configPath = await writeConfig({
+      resources: [],
+      endpoints: [
+        {
+          name: "app-base-url",
+          role: "application-base-url",
+          provider: "test-endpoint-provider",
+          appEnv: {
+            PORT: "port"
+          }
+        }
+      ]
+    });
+
+    let runnerCalled = false;
+    const runner: ChildProcessRunner = async () => {
+      runnerCalled = true;
+      return { exitCode: 0 };
+    };
+
+    const outcome = await runCli(
+      ["run", "--config", configPath, "--providers", providersModulePath,
+       "--worktree-id", "wt-port-extraction-refusal", "--", "node", "-e", "0"],
+      { runner, parentEnv: {} }
+    );
+
+    expect(outcome.exitCode).toBe(1);
+    expect(runnerCalled).toBe(false);
+    const parsed = JSON.parse(outcome.stderr[0]!) as { ok: boolean; refusal?: { category: string; reason: string } };
+    expect(parsed.ok).toBe(false);
+    expect(parsed.refusal?.category).toBe("invalid_configuration");
+    expect(parsed.refusal?.reason).toMatch(/PORT/);
+  });
+
   // ---------------------------------------------------------------------------
   // Declaration validation — appEnv field
   // ---------------------------------------------------------------------------
@@ -431,6 +537,56 @@ describe("CLI run — appEnv mapping (ADR-0018)", () => {
     const outcome = await runCli(
       ["run", "--config", configPath, "--providers", providersModulePath,
        "--worktree-id", "wt-dup-appenv", "--", "node", "-e", "0"],
+      { runner: async () => ({ exitCode: 0 }) }
+    );
+
+    expect(outcome.exitCode).toBe(1);
+    const parsed = JSON.parse(outcome.stderr[0]!) as { ok: boolean };
+    expect(parsed.ok).toBe(false);
+  });
+
+  it("refuses derive when endpoint typed appEnv uses an unsupported value kind", async () => {
+    const configPath = await writeConfig({
+      resources: [],
+      endpoints: [
+        {
+          name: "http",
+          role: "application-http",
+          provider: "test-endpoint-provider",
+          appEnv: {
+            PORT: "hostname"
+          }
+        }
+      ]
+    });
+
+    const outcome = await runCli(
+      ["run", "--config", configPath, "--providers", providersModulePath,
+       "--worktree-id", "wt-invalid-kind", "--", "node", "-e", "0"],
+      { runner: async () => ({ exitCode: 0 }) }
+    );
+
+    expect(outcome.exitCode).toBe(1);
+    const parsed = JSON.parse(outcome.stderr[0]!) as { ok: boolean };
+    expect(parsed.ok).toBe(false);
+  });
+
+  it("refuses derive when endpoint typed appEnv is an empty object", async () => {
+    const configPath = await writeConfig({
+      resources: [],
+      endpoints: [
+        {
+          name: "http",
+          role: "application-http",
+          provider: "test-endpoint-provider",
+          appEnv: {}
+        }
+      ]
+    });
+
+    const outcome = await runCli(
+      ["run", "--config", configPath, "--providers", providersModulePath,
+       "--worktree-id", "wt-empty-object", "--", "node", "-e", "0"],
       { runner: async () => ({ exitCode: 0 }) }
     );
 

@@ -1,5 +1,7 @@
 import type {
   EndpointDeclaration,
+  EndpointAppEnvMapping,
+  EndpointAppEnvValueKind,
   IsolationStrategy,
   ResourceDeclaration
 } from "@multiverse/provider-contracts";
@@ -7,7 +9,7 @@ import type {
 
 export interface DeclarationValidationError {
   path: string;
-  code: "required" | "invalid_env_var_name" | "reserved_name" | "duplicate_appenv";
+  code: "required" | "invalid_env_var_name" | "reserved_name" | "duplicate_appenv" | "invalid_appenv_mapping_kind";
 }
 
 export interface ValidatedResourceDeclaration {
@@ -24,12 +26,12 @@ export interface ValidatedEndpointDeclaration {
   name: string;
   role: string;
   provider: string;
-  appEnv?: string;
+  appEnv?: string | EndpointAppEnvMapping;
 }
 
 export interface EndpointDeclarationValidationError {
   path: "name" | "role" | "provider" | "appEnv";
-  code: "required" | "invalid_env_var_name" | "reserved_name";
+  code: "required" | "invalid_env_var_name" | "reserved_name" | "invalid_appenv_mapping_kind";
 }
 
 export type EndpointDeclarationValidationResult<T> =
@@ -78,14 +80,41 @@ function appEnvErrors(
 }
 
 function endpointAppEnvErrors(
-  value: string
+  value: string | EndpointAppEnvMapping
 ): EndpointDeclarationValidationError[] {
-  const errors: EndpointDeclarationValidationError[] = [];
-  if (!isValidEnvVarName(value)) {
-    errors.push({ path: "appEnv", code: "invalid_env_var_name" });
-  } else if (isReservedEnvVarName(value)) {
-    errors.push({ path: "appEnv", code: "reserved_name" });
+  if (typeof value === "string") {
+    const errors: EndpointDeclarationValidationError[] = [];
+    if (!isValidEnvVarName(value)) {
+      errors.push({ path: "appEnv", code: "invalid_env_var_name" });
+    } else if (isReservedEnvVarName(value)) {
+      errors.push({ path: "appEnv", code: "reserved_name" });
+    }
+    return errors;
   }
+
+  const errors: EndpointDeclarationValidationError[] = [];
+  const entries = Object.entries(value);
+  if (entries.length === 0) {
+    errors.push({ path: "appEnv", code: "invalid_env_var_name" });
+    return errors;
+  }
+
+  for (const [envName, kind] of entries) {
+    if (!isValidEnvVarName(envName)) {
+      errors.push({ path: "appEnv", code: "invalid_env_var_name" });
+      continue;
+    }
+
+    if (isReservedEnvVarName(envName)) {
+      errors.push({ path: "appEnv", code: "reserved_name" });
+      continue;
+    }
+
+    if (kind !== "url" && kind !== "port") {
+      errors.push({ path: "appEnv", code: "invalid_appenv_mapping_kind" });
+    }
+  }
+
   return errors;
 }
 

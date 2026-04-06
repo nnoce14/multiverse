@@ -81,14 +81,21 @@ export function validateRepositoryConfiguration(
 
     for (const [index, endpoint] of endpoints.entries()) {
       if (endpoint.appEnv === undefined) continue;
-      const existing = seen.get(endpoint.appEnv);
-      if (existing !== undefined) {
-        errors.push({
-          path: `endpoints[${index}].appEnv`,
-          code: "duplicate_appenv"
-        });
-      } else {
-        seen.set(endpoint.appEnv, `endpoints[${index}].appEnv`);
+
+      const names = typeof endpoint.appEnv === "string"
+        ? [endpoint.appEnv]
+        : Object.keys(endpoint.appEnv);
+
+      for (const envName of names) {
+        const existing = seen.get(envName);
+        if (existing !== undefined) {
+          errors.push({
+            path: `endpoints[${index}].appEnv`,
+            code: "duplicate_appenv"
+          });
+        } else {
+          seen.set(envName, `endpoints[${index}].appEnv`);
+        }
       }
     }
   }

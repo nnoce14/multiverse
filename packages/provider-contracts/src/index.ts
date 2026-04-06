@@ -37,11 +37,14 @@ export interface ResourceDeclaration {
   appEnv?: string;
 }
 
+export type EndpointAppEnvValueKind = "url" | "port";
+export type EndpointAppEnvMapping = Record<string, EndpointAppEnvValueKind>;
+
 export interface EndpointDeclaration {
   name?: string;
   role?: string;
   provider?: string;
-  appEnv?: string;
+  appEnv?: string | EndpointAppEnvMapping;
 }
 
 export interface RepositoryConfiguration {

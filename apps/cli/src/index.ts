@@ -13,6 +13,7 @@ import {
 } from "@multiverse/core";
 import type {
   DeriveOneResult,
+  EndpointAppEnvValueKind,
   ProviderRegistry,
   RepositoryConfiguration
 } from "@multiverse/provider-contracts";
@@ -103,10 +104,26 @@ function buildRunEnv(
  * Correlates each declaration's appEnv name with the derived value from the derive result.
  * Returns a map of appEnv name → derived value.
  */
+function extractEndpointAppEnvValue(
+  address: string,
+  kind: EndpointAppEnvValueKind
+): string | undefined {
+  if (kind === "url") {
+    return address;
+  }
+
+  const parsed = new URL(address);
+  if (parsed.port) {
+    return parsed.port;
+  }
+
+  return undefined;
+}
+
 function collectAppEnvAliases(
   repository: RepositoryConfiguration,
   result: Extract<DeriveOneResult, { ok: true }>
-): Record<string, string> {
+): Record<string, string> | { refusal: { category: "invalid_configuration"; reason: string } } {
   const aliases: Record<string, string> = {};
 
   for (const resource of repository.resources) {
@@ -118,7 +135,25 @@ function collectAppEnvAliases(
   for (const endpoint of repository.endpoints) {
     if (!endpoint.appEnv || !endpoint.name) continue;
     const mapping = result.endpointMappings.find((m) => m.endpointName === endpoint.name);
-    if (mapping) aliases[endpoint.appEnv] = mapping.address;
+    if (!mapping) continue;
+
+    if (typeof endpoint.appEnv === "string") {
+      aliases[endpoint.appEnv] = mapping.address;
+      continue;
+    }
+
+    for (const [envName, kind] of Object.entries(endpoint.appEnv)) {
+      const extracted = extractEndpointAppEnvValue(mapping.address, kind);
+      if (extracted === undefined) {
+        return {
+          refusal: {
+            category: "invalid_configuration",
+            reason: `Cannot inject app-native env var "${envName}": endpoint value kind "${kind}" could not be extracted from derived endpoint "${mapping.address}".`
+          }
+        };
+      }
+      aliases[envName] = extracted;
+    }
   }
 
   return aliases;
@@ -429,6 +464,12 @@ async function handleRun(
 
   // Collect appEnv aliases declared in the repository configuration.
   const appEnvAliases = collectAppEnvAliases(parsedConfig, deriveResult);
+  if ("refusal" in appEnvAliases) {
+    return runFailure({
+      ok: false,
+      refusal: appEnvAliases.refusal
+    });
+  }
 
   // Refuse if any appEnv name already exists in the parent environment.
   const conflict = findAppEnvConflict(appEnvAliases, parentEnv);

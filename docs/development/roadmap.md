@@ -26,7 +26,7 @@ Multiverse development continues under the same core assumptions:
 
 ## Current version posture
 
-Current version posture: **0.3.0-alpha.2**
+Current version posture: **0.3.0-alpha.3**
 
 What that means:
 
