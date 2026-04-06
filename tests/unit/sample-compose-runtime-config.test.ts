@@ -7,7 +7,7 @@ describe("sample-compose runtime config boundary", () => {
     const config = readRuntimeConfigFromEnv({
       DATABASE_PATH: "/tmp/app-db",
       CACHE_ADDR: "localhost:6401",
-      APP_HTTP_URL: "http://127.0.0.1:5401"
+      PORT: "5401"
     });
 
     expect(config).toEqual({
@@ -21,7 +21,7 @@ describe("sample-compose runtime config boundary", () => {
     expect(() =>
       readRuntimeConfigFromEnv({
         CACHE_ADDR: "localhost:6401",
-        APP_HTTP_URL: "http://127.0.0.1:5401"
+        PORT: "5401"
       })
     ).toThrow("DATABASE_PATH is required");
   });
@@ -30,28 +30,28 @@ describe("sample-compose runtime config boundary", () => {
     expect(() =>
       readRuntimeConfigFromEnv({
         DATABASE_PATH: "/tmp/app-db",
-        APP_HTTP_URL: "http://127.0.0.1:5401"
+        PORT: "5401"
       })
     ).toThrow("CACHE_ADDR is required");
   });
 
-  it("refuses when APP_HTTP_URL is missing", () => {
+  it("refuses when PORT is missing", () => {
     expect(() =>
       readRuntimeConfigFromEnv({
         DATABASE_PATH: "/tmp/app-db",
         CACHE_ADDR: "localhost:6401"
       })
-    ).toThrow("APP_HTTP_URL is required");
+    ).toThrow("PORT is required");
   });
 
-  it("refuses malformed APP_HTTP_URL input", () => {
+  it("refuses malformed PORT input", () => {
     expect(() =>
       readRuntimeConfigFromEnv({
         DATABASE_PATH: "/tmp/app-db",
         CACHE_ADDR: "localhost:6401",
-        APP_HTTP_URL: "http://127.0.0.1"
+        PORT: "not-a-number"
       })
-    ).toThrow("APP_HTTP_URL must include a numeric port");
+    ).toThrow("PORT must be a numeric string");
   });
 
   it("does not fall back to raw MULTIVERSE_* env vars", () => {

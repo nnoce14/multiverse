@@ -15,7 +15,7 @@ This is a short state-of-the-project document, not a full history.
 
 ## Current version posture
 
-Current version posture: **0.3.0-alpha.2**
+Current version posture: **0.3.0-alpha.3**
 
 Interpretation:
 

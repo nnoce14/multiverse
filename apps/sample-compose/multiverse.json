@@ -24,7 +24,10 @@
       "name": "http",
       "role": "application-http",
       "provider": "local-port",
-      "appEnv": "APP_HTTP_URL"
+      "appEnv": {
+        "PORT": "port",
+        "APP_HTTP_URL": "url"
+      }
     }
   ]
 }

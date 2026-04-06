@@ -178,6 +178,21 @@ export function createExplicitTestProviders(): ProviderRegistry {
             address: `http://${worktree.id}.local/${endpoint.name}`
           };
         }
+      },
+      "test-port-endpoint-provider": {
+        deriveEndpoint({ endpoint, worktree }) {
+          if (!worktree.id) {
+            return unsafeScope("Safe worktree scope cannot be determined.");
+          }
+
+          return {
+            endpointName: endpoint.name,
+            provider: endpoint.provider,
+            role: endpoint.role,
+            worktreeId: worktree.id,
+            address: "http://127.0.0.1:5500"
+          };
+        }
       }
     }
   };
