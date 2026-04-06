@@ -1,6 +1,6 @@
 # External Demo Guide
 
-This guide shows how to run a Node.js application under Multiverse isolation using the `multiverse run` command.
+This guide shows how to run a Node.js application under Multiverse isolation using the `pnpm cli run` command.
 
 By the end of this guide you will be able to:
 
@@ -10,11 +10,20 @@ By the end of this guide you will be able to:
 
 ---
 
+## What this guide proves
+
+This guide proves that Multiverse can:
+
+- derive isolated runtime values for a standalone application repository
+- inject those values into a user-supplied child process through `pnpm cli run`
+- run multiple worktrees of the same application in parallel without resource or port collisions
+- reset or clean up isolated state per worktree without affecting other worktrees
+
 ## Prerequisites
 
 - Node.js 18+
 - A git repository with at least one worktree checked out
-- Multiverse installed (accessible as `multiverse` or via `pnpm dlx @multiverse/cli`)
+- A working Multiverse repository checkout, with the CLI available through `pnpm cli` from the repo root.
 
 ---
 
@@ -53,8 +62,8 @@ This file is **declarative**: it lists the resources (databases, file stores) an
 | `name` | Your name for this resource or endpoint |
 | `provider` | Which provider implements the isolation |
 | `isolationStrategy` | How the resource is isolated (`path-scoped`, `name-scoped`) |
-| `scopedReset` | Whether `multiverse reset` should perform a destructive reset for this resource |
-| `scopedCleanup` | Whether `multiverse cleanup` should remove this resource's isolated state |
+| `scopedReset` | Whether `pnpm cli reset` should perform a destructive reset for this resource |
+| `scopedCleanup` | Whether `pnpm cli cleanup` should remove this resource's isolated state |
 
 ---
 
@@ -86,9 +95,9 @@ The `baseDir` is where isolated resource directories are created. Each worktree 
 
 ## Step 3 — Read Multiverse env vars in your application
 
-When `multiverse run` starts your app, it injects isolated values as environment variables. Your application reads these instead of hardcoded configuration.
+When `pnpm cli run` starts your app, it injects isolated values as environment variables. Your application reads these instead of hardcoded configuration.
 
-**Environment variables injected by `multiverse run`:**
+**Environment variables injected by `pnpm cli run`:**
 
 | Variable | Content | Example |
 |---|---|---|
@@ -97,6 +106,8 @@ When `multiverse run` starts your app, it injects isolated values as environment
 | `MULTIVERSE_ENDPOINT_<NAME>` | Derived endpoint address | `http://localhost:5100` |
 
 The name segment follows a simple rule: the declared name is uppercased and hyphens are replaced with underscores.
+
+For endpoint values, Multiverse currently injects the full derived address. If your application needs a numeric port, parse it from the address in application code.
 
 **Examples for the configuration above:**
 
@@ -113,7 +124,7 @@ const dbPath = process.env.MULTIVERSE_RESOURCE_APP_DB;
 const endpointAddress = process.env.MULTIVERSE_ENDPOINT_HTTP;
 
 if (!dbPath || !endpointAddress) {
-  process.stderr.write("Multiverse env vars required. Use: multiverse run -- node server.js\n");
+  process.stderr.write("Multiverse env vars required. Use: pnpm cli run -- node server.js\n");
   process.exit(1);
 }
 
@@ -128,7 +139,7 @@ const port = parseInt(new URL(endpointAddress).port, 10);
 From the root of your repository (where `multiverse.json` and `providers.ts` live):
 
 ```bash
-multiverse run --worktree-id <id> -- node server.js
+pnpm cli run --worktree-id <id> -- node server.js
 ```
 
 `--worktree-id` is the identity of the current worktree. Use the git branch name or worktree path — any stable, unique string that identifies this checkout.
@@ -137,10 +148,11 @@ multiverse run --worktree-id <id> -- node server.js
 
 ```bash
 # Starts server with isolated DB path and port for this worktree
-multiverse run --worktree-id feature-login -- node server.js
+pnpm cli run --worktree-id feature-login -- node server.js
 ```
 
 Multiverse will:
+
 1. Load `./multiverse.json` and `./providers.ts`
 2. Derive isolated values for `feature-login`
 3. Inject `MULTIVERSE_RESOURCE_APP_DB`, `MULTIVERSE_ENDPOINT_HTTP`, and `MULTIVERSE_WORKTREE_ID` into the process environment
@@ -150,6 +162,8 @@ Multiverse will:
 
 If derivation fails for any reason (invalid config, unknown provider, unsafe scope), Multiverse writes a JSON refusal to stderr and exits non-zero. The child process is never started.
 
+*Note*: In the common case, no `--config` or `--providers` arguments are needed. When `multiverse.json` and `providers.ts` live at the repository root, Multiverse uses those files automatically.
+
 ---
 
 ## Step 5 — Run two worktrees simultaneously
@@ -157,20 +171,24 @@ If derivation fails for any reason (invalid config, unknown provider, unsafe sco
 Open two terminals. Each runs the same application but at different isolated paths and ports.
 
 **Terminal 1 (main branch):**
+
 ```bash
-multiverse run --worktree-id main -- node server.js
+pnpm cli run --worktree-id main -- node server.js
 # → MULTIVERSE_RESOURCE_APP_DB=/tmp/my-app-multiverse/app-db/main
 # → MULTIVERSE_ENDPOINT_HTTP=http://localhost:5100
 ```
 
 **Terminal 2 (feature-login branch):**
+
 ```bash
-multiverse run --worktree-id feature-login -- node server.js
+pnpm cli run --worktree-id feature-login -- node server.js
 # → MULTIVERSE_RESOURCE_APP_DB=/tmp/my-app-multiverse/app-db/feature-login
 # → MULTIVERSE_ENDPOINT_HTTP=http://localhost:5101
 ```
 
 Each instance uses its own database path and port. State written through one does not appear in the other.
+
+*Note*: Keep the worktree directory name, branch name, and `--worktree-id` aligned when possible. Multiverse only requires a stable non-empty worktree identity, but matching those values makes the workflow easier to reason about and reduces operator mistakes.
 
 ---
 
@@ -180,13 +198,13 @@ To see what values Multiverse would derive without starting the app:
 
 ```bash
 # JSON output (default)
-multiverse derive --worktree-id feature-login
+pnpm cli derive --worktree-id feature-login
 
 # Shell-sourceable KEY=VALUE pairs
-multiverse derive --worktree-id feature-login --format=env
+pnpm cli derive --worktree-id feature-login --format=env
 ```
 
-The `--format=env` output uses the same variable names that `multiverse run` injects.
+The `--format=env` output uses the same variable names that `pnpm cli run` injects.
 
 ---
 
@@ -195,17 +213,17 @@ The `--format=env` output uses the same variable names that `multiverse run` inj
 **Reset** — deletes a worktree's isolated state so the next run starts fresh:
 
 ```bash
-multiverse reset --worktree-id feature-login
+pnpm cli reset --worktree-id feature-login
 ```
 
-After reset, `MULTIVERSE_RESOURCE_APP_DB` no longer exists on disk. The next `multiverse run` will create a new empty resource at the same path.
+After reset, `MULTIVERSE_RESOURCE_APP_DB` no longer exists on disk. The next `pnpm cli run` will create a new empty resource at the same path.
 
 Reset only affects resources that declare `scopedReset: true` in `multiverse.json`.
 
 **Cleanup** — permanently removes a worktree's isolated state when the worktree is no longer needed:
 
 ```bash
-multiverse cleanup --worktree-id feature-login
+pnpm cli cleanup --worktree-id feature-login
 ```
 
 Cleanup only affects resources that declare `scopedCleanup: true` in `multiverse.json`.
@@ -217,11 +235,11 @@ Cleanup only affects resources that declare `scopedCleanup: true` in `multiverse
 All Multiverse commands use these options. `--config` and `--providers` default to `./multiverse.json` and `./providers.ts` respectively. `--worktree-id` is always required.
 
 ```
-multiverse run       [--config PATH] [--providers MODULE] --worktree-id VALUE -- <cmd> [args...]
-multiverse derive    [--config PATH] [--providers MODULE] --worktree-id VALUE [--format json|env]
-multiverse validate  [--config PATH] [--providers MODULE] --worktree-id VALUE
-multiverse reset     [--config PATH] [--providers MODULE] --worktree-id VALUE
-multiverse cleanup   [--config PATH] [--providers MODULE] --worktree-id VALUE
+pnpm cli run       [--config PATH] [--providers MODULE] --worktree-id VALUE -- <cmd> [args...]
+pnpm cli derive    [--config PATH] [--providers MODULE] --worktree-id VALUE [--format json|env]
+pnpm cli validate  [--config PATH] [--providers MODULE] --worktree-id VALUE
+pnpm cli reset     [--config PATH] [--providers MODULE] --worktree-id VALUE
+pnpm cli cleanup   [--config PATH] [--providers MODULE] --worktree-id VALUE
 ```
 
 ---
@@ -230,7 +248,7 @@ multiverse cleanup   [--config PATH] [--providers MODULE] --worktree-id VALUE
 
 **"MULTIVERSE_RESOURCE_APP_DB is required"**
 
-Your server is reading the env var but Multiverse didn't inject it. Make sure you start the server with `multiverse run -- ...` rather than `node server.js` directly.
+Your server is reading the env var but Multiverse didn't inject it. Make sure you start the server with `pnpm cli run -- ...` rather than `node server.js` directly.
 
 **"Cannot read config file: ./multiverse.json"**
 

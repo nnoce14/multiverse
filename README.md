@@ -126,22 +126,30 @@ pnpm cli
 
 ## CLI usage
 
+At the current stage, the CLI is typically invoked from the repository root through the workspace script:
+
 ```bash
-# Derive isolated values as JSON (explicit paths)
-multiverse derive --config multiverse.json --providers providers.ts --worktree-id <id>
+pnpm cli --help
+```
+
+Examples:
+
+```bash
+# Derive isolated values as JSON
+pnpm cli derive --worktree-id <id>
 
 # Derive as shell-sourceable KEY=VALUE pairs
-multiverse derive --config multiverse.json --providers providers.ts --worktree-id <id> --format=env
+pnpm cli derive --worktree-id <id> --format=env
 
 # Run a command with derived values injected as env vars
-multiverse run --worktree-id <id> -- node server.js
+pnpm cli run --worktree-id <id> -- node server.js
 
-# Validate derived values against running resources
-multiverse validate --worktree-id <id> -- ...
+# Validate derived values against declared configuration
+pnpm cli validate --worktree-id <id>
 
 # Reset or clean up isolated state
-multiverse reset --worktree-id <id>
-multiverse cleanup --worktree-id <id>
+pnpm cli reset --worktree-id <id>
+pnpm cli cleanup --worktree-id <id>
 ```
 
 `--config` defaults to `./multiverse.json` and `--providers` defaults to `./providers.ts` when not specified. `--worktree-id` is always required.
