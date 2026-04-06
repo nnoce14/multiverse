@@ -44,7 +44,9 @@ A provider is not the same thing as a resource or an endpoint.
 
 In 1.0, provider selection is explicit.
 
-The repository configuration must declare which provider is used for each resource or endpoint.
+The repository configuration must declare which provider is used for each
+resource or endpoint, together with any explicit provider-owned configuration
+required by that provider shape.
 
 The core tool does not infer providers in 1.0.
 

@@ -128,6 +128,8 @@ Current `main` includes implemented slices covering:
 - path-scoped provider with effectful reset and cleanup (filesystem state)
 - name-scoped provider with scope-confirmation reset and cleanup
 - local-port endpoint provider
+- fixed-host-port endpoint provider as the first narrow `0.4.x`
+  extensibility proof
 - sample Express application for end-to-end integration proof
 - CI pipeline with acceptance, contract, unit, and integration test jobs
 - `derive --format=env` for shell-sourceable KEY=VALUE output

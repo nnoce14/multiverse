@@ -23,7 +23,9 @@ Interpretation:
 * the usable core of Multiverse has moved beyond isolated seam proofs
 * a richer composed application workflow has now been demonstrated through mixed-provider integration
 * the product is still in active proving, but the consumer-workflow question is now materially narrower than it was before ADR 0018 and ADR 0019
-* the repository has now started the first `0.4.x` extensibility proof with a second endpoint-provider shape
+* the current published project version remains `0.3.0-alpha.3`, while `main`
+  now includes the first narrow `0.4.x` extensibility proof with a second
+  endpoint-provider shape
 
 ## What is already proven
 
@@ -82,23 +84,26 @@ The current composed proof also now demonstrates:
 * typed endpoint mapping for `PORT`
 * an application-owned runtime-config boundary in `sample-compose`
 
-## Current highest-priority proving question
+## Current highest-priority proving result
 
-The current highest-priority question is:
+The most recently answered proving question is:
 
 **Can a second explicit endpoint-provider shape be added without changing the established consumer workflow or weakening the core/provider boundary?**
 
-ADR 0018 and ADR 0019 established the consumer workflow strongly enough to move to this next question. ADR 0020 defines the first narrow extensibility proof.
+ADR 0018 and ADR 0019 established the consumer workflow strongly enough to move
+to this next question. ADR 0020 and Slice 31 now prove it once through
+`fixed-host-port`, with a narrow explicit `host`/`basePort` extension to shared
+endpoint declaration and provider-input types.
 
 ## Current priority
 
 The current priority is:
 
-**Executing and stabilizing the first `0.4.x` extensibility proof while preserving the now-proven consumer workflow**
+**Keeping the first `0.4.x` extensibility proof narrow, explicit, and well-documented while preserving the now-proven consumer workflow**
 
 That means work should preferentially strengthen:
 
-* the first additional provider shape under the existing endpoint contract
+* the first additional provider shape under the existing endpoint model
 * clarity of the line between repository-owned declaration config and provider-owned derivation rules
 * confidence that `run` and app-native endpoint mapping remain unchanged for consumers
 * docs and tests that make the new extensibility seam understandable without widening scope
@@ -107,9 +112,9 @@ That means work should preferentially strengthen:
 
 Examples of work that are strongly aligned with the current phase:
 
-* implementing one additional meaningful provider shape cleanly
+* documenting the now-implemented fixed-host-port slice accurately
+* bounded stabilization of the newly proven extension seam where needed
 * tightening docs around what belongs in core versus provider code
-* bounded stabilization of declaration validation and refusal behavior for the new seam
 * preserving the proven app-native mapping and runtime-config boundary story while extensibility grows
 
 ## What is intentionally deferred
