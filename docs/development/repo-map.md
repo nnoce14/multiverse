@@ -53,6 +53,7 @@ Important areas:
 * `docs/scenarios/` — behavior scenarios that drive acceptance testing
 * `docs/adr/` — accepted architectural decisions
 * `docs/development/` — implementation-phase guidance, slice planning, and repo structure docs
+* `docs/guides/` — practical usage guides and reproducible demo flows
 
 ### `apps/`
 
@@ -195,6 +196,16 @@ Purpose:
 
 * verify that provider implementations satisfy the contract expected by core
 * verify capability reporting, scoped derivation behavior, and refusal behavior relevant to the provider contract
+
+### `tests/integration/`
+
+Purpose:
+
+* verify end-to-end behavior across real package seams
+* prove consumer workflows and runtime isolation behavior
+* exercise realistic provider interactions and external application scenarios
+
+Integration tests should validate broader system behavior than a single contract or unit seam while remaining narrower and faster than production-scale proving.
 
 ### `tests/unit/`
 
