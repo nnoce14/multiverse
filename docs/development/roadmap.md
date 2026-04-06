@@ -35,7 +35,11 @@ What that means:
 * explicit `run` workflow exists
 * multiple provider shapes have been implemented and tested
 * a richer composed application workflow has now been proven through mixed-provider integration
-* the current focus is refining the composed application developer experience and stabilizing the common-case workflow
+* the current `0.3.x` proving path now includes:
+  * explicit app-native env mapping for resources and endpoints
+  * typed endpoint mapping for `url` and `port`
+  * an application-owned runtime-config boundary proof in `sample-compose`
+* the current focus is confirming that the common-case workflow is now credible enough to transition toward `0.4.x` extensibility proof
 
 ## Version roadmap
 
@@ -128,6 +132,19 @@ The likely preferred 1.0-facing direction is:
 
 The product should evolve away from requiring direct reads of raw `MULTIVERSE_*` names throughout consumer application code.
 
+### What 0.3.x has now proven
+
+The current `0.3.x` implementation has proven a concrete common-case consumer path:
+
+* `multiverse run` still injects canonical `MULTIVERSE_*` transport variables
+* repository configuration can map resources to app-native env names explicitly
+* repository configuration can map endpoints to either:
+  * full `url` values, or
+  * extracted `port` values
+* a composed application can consume those app-owned names at one explicit runtime-config boundary instead of scattering direct `MULTIVERSE_*` reads through the app
+
+This means the `0.3.x` line is no longer primarily exploring whether a cleaner consumer model is possible. It has a credible explicit proving path.
+
 ### Typical work in this phase
 
 Examples:
@@ -158,6 +175,11 @@ The project should not move beyond `0.3.x` until:
 * reset and cleanup behavior remain understandable under mixed-provider composition
 * the richer proving app can be demonstrated and explained without author-only knowledge
 * the common-case workflow is stable enough to support broader extension and usability work
+
+At the current `0.3.0-alpha.3` posture, no additional single concrete product-behavior gap is defined in the source-of-truth documents. Remaining `0.3.x` work, if any, is more likely to be:
+
+* bounded stabilization of the chosen consumer model, or
+* documentation and transition work that makes readiness for `0.4.x` explicit
 
 ## 0.4.x alpha — extensibility proof
 
@@ -457,10 +479,9 @@ It should mean that the product is trustworthy in its intended scope.
 
 The current near-term direction is:
 
-* refine the composed application workflow now proven by `sample-compose`
-* reduce developer friction in how applications consume Multiverse-derived runtime values
-* explore explicit app-native configuration mapping for the common-case workflow
-* continue strengthening realistic multi-seam integration coverage where it improves confidence
+* confirm and document the now-proven common-case consumer workflow
+* stabilize the chosen consumer model where needed without broadening scope
+* transition toward `0.4.x` extensibility proof once no concrete remaining `0.3.x` consumer gap is identified
 
 Provider-ecosystem formalization remains deferred until the consumer workflow for composed applications is more mature.
 
@@ -471,6 +492,8 @@ The current preferred direction for reducing developer friction is:
 1. explicit app-native environment variable overlay at process launch
 2. application-owned runtime config boundaries where needed
 3. generated or overlay config-file workflows only if explicitly declared and truly necessary
+
+The current implementation has already proven items 1 and 2 in the composed sample application. No broader config-overlay workflow is currently justified by the source documents.
 
 The following are explicitly out of bounds for the common path:
 

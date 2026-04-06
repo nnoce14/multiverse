@@ -139,7 +139,7 @@ const port = parseInt(new URL(endpointAddress).port, 10);
 // start your server on `port`, use `dbPath` for your database file
 ```
 
-If you prefer app-owned names, declare `appEnv` in `multiverse.json`. Then `pnpm cli run` injects both the canonical `MULTIVERSE_*` variable and the alias with the same derived string value.
+If you prefer app-owned names, declare `appEnv` in `multiverse.json`. Then `pnpm cli run` injects both the canonical `MULTIVERSE_*` variable and the explicit app-native values for that declaration.
 
 Example:
 
@@ -160,13 +160,16 @@ Example:
       "name": "http",
       "role": "application-http",
       "provider": "local-port",
-      "appEnv": "APP_HTTP_URL"
+      "appEnv": {
+        "PORT": "port",
+        "APP_HTTP_URL": "url"
+      }
     }
   ]
 }
 ```
 
-An application-owned runtime-config boundary can then read `DATABASE_PATH` and `APP_HTTP_URL` instead of the raw canonical names.
+An application-owned runtime-config boundary can then read `DATABASE_PATH`, `APP_HTTP_URL`, and `PORT` instead of the raw canonical names.
 
 ---
 
