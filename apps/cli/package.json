@@ -2,6 +2,13 @@
   "name": "@multiverse/cli",
   "private": true,
   "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "multiverse": "./bin/multiverse.js"
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json"
+  },
   "dependencies": {
     "@multiverse/core": "workspace:*",
     "@multiverse/provider-contracts": "workspace:*"

@@ -2,7 +2,12 @@
 
 ## Status
 
-Proposed
+Accepted
+
+Settled open questions:
+- Q1: `main()` is exported from `src/index.ts`; `bin/multiverse.js` imports and awaits it explicitly. `isMainModule` guard retained only for the `pnpm cli` path.
+- Q2: `apps/cli/tsconfig.build.json` extends root `tsconfig.json`, overrides `outDir`, `rootDir`, and disables declaration output.
+- Q3: CI `build-cli` job is a required validation check; the repo fails CI if the formal binary no longer builds cleanly.
 
 ## Context
 
