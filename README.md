@@ -36,6 +36,7 @@ Today’s repo includes:
 
 * a thin CLI application in `apps/cli/`
 * a sample Express application in `apps/sample-express/`
+* a composed proving application in `apps/sample-compose/`
 * core business logic in `packages/core/`
 * explicit provider contracts in `packages/provider-contracts/`
 * test support in `packages/providers-testkit/`
@@ -44,11 +45,13 @@ Today’s repo includes:
   * name-scoped resources
   * path-scoped resources
   * local-port endpoints
+  * process-scoped resources
+  * process-port-scoped resources
 * acceptance, contract, unit, and integration tests
 
 ## Current behavior being proven
 
-The current implementation proves the core loop for explicit declarations and deterministic derivation.
+The current implementation proves the core loop for explicit declarations and deterministic derivation, plus the current `0.3.0-alpha.2` consumer-workflow refinement direction.
 
 That includes:
 
@@ -60,13 +63,19 @@ That includes:
   * name-scoped resources
   * path-scoped resources
   * local-port endpoints
+  * process-scoped resources
+  * process-port-scoped resources
 * multi-resource and multi-endpoint support
 * lifecycle support:
 
   * name-scoped reset/cleanup as scope confirmation only
   * path-scoped reset/cleanup as effectful operations for provider-managed filesystem state
+  * process-scoped and process-port-scoped reset/cleanup for declared child-process lifecycle
 * `derive --format=env` for shell-sourceable KEY=VALUE output
 * sample Express application end-to-end integration proof
+* app-native env alias injection during `run`
+* a composed `sample-compose` proof for mixed-provider consumption in one app
+* an application-owned runtime-config boundary for the composed sample app
 
 ## Design principles
 
@@ -87,6 +96,7 @@ This keeps the tool predictable and avoids hidden behavior around consequential 
 
 * `apps/cli/` — thin command-line entrypoint
 * `apps/sample-express/` — sample application used for end-to-end integration proof
+* `apps/sample-compose/` — composed proving app for the current `0.3.x` consumer workflow
 
 ### Packages
 
@@ -96,6 +106,8 @@ This keeps the tool predictable and avoids hidden behavior around consequential 
 * `packages/provider-name-scoped/` — name-scoped resource provider
 * `packages/provider-path-scoped/` — path-scoped resource provider
 * `packages/provider-local-port/` — local-port endpoint provider
+* `packages/provider-process-scoped/` — process-backed resource provider
+* `packages/provider-process-port-scoped/` — process-backed resource-with-address provider
 
 ### Tests
 
@@ -154,6 +166,8 @@ pnpm cli cleanup --worktree-id <id>
 
 `--config` defaults to `./multiverse.json` and `--providers` defaults to `./providers.ts` when not specified. `--worktree-id` is always required.
 
+For the current common-case `0.3.x` proving path, `run` can inject both canonical `MULTIVERSE_*` transport vars and explicit app-native aliases declared with `appEnv`. The preferred application pattern is to read those app-owned names at one runtime-config boundary rather than scatter direct `MULTIVERSE_*` reads through the app.
+
 ## Source-of-truth order
 
 When implementation questions arise, precedence is:
@@ -172,6 +186,8 @@ Start here:
 * `AGENTS.md`
 * `docs/guides/external-demo-guide.md` — practical usage guide: multiverse run, parallel worktrees, reset/cleanup
 * `docs/development/repo-map.md`
+* `docs/development/current-state.md`
+* `docs/development/roadmap.md`
 * `docs/development/implementation-strategy.md`
 * `docs/development/testing-strategy.md`
 
