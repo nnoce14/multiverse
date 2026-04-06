@@ -6,7 +6,7 @@ import {
   type DeclarationValidationError,
   type ValidatedEndpointDeclaration,
   type ValidatedResourceDeclaration
-} from "./declarations";
+} from "./declarations.js";
 
 export interface ValidatedRepositoryConfiguration {
   resources: ValidatedResourceDeclaration[];

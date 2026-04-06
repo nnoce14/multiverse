@@ -13,7 +13,7 @@ import type {
 } from "@multiverse/provider-contracts";
 import {
   withValidatedRepositoryConfiguration
-} from "./repository-configuration";
+} from "./repository-configuration.js";
 import {
   invalidConfiguration,
   isFailureOutcome,
@@ -21,8 +21,8 @@ import {
   unsupportedCapability,
   unsafeScope,
   type FailureResult
-} from "./refusals";
-import { validateWorktreeIdentity } from "./worktree-identity";
+} from "./refusals.js";
+import { validateWorktreeIdentity } from "./worktree-identity.js";
 
 interface ResolvedWorktree {
   id: string;

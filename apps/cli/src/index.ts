@@ -420,7 +420,7 @@ export async function runCli(args: string[], options: RunCliOptions = {}): Promi
   );
 }
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const result = await runCli(process.argv.slice(2));
 
   for (const line of result.stdout) {

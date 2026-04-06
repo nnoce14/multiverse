@@ -12,20 +12,20 @@ import {
   resolveAndDeriveAllWithValidation,
   resolveAndResetAll,
   resolveAndCleanupAll
-} from "./orchestration";
+} from "./orchestration.js";
 
 export {
   validateWorktreeIdentity,
   withValidatedWorktreeIdentity
-} from "./worktree-identity";
+} from "./worktree-identity.js";
 export {
   validateEndpointDeclaration,
   withValidatedEndpointDeclaration
-} from "./declarations";
+} from "./declarations.js";
 export {
   validateRepositoryConfiguration,
   withValidatedRepositoryConfiguration
-} from "./repository-configuration";
+} from "./repository-configuration.js";
 
 export function deriveOne(input: {
   repository: RepositoryConfiguration;

@@ -3,7 +3,13 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./index.ts"
+    ".": {
+      "types": "./index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json"
   },
   "dependencies": {
     "@multiverse/provider-contracts": "workspace:*"

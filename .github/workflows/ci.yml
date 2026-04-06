@@ -129,3 +129,30 @@ jobs:
 
       - name: Run integration tests
         run: pnpm test:integration
+
+  build-cli:
+    name: build-cli
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build CLI
+        run: pnpm build
+
+      - name: Verify binary runs
+        run: node apps/cli/bin/multiverse.js 2>&1 | grep -q "Usage:"
