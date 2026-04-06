@@ -39,7 +39,9 @@ What that means:
   * explicit app-native env mapping for resources and endpoints
   * typed endpoint mapping for `url` and `port`
   * an application-owned runtime-config boundary proof in `sample-compose`
-* the common-case workflow is now credible enough that the first `0.4.x` extensibility slice can begin
+* the current published project version remains `0.3.0-alpha.3`
+* the common-case workflow is now credible enough that the first `0.4.x`
+  extensibility slice has been implemented on `main`
 
 ## Version roadmap
 

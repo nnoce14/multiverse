@@ -105,6 +105,8 @@ The repository is responsible for declaring:
 - which endpoints exist
 - the intended role of each endpoint
 - which provider is assigned to each endpoint
+- any explicit provider-owned configuration required by the selected endpoint
+  provider shape
 
 The endpoint provider is responsible for implementing:
 

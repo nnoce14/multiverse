@@ -2,7 +2,7 @@
 
 ## Status
 
-Draft
+Implemented on `main`
 
 ## ADR
 
@@ -38,7 +38,8 @@ changing the consumer workflow established in `0.3.x`.
 
 ## Out of scope
 
-- changes to the endpoint provider contract
+- broader endpoint-provider contract redesign beyond the narrow explicit
+  `host`/`basePort` extension required for this provider shape
 - redesign of `run`
 - redesign of ADR 0018 or ADR 0019 semantics
 - resource-provider changes
@@ -81,16 +82,18 @@ changing the consumer workflow established in `0.3.x`.
 Likely implementation files:
 
 - `apps/cli/src/...` for minimal provider registration and declaration wiring
-- `packages/provider-contracts/src/index.ts` only if clarification is necessary;
-  no contract redesign is intended
+- `packages/provider-contracts/src/index.ts` for the narrow explicit
+  `host`/`basePort` extension needed to carry fixed-host-port declaration and
+  derive input through the shared seam
 - `packages/provider-fixed-host-port/src/index.ts`
 - `tests/contracts/endpoint-provider.derive.contract.test.ts`
 - one new acceptance test under `tests/acceptance/`
 
-Likely doc updates when the slice is implemented:
+Doc updates for the implemented slice:
 
 - `docs/development/roadmap.md`
 - `docs/development/current-state.md`
+- `docs/development/repo-map.md`
 - `README.md`
 
 ## Definition of done

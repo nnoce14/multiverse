@@ -2,7 +2,7 @@
 
 ## Status
 
-Draft
+Accepted
 
 ## Date
 
@@ -30,7 +30,7 @@ that endpoint extensibility is a credible platform seam.
 The first `0.4.x` slice should therefore add one additional endpoint provider
 shape while preserving:
 
-- the existing endpoint contract
+- the existing endpoint mapping/result contract
 - ADR 0018 and ADR 0019 semantics
 - explicit repository-owned configuration
 - refusal-first behavior
@@ -41,7 +41,7 @@ shape while preserving:
 Multiverse will add a second endpoint provider shape named `fixed-host-port`.
 
 This provider is an endpoint provider that returns a URL-shaped endpoint value
-through the existing endpoint contract.
+through the existing endpoint model.
 
 For this slice:
 
@@ -51,6 +51,8 @@ For this slice:
 - the emitted host is provider-owned and explicitly configured
 - the emitted port is worktree-derived from provider configuration plus worktree
   and endpoint identity
+- shared endpoint declaration and provider-input types are extended narrowly and
+  explicitly to carry `host` and `basePort` for this provider shape only
 
 This slice is intended to prove endpoint-provider extensibility without changing
 consumer workflow semantics.
@@ -61,6 +63,9 @@ Included:
 
 - one new endpoint provider named `fixed-host-port`
 - explicit repository declaration support for that provider's configuration
+- one narrow explicit shared declaration/provider-input extension for:
+  - `host`
+  - `basePort`
 - deterministic URL derivation using a configured host and base port
 - declaration validation for the provider's configuration
 - refusal behavior for invalid or unsafe provider configuration
@@ -69,7 +74,8 @@ Included:
 
 Excluded:
 
-- changes to the endpoint provider contract
+- broader endpoint-provider contract redesign beyond the narrow explicit
+  `host`/`basePort` extension required for this provider shape
 - redesign of `run`
 - redesign of endpoint `appEnv`
 - changes to ADR 0018 or ADR 0019 semantics
@@ -102,7 +108,9 @@ Configuration fields:
 - `host`: required non-empty hostname or IP literal
 - `basePort`: required integer base port
 
-No additional provider configuration fields are introduced in this slice.
+This configuration is carried through a narrow explicit extension to shared
+endpoint declaration and provider-input types. No broader endpoint-model
+redesign or provider-discovery behavior is introduced in this slice.
 
 ## URL ownership and derivation semantics
 
@@ -232,8 +240,9 @@ This slice preserves existing boundaries:
 - repository configuration explicitly selects the provider and supplies provider
   configuration
 - the provider owns technology-specific URL derivation rules for this shape
-- core owns declaration loading, validation coordination, provider dispatch, and
-  `run` environment injection
+- core owns declaration loading, validation coordination, provider dispatch, the
+  narrow shared contract carriage for explicit provider-owned fields, and `run`
+  environment injection
 - ADR 0018 and ADR 0019 behavior remains core-owned and unchanged
 
 This slice does not authorize moving consumer behavior into provider code.
@@ -277,16 +286,19 @@ Rejected for now.
 That broadens endpoint configuration without improving the core extensibility
 proof.
 
-## Follow-on implications
+## Implementation notes
 
-The implementation slice following this ADR may:
+The merged implementation for this ADR did:
 
 - add explicit declaration parsing and validation for `fixed-host-port`
 - add one provider package implementing derive-only endpoint behavior
+- extend shared endpoint declaration/provider-input types narrowly for
+  `host` and `basePort`
 - add contract and acceptance coverage proving the second endpoint shape
-- update roadmap and state docs to reflect the first `0.4.x` extensibility proof
+- update roadmap, state, and package-map docs for the first `0.4.x`
+  extensibility proof
 
-It should not:
+It did not:
 
 - redesign `run`
 - redesign `appEnv`
