@@ -1,15 +1,17 @@
 import type {
   EndpointDeclaration,
   EndpointAppEnvMapping,
-  EndpointAppEnvValueKind,
   IsolationStrategy,
   ResourceDeclaration
+} from "@multiverse/provider-contracts";
+import {
+  isValidFixedHostPortBasePort
 } from "@multiverse/provider-contracts";
 
 
 export interface DeclarationValidationError {
   path: string;
-  code: "required" | "invalid_env_var_name" | "reserved_name" | "duplicate_appenv" | "invalid_appenv_mapping_kind";
+  code: "required" | "invalid_value" | "invalid_env_var_name" | "reserved_name" | "duplicate_appenv" | "invalid_appenv_mapping_kind";
 }
 
 export interface ValidatedResourceDeclaration {
@@ -27,11 +29,13 @@ export interface ValidatedEndpointDeclaration {
   role: string;
   provider: string;
   appEnv?: string | EndpointAppEnvMapping;
+  host?: string;
+  basePort?: number;
 }
 
 export interface EndpointDeclarationValidationError {
-  path: "name" | "role" | "provider" | "appEnv";
-  code: "required" | "invalid_env_var_name" | "reserved_name" | "invalid_appenv_mapping_kind";
+  path: "name" | "role" | "provider" | "appEnv" | "host" | "basePort";
+  code: "required" | "invalid_value" | "invalid_env_var_name" | "reserved_name" | "invalid_appenv_mapping_kind";
 }
 
 export type EndpointDeclarationValidationResult<T> =
@@ -47,7 +51,6 @@ export type EndpointDeclarationValidationResult<T> =
 /** Pattern for a valid environment variable name (POSIX-like). */
 const ENV_VAR_NAME_PATTERN = /^[A-Za-z_][A-Za-z0-9_]*$/;
 const RESERVED_PREFIX = "MULTIVERSE_";
-
 function isValidEnvVarName(name: string): boolean {
   return ENV_VAR_NAME_PATTERN.test(name);
 }
@@ -113,6 +116,32 @@ function endpointAppEnvErrors(
     if (kind !== "url" && kind !== "port") {
       errors.push({ path: "appEnv", code: "invalid_appenv_mapping_kind" });
     }
+  }
+
+  return errors;
+}
+
+function invalidEndpointValueError(
+  path: EndpointDeclarationValidationError["path"]
+): EndpointDeclarationValidationError {
+  return { path, code: "invalid_value" };
+}
+
+function fixedHostPortConfigErrors(
+  input: EndpointDeclaration
+): EndpointDeclarationValidationError[] {
+  const errors: EndpointDeclarationValidationError[] = [];
+
+  if (input.host === undefined) {
+    errors.push(requiredEndpointError("host"));
+  } else if (typeof input.host !== "string" || input.host.trim().length === 0) {
+    errors.push(invalidEndpointValueError("host"));
+  }
+
+  if (input.basePort === undefined) {
+    errors.push(requiredEndpointError("basePort"));
+  } else if (!isValidFixedHostPortBasePort(input.basePort)) {
+    errors.push(invalidEndpointValueError("basePort"));
   }
 
   return errors;
@@ -192,6 +221,10 @@ export function validateEndpointDeclaration(
     errors.push(requiredEndpointError("provider"));
   }
 
+  if (input.provider === "fixed-host-port") {
+    errors.push(...fixedHostPortConfigErrors(input));
+  }
+
   if (input.appEnv !== undefined) {
     errors.push(...endpointAppEnvErrors(input.appEnv));
   }
@@ -206,6 +239,10 @@ export function validateEndpointDeclaration(
       name: input.name!,
       role: input.role!,
       provider: input.provider!,
+      ...(input.provider === "fixed-host-port" && input.host !== undefined ? { host: input.host } : {}),
+      ...(input.provider === "fixed-host-port" && input.basePort !== undefined
+        ? { basePort: input.basePort }
+        : {}),
       ...(input.appEnv !== undefined ? { appEnv: input.appEnv } : {})
     }
   };

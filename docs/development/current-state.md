@@ -23,6 +23,7 @@ Interpretation:
 * the usable core of Multiverse has moved beyond isolated seam proofs
 * a richer composed application workflow has now been demonstrated through mixed-provider integration
 * the product is still in active proving, but the consumer-workflow question is now materially narrower than it was before ADR 0018 and ADR 0019
+* the repository has now started the first `0.4.x` extensibility proof with a second endpoint-provider shape
 
 ## What is already proven
 
@@ -53,6 +54,7 @@ The provider model has been proven across several shapes, including:
 * name-scoped resource behavior
 * path-scoped resource behavior
 * local-port endpoint behavior
+* fixed-host-port endpoint behavior
 * process-scoped resource behavior
 * process-port-scoped resource behavior
 
@@ -84,31 +86,31 @@ The current composed proof also now demonstrates:
 
 The current highest-priority question is:
 
-**Has the current explicit consumer integration model been proven enough to treat it as the credible common-case direction for 1.0, rather than still as an open exploration?**
+**Can a second explicit endpoint-provider shape be added without changing the established consumer workflow or weakening the core/provider boundary?**
 
-ADR 0018 and ADR 0019, together with the current `sample-compose` proof, have narrowed this question substantially.
+ADR 0018 and ADR 0019 established the consumer workflow strongly enough to move to this next question. ADR 0020 defines the first narrow extensibility proof.
 
 ## Current priority
 
 The current priority is:
 
-**Confirming and stabilizing the now-proven composed application developer experience**
+**Executing and stabilizing the first `0.4.x` extensibility proof while preserving the now-proven consumer workflow**
 
 That means work should preferentially strengthen:
 
-* clarity and stability of the common-case workflow for composed applications
-* explicit and low-friction consumption of derived runtime values
-* the now-proven app-native mapping and runtime-config boundary story
-* realistic multi-seam runtime flows only where they sharpen confidence
+* the first additional provider shape under the existing endpoint contract
+* clarity of the line between repository-owned declaration config and provider-owned derivation rules
+* confidence that `run` and app-native endpoint mapping remain unchanged for consumers
+* docs and tests that make the new extensibility seam understandable without widening scope
 
 ## What kinds of work are highest-value right now
 
 Examples of work that are strongly aligned with the current phase:
 
-* tightening docs and planning around the proven common-case path
-* bounded stabilization of the chosen consumer model
-* clarifying any remaining refusal or lifecycle edges only where they affect trust in the current consumer story
-* preparing the transition to the next major proving question if no concrete `0.3.x` behavior gap remains
+* implementing one additional meaningful provider shape cleanly
+* tightening docs around what belongs in core versus provider code
+* bounded stabilization of declaration validation and refusal behavior for the new seam
+* preserving the proven app-native mapping and runtime-config boundary story while extensibility grows
 
 ## What is intentionally deferred
 

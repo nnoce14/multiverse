@@ -45,6 +45,19 @@ export interface EndpointDeclaration {
   role?: string;
   provider?: string;
   appEnv?: string | EndpointAppEnvMapping;
+  host?: string;
+  basePort?: number;
+}
+
+export const FIXED_HOST_PORT_PORT_RANGE = 1000;
+export const FIXED_HOST_PORT_MIN_BASE_PORT = 1;
+export const FIXED_HOST_PORT_MAX_BASE_PORT = 65535 - (FIXED_HOST_PORT_PORT_RANGE - 1);
+
+export function isValidFixedHostPortBasePort(value: number | undefined): value is number {
+  return typeof value === "number" &&
+    Number.isInteger(value) &&
+    value >= FIXED_HOST_PORT_MIN_BASE_PORT &&
+    value <= FIXED_HOST_PORT_MAX_BASE_PORT;
 }
 
 export interface RepositoryConfiguration {
@@ -162,6 +175,8 @@ export interface EndpointProvider {
       name: string;
       role: string;
       provider: string;
+      host?: string;
+      basePort?: number;
     };
     worktree: {
       id: string;

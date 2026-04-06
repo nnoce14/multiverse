@@ -17,6 +17,9 @@ importers:
       '@multiverse/provider-contracts':
         specifier: workspace:*
         version: link:packages/provider-contracts
+      '@multiverse/provider-fixed-host-port':
+        specifier: workspace:*
+        version: link:packages/provider-fixed-host-port
       '@multiverse/provider-local-port':
         specifier: workspace:*
         version: link:packages/provider-local-port
@@ -111,6 +114,12 @@ importers:
         version: link:../provider-contracts
 
   packages/provider-contracts: {}
+
+  packages/provider-fixed-host-port:
+    dependencies:
+      '@multiverse/provider-contracts':
+        specifier: workspace:*
+        version: link:../provider-contracts
 
   packages/provider-local-port:
     dependencies:

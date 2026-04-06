@@ -19,6 +19,7 @@
     "@multiverse/core": "workspace:*",
     "@multiverse/cli": "workspace:*",
     "@multiverse/provider-contracts": "workspace:*",
+    "@multiverse/provider-fixed-host-port": "workspace:*",
     "@multiverse/provider-local-port": "workspace:*",
     "@multiverse/provider-name-scoped": "workspace:*",
     "@multiverse/provider-path-scoped": "workspace:*",
