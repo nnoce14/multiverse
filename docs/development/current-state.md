@@ -15,14 +15,14 @@ This is a short state-of-the-project document, not a full history.
 
 ## Current version posture
 
-Current version posture: **0.2.0-alpha.2**
+Current version posture: **0.3.0-alpha.1**
 
 Interpretation:
 
-* the core product thesis is proven in constrained but real workflows
-* the CLI is usable in both repo-local development and formal binary-oriented directions
-* multiple provider types now exist and are covered at several test tiers
-* the product is still in active proving, not stabilization or ecosystem mode
+* the core product thesis is proven in real workflows
+* the usable core of Multiverse has moved beyond isolated seam proofs
+* a richer composed application workflow has now been demonstrated through mixed-provider integration
+* the product is still in active proving, but the next major focus is consumer workflow maturity rather than basic feasibility
 
 ## What is already proven
 
@@ -42,7 +42,7 @@ The following are now considered proven enough to serve as the working baseline 
 * `run` acts as an explicit runtime wrapper for a user-supplied command
 * `reset` and `cleanup` support declared lifecycle behavior where allowed
 * `pnpm cli ...` remains the repo-local development path
-* formal CLI packaging/binary work is underway or newly established, depending on current branch state
+* formal CLI packaging and binary invocation support for `multiverse ...` now exist alongside the repo-local `pnpm cli ...` development path
 
 ### Provider model
 
@@ -62,11 +62,21 @@ Multiverse has already been demonstrated against standalone external application
 
 This matters because it proves the model is not limited to one tightly controlled internal shape.
 
+### Composed application proof
+
+A richer composed proving application now demonstrates that one application can consume multiple Multiverse-managed seams at once, including:
+
+* a path-scoped resource
+* a process-port-scoped resource
+* a local-port endpoint
+
+This proves that mixed-provider composition can work in one running application without collapsing the model.
+
 ## Current highest-priority proving question
 
 The current highest-priority question is:
 
-**Can one richer application consume multiple Multiverse-managed resources and endpoints at once, using mixed provider types, without the model becoming awkward or inconsistent?**
+**What is the cleanest explicit consumer integration model for composed applications, so that developers do not have to code directly against raw MULTIVERSE_* environment variables in the common 1.0 workflow?**
 
 This is the main focus of the current implementation phase.
 
@@ -74,16 +84,15 @@ This is the main focus of the current implementation phase.
 
 The current priority is:
 
-**Richer mixed-provider composition in a single application**
+**Refining the composed application developer experience**
 
 That means work should preferentially strengthen:
 
-* applications with multiple resources
-* applications with multiple endpoints
-* multiple provider types used together
-* realistic end-to-end runtime consumption
-* realistic reset/cleanup behavior across composed seams
-* integration coverage for composed workflows
+* the common-case workflow for composed applications
+* explicit and low-friction consumption of derived runtime values
+* app-native configuration mapping where justified
+* realistic multi-seam runtime flows
+* continued integration coverage only where it sharpens confidence in the consumer experience
 
 ## What kinds of work are highest-value right now
 
@@ -97,25 +106,24 @@ Examples of work that are strongly aligned with the current phase:
 
 ## What is intentionally deferred
 
-The following are explicitly lower priority until richer composition is proven:
+The following remain explicitly lower priority until the composed application consumer workflow is more mature:
 
 * broad provider ecosystem positioning
 * formal provider-authoring guidance
 * community-extension workflow optimization
 * generalized plugin/ecosystem framing
-* broad distribution polish beyond what is needed for current proving work
 
 These are not rejected. They are deferred until the richer composed application proof is complete.
 
 ## Version-milestone meaning for the current phase
 
-The `0.2.x` line should be understood as:
+The 0.3.x line should be understood as:
 
-* usable core
-* still proving composition
-* not yet in ecosystem or outside-user optimization mode
+* composed application behavior is now proven enough to refine
+* the current focus is consumer workflow maturity
+* the repo is not yet in ecosystem or outside-user optimization mode
 
-A move beyond `0.2.x` should happen only after richer mixed-provider application composition is convincingly demonstrated.
+A move beyond 0.3.x should happen only after the composed application workflow feels clean, the consumer integration model is materially improved, and the common-case workflow is stable enough for broader extension and usability work.
 
 ## Practical instruction for contributors and agents
 
