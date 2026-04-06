@@ -19,9 +19,8 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { existsSync } from "node:fs";
 import { spawn, type ChildProcess } from "node:child_process";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
-import { tmpdir } from "node:os";
+import { readFile, rm } from "node:fs/promises";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 
@@ -37,15 +36,17 @@ import { startApp, type AppHandle } from "../../apps/sample-compose/src/app.js";
 // Shared configuration
 // ---------------------------------------------------------------------------
 
-const TEST_BASE_DIR = join(tmpdir(), "multiverse-integration-compose");
+const root = resolve(fileURLToPath(new URL(".", import.meta.url)), "../../");
+const TEST_BASE_DIR = resolve(root, ".codex", "test-state", "integration", "sample-compose");
 const TEST_BASE_PORT_HTTP = 5400;
 const TEST_BASE_PORT_SIDECAR = 6400;
-
-const root = resolve(fileURLToPath(new URL(".", import.meta.url)), "../../");
 const tsx = resolve(root, "node_modules/.bin/tsx");
 const sidecarPath = resolve(root, "apps/sample-compose/src/sidecar.ts");
 const sampleComposeConfigPath = resolve(root, "apps/sample-compose/multiverse.json");
 const sampleComposeEntrypointPath = resolve(root, "apps/sample-compose/src/index.ts");
+const sampleComposeProvidersModulePath = fileURLToPath(
+  new URL("./fixtures/sample-compose-test-providers.ts", import.meta.url)
+);
 
 const providers = {
   resources: {
@@ -134,36 +135,6 @@ async function waitForApp(address: string, timeoutMs = 3000): Promise<void> {
   throw new Error(`App at ${address} did not become ready within ${timeoutMs}ms: ${String(lastError)}`);
 }
 
-async function writeTestProvidersModule(): Promise<string> {
-  const tempDir = await mkdtemp(join(tmpdir(), "multiverse-sample-compose-providers-"));
-  const modulePath = join(tempDir, "providers.ts");
-  await writeFile(
-    modulePath,
-    `import { join } from "node:path";
-import { createPathScopedProvider } from "@multiverse/provider-path-scoped";
-import { createLocalPortProvider } from "@multiverse/provider-local-port";
-import { createProcessPortScopedProvider } from "@multiverse/provider-process-port-scoped";
-
-export const providers = {
-  resources: {
-    "path-scoped": createPathScopedProvider({
-      baseDir: join(${JSON.stringify(TEST_BASE_DIR)}, "db")
-    }),
-    "process-port-scoped": createProcessPortScopedProvider({
-      baseDir: join(${JSON.stringify(TEST_BASE_DIR)}, "sidecar"),
-      basePort: ${TEST_BASE_PORT_SIDECAR},
-      command: [${JSON.stringify(tsx)}, ${JSON.stringify(sidecarPath)}, "--port", "{PORT}"]
-    })
-  },
-  endpoints: {
-    "local-port": createLocalPortProvider({ basePort: ${TEST_BASE_PORT_HTTP} })
-  }
-};
-`
-  );
-  return modulePath;
-}
-
 async function readSampleComposeRepository() {
   return JSON.parse(await readFile(sampleComposeConfigPath, "utf8")) as typeof repository;
 }
@@ -233,13 +204,11 @@ describe("sample-compose: mixed-provider composition", () => {
   describe("app-native env consumer path", () => {
     const worktreeId = "wt-compose-appenv";
     let child: ChildProcess | undefined;
-    let providersModulePath: string | undefined;
     let appAddress = "";
     let repositoryConfig: typeof repository;
 
     beforeAll(async () => {
       repositoryConfig = await readSampleComposeRepository();
-      providersModulePath = await writeTestProvidersModule();
 
       const derived = deriveOne({ repository: repositoryConfig, worktree: { id: worktreeId }, providers });
       if (!derived.ok) {
@@ -284,7 +253,7 @@ describe("sample-compose: mixed-provider composition", () => {
           "--config",
           sampleComposeConfigPath,
           "--providers",
-          providersModulePath,
+          sampleComposeProvidersModulePath,
           "--worktree-id",
           worktreeId,
           "--",
@@ -309,9 +278,6 @@ describe("sample-compose: mixed-provider composition", () => {
           worktree: { id: worktreeId },
           providers
         });
-      }
-      if (providersModulePath) {
-        await rm(dirname(providersModulePath), { recursive: true, force: true });
       }
     });
 
