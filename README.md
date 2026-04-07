@@ -52,9 +52,9 @@ Today’s repo includes:
 
 ## Current behavior being proven
 
-The current implementation proves the core loop for explicit declarations and deterministic derivation, plus the current consumer-workflow path and the first narrow `0.4.x` endpoint-provider extensibility proof now captured in `0.4.0-alpha.1`.
+The current implementation proves the core loop for explicit declarations and deterministic derivation, the composed application consumer workflow, and a complete provider extensibility story now captured in `0.5.0-alpha.1`.
 
-`0.4.0-alpha.1` is a proof posture, not a broader maturity claim: it documents that the first additional endpoint provider shape now lives on `main` while the `0.3.x` consumer workflow remains unchanged and 1.0 continues to stay intentionally narrow.
+`0.5.0-alpha.1` marks the transition to early outside usability: the `0.4.x` extensibility proof is complete (new provider shapes, non-first-party authoring, CLI invocation proof), and the next proving question is whether a second engineer can follow the docs and succeed without live guidance. 1.0 remains intentionally narrow.
 
 That includes:
 
@@ -101,7 +101,7 @@ This keeps the tool predictable and avoids hidden behavior around consequential 
 
 * `apps/cli/` — thin command-line entrypoint
 * `apps/sample-express/` — sample application used for end-to-end integration proof
-* `apps/sample-compose/` — composed proving app for the current `0.3.x` consumer workflow
+* `apps/sample-compose/` — composed proving app for the common-case consumer workflow
 
 ### Packages
 
@@ -172,7 +172,7 @@ pnpm cli cleanup --worktree-id <id>
 
 `--config` defaults to `./multiverse.json` and `--providers` defaults to `./providers.ts` when not specified. `--worktree-id` is always required.
 
-For the current common-case `0.3.x` proving path, `run` can inject both canonical `MULTIVERSE_*` transport vars and explicit app-native values declared with `appEnv`. For endpoints, that now includes explicit typed mapping for `url` and `port`. The preferred application pattern is to read those app-owned names at one runtime-config boundary rather than scatter direct `MULTIVERSE_*` reads through the app.
+`run` injects both canonical `MULTIVERSE_*` transport vars and explicit app-native values declared with `appEnv`. For endpoints, that includes typed mapping for `url` and `port`. The preferred application pattern is to read those app-owned names at one runtime-config boundary rather than scatter direct `MULTIVERSE_*` reads through the app.
 
 ## Source-of-truth order
 

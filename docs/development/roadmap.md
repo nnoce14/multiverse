@@ -480,11 +480,18 @@ It should mean that the product is trustworthy in its intended scope.
 
 The current near-term direction is:
 
-* confirm and document the now-proven common-case consumer workflow
-* stabilize the chosen consumer model where needed without broadening scope
-* transition toward `0.4.x` extensibility proof once no concrete remaining `0.3.x` consumer gap is identified
+* prove that a second engineer can follow the existing docs and successfully run a
+  Multiverse-isolated application without live guidance
+* identify and close the most load-bearing cold-start friction in the current
+  documented common-case workflow
+* make the `pnpm cli` in-repo path and the formal `multiverse` binary path
+  explicit and honest in the docs
 
-Provider-ecosystem formalization remains deferred until the consumer workflow for composed applications is more mature.
+The provider model and consumer workflow are now stable enough that the remaining
+0.5.x work is about usability, reproducibility, and honest documentation — not
+proving new product behaviors.
+
+Provider-ecosystem formalization and external distribution remain deferred.
 
 ### Configuration and CLI boundary for the current phase
 
