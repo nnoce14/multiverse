@@ -336,17 +336,20 @@ separately, following the existing per-provider contract files as reference.
 ## Scope note
 
 The seam proven by this guide is: **implement the contract, register in the
-registry, and the provider works through `deriveOne` and the rest of the core
-API**.
+registry, and the provider works through the CLI derive command and the rest of
+the core API**.
 
-This has been verified by an acceptance test (`tests/acceptance/dev-slice-32.acceptance.test.ts`)
-that authors a resource and endpoint provider using only `@multiverse/provider-contracts`
-types and confirms they derive correctly through `@multiverse/core`.
+This has been verified by two acceptance tests:
+
+- `tests/acceptance/dev-slice-32.acceptance.test.ts` — authors a resource and
+  endpoint provider using only `@multiverse/provider-contracts` types and confirms
+  they derive correctly through `@multiverse/core` (core/registry seam).
+- `tests/acceptance/dev-slice-35.acceptance.test.ts` — loads the same style of
+  provider through the CLI `--providers` flag and confirms that the full
+  `providers.ts` → `pnpm cli derive --providers` path works end to end.
 
 What is **not** covered here:
 - Packaging a provider as a standalone npm package for distribution outside the
   repository. That packaging workflow is not addressed in the current scope.
-- CLI invocation with an external provider. The `providers.ts` convention is the
-  current registration seam; broader loading models are deferred.
 - Provider discovery or auto-registration. Provider selection is always explicit
   in repository configuration.

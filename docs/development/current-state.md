@@ -126,30 +126,40 @@ errors in bare `catch {}` blocks. A provider author whose module failed to load
 Both catch blocks now capture and include the underlying error message. This is
 the highest-signal usability gap found in the 0.4.x hardening audit.
 
+**Does the full `providers.ts` → CLI derive path work for a non-first-party
+provider?**
+
+Slice 35 closes the last named 0.4.x gap: a provider authored following the guide
+— importing only from `@multiverse/provider-contracts`, registered in a
+`providers.ts` file — is proven to derive correctly through `pnpm cli derive
+--providers`. This extends the Slice 32 core/registry seam proof to cover the
+complete documented invocation path. The provider authoring guide scope note no
+longer marks CLI invocation as unproven.
+
 ## Current priority
 
 The current priority is:
 
-**Confirming the `0.4.x` extension story is complete enough to assess whether any
-material gap remains before transitioning to `0.5.x`**
+**`0.4.x` extensibility proof is complete — transition planning toward `0.5.x`**
 
-Slices 31–34 have progressively strengthened the extension story: a second
-endpoint provider shape (Slice 31), a non-first-party authoring proof and guide
-(Slice 32), a parameterized derive compliance suite (Slice 33), and a narrow
-CLI error-surfacing fix that removes the most load-bearing usability gap a second
-author would encounter (Slice 34). The remaining question is whether any other
-gap exists that would surface for a provider author following the documented path.
+Slices 31–35 have fully closed the 0.4.x extension story: a second endpoint
+provider shape (Slice 31), non-first-party authoring proof and guide (Slice 32),
+parameterized derive compliance suite (Slice 33), CLI error surfacing (Slice 34),
+and CLI-level non-first-party invocation proof (Slice 35). All four 0.4.x roadmap
+exit criteria are now met.
+
+The next question is 0.5.x: can another engineer follow the docs and succeed?
+That is a different class of work — cold-start usability, install/invocation path,
+and getting-started guide — not more provider extension proving.
 
 ## What kinds of work are highest-value right now
 
 Examples of work that are strongly aligned with the current phase:
 
-* identifying whether any material gap remains in the provider extension story
-  that a second author would discover when following the guide and compliance suite
-* confirming the `0.4.x` exit criteria are met well enough to consider the
-  extensibility proof complete
-* transition planning toward `0.5.x` early outside usability if no material
-  `0.4.x` gap remains
+* assessing the 0.4.x exit criteria formally and declaring the checkpoint
+* defining the first concrete 0.5.x slice (outside-user usability proof)
+* identifying the most load-bearing cold-start friction a second engineer would
+  encounter following the existing docs
 
 ## What is intentionally deferred
 

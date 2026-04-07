@@ -27,7 +27,7 @@ The repository contains behavior-first design artifacts and a working implementa
 * a composed proving application in `apps/sample-compose/`
 * acceptance, contract, unit, and integration tests under `tests/`
 
-Implementation has progressed through 34 development slices. The core lifecycle
+Implementation has progressed through 35 development slices. The core lifecycle
 (derive, validate, reset, cleanup) is implemented across the current declared
 resource and endpoint model, with multi-resource and multi-endpoint support in
 place. The `0.3.x` work proved the main composed-application consumer workflow.
@@ -42,7 +42,10 @@ resource-side derive governance as explicit and executable as the endpoint-side
 compliance suite. Slice 34 fixed a load-bearing usability gap: the CLI now
 surfaces the underlying Node.js error when a providers module fails to load or a
 config file cannot be parsed, instead of swallowing the error in a bare
-`catch {}` block.
+`catch {}` block. Slice 35 closed the last named 0.4.x gap by proving that the
+full `providers.ts` → `pnpm cli derive --providers` path works for a provider
+authored against only `@multiverse/provider-contracts`, extending the Slice 32
+core/registry seam proof to cover CLI invocation.
 
 ## Implementation Model
 
