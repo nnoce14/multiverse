@@ -76,9 +76,10 @@ engineer reading only the docs.
 - No step assumes the reader has installed `@multiverse/*` packages separately
 - `pnpm vitest run` continues to pass (no regression)
 
-## Files expected to change
+## Files changed
 
-- `docs/guides/external-demo-guide.md` (update)
+- `docs/guides/external-demo-guide.md` (updated)
+- `docs/development/current-state.md` (truth-aligned)
 - `docs/development/tasks/dev-slice-36-task-01.md` (this file)
 
 ## Truth-alignment on completion

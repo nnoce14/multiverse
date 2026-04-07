@@ -10,6 +10,22 @@ By the end of this guide you will be able to:
 
 ---
 
+## How this guide works
+
+This guide uses the **repo-local `pnpm cli` invocation path**.
+
+`pnpm cli` is a workspace script defined in the multiverse `package.json`. It runs the Multiverse CLI using the local TypeScript source via `tsx`. It is **not a globally installed binary** — it only works when invoked from the multiverse repo root.
+
+To follow this guide, you need:
+
+1. A clone of the multiverse repository
+2. `pnpm install` run at the multiverse repo root — this makes the workspace packages available
+3. All commands run from the **multiverse repo root**
+
+The provider packages used in Step 2 (`@multiverse/provider-path-scoped`, `@multiverse/provider-local-port`) are **workspace packages within the multiverse repo**. They are not published to npm and do not need to be installed separately. They become available automatically once `pnpm install` is run at the repo root.
+
+---
+
 ## What this guide proves
 
 This guide proves that Multiverse can:
@@ -22,8 +38,14 @@ This guide proves that Multiverse can:
 ## Prerequisites
 
 - Node.js 18+
-- A git repository with at least one worktree checked out
-- A working Multiverse repository checkout, with the CLI available through `pnpm cli` from the repo root.
+- pnpm (the multiverse repo uses pnpm workspaces)
+- The multiverse repository cloned and installed:
+  ```bash
+  git clone https://github.com/nnoce14/multiverse
+  cd multiverse
+  pnpm install
+  ```
+- A git repository (or git worktree) for the application you want to isolate, with at least one worktree checked out
 
 ---
 
@@ -88,6 +110,8 @@ export const providers = {
   }
 };
 ```
+
+`@multiverse/provider-path-scoped` and `@multiverse/provider-local-port` are workspace packages within the multiverse repo. They are available once `pnpm install` has been run at the repo root — no separate install step is needed.
 
 The `baseDir` is where isolated resource directories are created. Each worktree gets its own subdirectory under `baseDir`.
 
@@ -175,7 +199,7 @@ An application-owned runtime-config boundary can then read `DATABASE_PATH`, `APP
 
 ## Step 4 — Run your application
 
-From the root of your repository (where `multiverse.json` and `providers.ts` live):
+From the **multiverse repo root** (where `pnpm cli` is available and where `multiverse.json` and `providers.ts` live by default):
 
 ```bash
 pnpm cli run --worktree-id <id> -- node server.js
