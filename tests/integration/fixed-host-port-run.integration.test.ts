@@ -92,7 +92,7 @@ describe("fixed-host-port run integration", () => {
     return JSON.parse(stdout) as Record<string, string>;
   }
 
-  it("launches a child process through run and preserves the existing endpoint consumer workflow", async () => {
+  it("injects canonical and typed endpoint env vars into a real child process through run", async () => {
     const config = {
       resources: [],
       endpoints: [
@@ -121,6 +121,7 @@ describe("fixed-host-port run integration", () => {
 
     expect(httpUrlA).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
     expect(httpUrlB).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
+    // fixed-host-port keeps the configured host stable while deriving distinct worktree ports.
     expect(httpUrlA).not.toBe(httpUrlB);
 
     expect(envA["APP_HTTP_URL"]).toBe(httpUrlA);

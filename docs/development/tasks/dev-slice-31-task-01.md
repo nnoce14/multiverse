@@ -2,7 +2,7 @@
 
 ## Title
 
-Add a narrow `multiverse run` integration proof for fixed-host-port endpoint consumers
+Add a narrow `multiverse run` env-injection proof for fixed-host-port endpoint consumers
 
 ## Sources of truth
 
@@ -22,6 +22,9 @@ Add a narrow `multiverse run` integration proof for fixed-host-port endpoint con
   - canonical `MULTIVERSE_ENDPOINT_*` endpoint env
   - declared app-native endpoint env aliases
   - correct typed `url` and `port` values
+- verification that fixed host plus derived port semantics remain clear:
+  - host stays repository-configured
+  - port still varies per worktree from `basePort`
 - `apps/cli/src/index.ts` only if the new proof reveals a real `run` gap
 
 ## Out of scope
@@ -31,6 +34,7 @@ Add a narrow `multiverse run` integration proof for fixed-host-port endpoint con
 - endpoint-model redesign
 - provider-contract redesign beyond the existing narrow fixed-host-port extension
 - sample-app expansion beyond the tiny local child process needed for this proof
+- broader application-runtime proof that a real app binds or listens on the mapped port
 
 ## Acceptance criteria
 
@@ -39,6 +43,7 @@ Add a narrow `multiverse run` integration proof for fixed-host-port endpoint con
 - the child process receives the declared app-native endpoint env aliases unchanged
 - typed endpoint mapping still injects the full URL and extracted numeric port string
 - different worktrees still receive correctly scoped fixed-host-port endpoint values through the same consumer workflow
+- the proof remains limited to endpoint env-injection parity through `run`, not full app bind/listen behavior
 
 ## Version and status check
 
