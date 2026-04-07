@@ -27,9 +27,10 @@ data structure.
 worktree. The basename of that path is:
 
 - deterministic for a given worktree
-- unique across all worktrees in the same repository
 - inspectable without reading Multiverse source code
 - stable for the lifetime of the worktree
+- unique in the common case where worktree directories are named distinctly,
+  as is conventional practice; the implementation does not enforce uniqueness
 
 This is the same character as the `--config`/`--providers` conventional defaults:
 strict convention, not discovery or inference.
