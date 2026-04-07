@@ -85,47 +85,67 @@ The current composed proof also now demonstrates:
 
 ## Current highest-priority proving result
 
-The most recently answered proving question is:
+The most recently answered proving questions are:
 
-**Can a second explicit endpoint-provider shape be added without changing the established consumer workflow or weakening the core/provider boundary?**
+**Can a second explicit endpoint-provider shape be added without changing the
+established consumer workflow or weakening the core/provider boundary?**
 
 ADR 0018 and ADR 0019 established the consumer workflow strongly enough to move
-to this next question. ADR 0020 and Slice 31 now prove it once through
-`fixed-host-port`, with a narrow explicit `host`/`basePort` extension to shared
-endpoint declaration and provider-input types.
+to this question. ADR 0020 and Slice 31 prove it through `fixed-host-port`, with
+a narrow explicit `host`/`basePort` extension to shared endpoint declaration and
+provider-input types.
+
+**Can a provider be authored against `@multiverse/provider-contracts` alone and
+consumed through the standard core/registry seam, with no knowledge of core
+internals?**
+
+Slice 32 answers yes: a provider implemented using only `@multiverse/provider-contracts`
+types can be registered in a `ProviderRegistry` and consumed correctly through
+`deriveOne`. This is a core/registry seam proof; it does not address CLI
+invocation with an externally distributed provider, which is not yet in scope.
 
 ## Current priority
 
 The current priority is:
 
-**Keeping the first `0.4.x` extensibility proof narrow, explicit, and well-documented while preserving the now-proven consumer workflow**
+**Making the `0.4.x` extension story feel repeatable and governable, not just
+possible**
 
-That means work should preferentially strengthen:
+Slice 32 established that the contract is a real authoring seam. The remaining
+`0.4.x` question is whether the extension story holds up under real pressure —
+meaning a second author or a different kind of extension can follow the established
+pattern without discovering hidden gaps in the contract, the authoring guidance,
+or the core boundary.
 
-* the first additional provider shape under the existing endpoint model
-* clarity of the line between repository-owned declaration config and provider-owned derivation rules
-* confidence that `run` and app-native endpoint mapping remain unchanged for consumers
-* docs and tests that make the new extensibility seam understandable without widening scope
+That question could be answered through another meaningful provider shape if a
+product-relevant one exists, through strengthening the authoring or compliance
+workflow, or through another form of extension-seam hardening. The direction
+should follow the most honest remaining gap, not a fixed expectation of
+provider-count.
 
 ## What kinds of work are highest-value right now
 
 Examples of work that are strongly aligned with the current phase:
 
-* documenting the now-implemented fixed-host-port slice accurately
-* bounded stabilization of the newly proven extension seam where needed
-* tightening docs around what belongs in core versus provider code
-* preserving the proven app-native mapping and runtime-config boundary story while extensibility grows
+* identifying and closing the most honest remaining gap in the extension story
+  (authoring workflow, compliance verification, contract clarity, or a
+  product-relevant second provider shape — whichever is most load-bearing)
+* refining the provider authoring guide if real authoring reveals gaps
+* confirming that the core/provider boundary holds clearly enough that a second
+  author could follow it without help
 
 ## What is intentionally deferred
 
-The following remain explicitly lower priority until the composed application consumer workflow is more mature:
+The following remain explicitly lower priority until the `0.4.x` extensibility
+proof is more complete:
 
 * broad provider ecosystem positioning
-* formal provider-authoring guidance
+* provider packaging and distribution outside the repository
 * community-extension workflow optimization
 * generalized plugin/ecosystem framing
 
-These are not rejected. They are deferred until the richer composed application proof is complete.
+A narrow provider authoring guide and core/registry acceptance proof now exist
+(Slice 32). Broader ecosystem framing remains deferred.
 
 ## Version-milestone meaning for the current phase
 
