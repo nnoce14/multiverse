@@ -137,30 +137,40 @@ Slice 35 closes the last named 0.4.x gap: a provider authored following the guid
 complete documented invocation path. The provider authoring guide scope note no
 longer marks CLI invocation as unproven.
 
+**Is the in-repo `pnpm cli` path honest and followable from scratch by a second
+engineer reading only the docs?**
+
+Slice 36 addresses the most load-bearing cold-start gap in the external-demo-guide:
+the guide never stated that it required a multiverse repo checkout with `pnpm install`
+completed, or that the `@multiverse/provider-*` packages are workspace-local and not
+on npm. A new "How this guide works" section makes the repo-local invocation path
+explicit. Prerequisites now list the concrete clone and install steps. Step 2 clarifies
+that provider imports are workspace packages, not separately installable. Step 4
+clarifies that `pnpm cli` runs from the multiverse repo root.
+
 ## Current priority
 
 The current priority is:
 
-**`0.4.x` extensibility proof is complete — transition planning toward `0.5.x`**
+**`0.5.x` early outside usability — in-repo path proven, binary distribution path next**
 
-Slices 31–35 have fully closed the 0.4.x extension story: a second endpoint
-provider shape (Slice 31), non-first-party authoring proof and guide (Slice 32),
-parameterized derive compliance suite (Slice 33), CLI error surfacing (Slice 34),
-and CLI-level non-first-party invocation proof (Slice 35). All four 0.4.x roadmap
-exit criteria are now met.
+Slice 36 has closed the most load-bearing cold-start documentation gap: the
+external-demo-guide now explicitly states what the reader needs and does not
+assume they can acquire `@multiverse/provider-*` from npm.
 
-The next question is 0.5.x: can another engineer follow the docs and succeed?
-That is a different class of work — cold-start usability, install/invocation path,
-and getting-started guide — not more provider extension proving.
+The remaining 0.5.x proving question is whether a second engineer can succeed
+end to end: following the guide, running an isolated application, and confirming
+the parallel-worktree and reset/cleanup behavior. The formal `multiverse` binary
+path (build + link + invoke) is a follow-on slice after the in-repo path is
+confirmed reproducible.
 
 ## What kinds of work are highest-value right now
 
 Examples of work that are strongly aligned with the current `0.5.x` phase:
 
-* proving whether the existing external-demo-guide and README are sufficient for
-  a cold-start second engineer without live guidance
-* identifying and closing the most load-bearing gap in the current documented
-  common-case workflow
+* proving end-to-end reproducibility: a second engineer following the updated
+  external-demo-guide succeeds without live guidance
+* documenting and proving the formal `multiverse` binary path (build, link, invoke)
 * making the `pnpm cli` in-repo path and the formal `multiverse` binary path
   explicit and honest in the docs
 
