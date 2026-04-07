@@ -97,7 +97,7 @@ The `baseDir` is where isolated resource directories are created. Each worktree 
 
 When `pnpm cli run` starts your app, it injects isolated values as environment variables. Your application reads these instead of hardcoded configuration.
 
-For the current `0.3.x` common-case direction, there are now two explicit consumer patterns:
+There are two explicit consumer patterns for reading Multiverse-derived values:
 
 - read the canonical `MULTIVERSE_*` transport vars directly
 - declare app-native aliases with `appEnv` and read those at one application-owned runtime-config boundary
