@@ -102,6 +102,14 @@ Do not create new packages for speculative reuse or abstract neatness.
 
 A new package should be introduced only when a real responsibility boundary or dependency-direction need requires it.
 
+The same discipline applies to product scope:
+
+- keep 1.0 narrow and explicit
+- do not pull broader ergonomics, ecosystem, or post-1.0 ideas into a slice
+  unless the current source-of-truth documents require them
+- capture those ideas as deferred follow-up work instead of widening the active
+  slice
+
 ## Expected Deliverables for the Initial Slice
 
 - executable acceptance tests for the selected in-scope behavior
@@ -159,6 +167,26 @@ Phase 3 in design (targeting 0.2.x):
   with process lifecycle management, exposing `host:port` as the public resource handle
 
 The purpose of this document is still to preserve implementation posture and first-phase boundaries, not to serve as the complete change log for every later slice.
+
+## Completion Discipline
+
+When a slice is implemented, the work is not complete until the repository's
+descriptive docs are checked for truth alignment.
+
+At minimum, closeout should review:
+
+- the active ADR, if the slice was driven by one
+- the slice doc and any task doc used during implementation
+- nearby docs such as `current-state.md`, `roadmap.md`, and `repo-map.md` when
+  they describe the changed seam
+
+That review should:
+
+- distinguish between the current project version posture and behavior merely
+  implemented on `main`
+- call narrow shared declaration or contract extensions what they are, rather
+  than implying "no contract change" when a small explicit extension occurred
+- keep deferred improvements explicit instead of absorbing them into the slice
 
 ## Refusal Requirements
 

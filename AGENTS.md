@@ -49,6 +49,8 @@ Do not invent behavior not supported by these sources.
 - do not introduce orchestration behavior unless explicitly required
 - do not silently resolve ambiguity by guessing
 - do not add speculative abstractions beyond the needs of the current slice
+- keep 1.0 narrow; capture broader ergonomics, ecosystem, or 2.0 ideas as
+  deferred follow-up work unless the active slice explicitly requires them
 
 ## Testing Rules
 
@@ -71,7 +73,34 @@ Each implementation task must define:
 - acceptance criteria
 - safety/refusal expectations
 
+Each implementation slice should normally also have a short task document under
+`docs/development/tasks/`, even when a slice document already exists.
+
+That task document may be brief, but it should make the active file set,
+acceptance target, and explicit out-of-scope boundary easy to review before
+coding starts.
+
 If a task is ambiguous, preserve existing boundaries rather than introducing new behavior.
+
+## Slice Completion Discipline
+
+Before considering a slice done or opening a PR, review whether truth-alignment
+updates are needed in:
+
+- the active ADR for the slice, if one exists
+- the active slice doc and any task doc used for implementation
+- nearby state/roadmap/repo-map docs that describe the implemented seam
+
+When doing that review:
+
+- distinguish clearly between the current project version posture and behavior
+  merely implemented on `main`
+- do not imply a release bump unless the version itself changed
+- describe narrow shared declaration or contract changes explicitly when they
+  occurred; do not describe them as "no contract change" if a small explicit
+  extension was introduced
+- record deferred items explicitly instead of smuggling them into the completed
+  slice
 
 ## Codex Environment Rules
 
@@ -128,6 +157,8 @@ When creating a PR, include:
 - the scope of changes
 - validation performed
 - notable deferred items or follow-up work
+- whether docs or status artifacts were updated as part of slice completion when
+  that is relevant
 
 Keep PR descriptions concise and factual.
 

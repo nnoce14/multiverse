@@ -58,6 +58,17 @@ Use these as the source of truth:
 - contract tests only where needed by the slice
 - no unrelated refactors
 
+## Version and Status Check
+
+Before implementation starts, note whether this task is expected to:
+
+- change only behavior implemented on `main`
+- change the current project version posture
+- require ADR, slice-doc, roadmap, current-state, or repo-map updates when done
+
+If the task does not change the published version posture, say so explicitly and
+avoid wording that implies a release bump.
+
 ## Acceptance Criteria
 
 - [criterion 1]
@@ -73,5 +84,15 @@ Before making changes:
 2. confirm the change preserves current boundaries
 3. implement tests before broadening production code
 4. stop at the slice boundary
+
+Before considering the task complete:
+
+1. confirm a short task doc exists and still matches the implemented slice
+2. perform the bounded refactor pass required by the repo's TDD loop
+3. review whether the active ADR, slice doc, and nearby state docs need
+   truth-alignment updates
+4. distinguish clearly between "implemented on `main`" and any actual version
+   or release-posture change
+5. list deferred items explicitly in the PR summary instead of broadening scope
 
 When uncertain, prefer refusal and explicitness over convenience behavior.
