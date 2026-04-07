@@ -49,13 +49,20 @@ from git state using the following strict algorithm:
 1. Run `git worktree list --porcelain` from the current working directory.
 2. Parse the output to find the worktree entry whose path is a prefix of (or
    equal to) the current working directory.
-3. If the matched entry is the **main worktree** (the first entry in the
-   porcelain output), the identity is the reserved value `"main"` (ADR-0003).
-4. If the matched entry is a **linked worktree**, the identity is
-   `path.basename(entry.path)`.
-5. If no entry matches, or if the git command fails, or if the resolved basename
+3. The discovered identity is `path.basename(entry.path)` — the same rule for
+   all matched worktrees, including the primary checkout. No worktree type is
+   special-cased.
+4. If no entry matches, or if the git command fails, or if the resolved basename
    is empty — refuse with an actionable error message directing the caller to
    pass `--worktree-id` explicitly.
+
+**Relationship to ADR-0003:** ADR-0003 establishes `"main"` as the reserved
+worktree identity for the primary checkout when supplied *explicitly* (via
+`--worktree-id main`). Auto-discovery does not enforce that reserved value: the
+primary checkout's discovered id is its directory basename, which may or may not
+be `"main"` depending on how the repository is checked out. Users who require the
+`"main"` identity on the primary checkout must pass `--worktree-id main`
+explicitly.
 
 ### 2. `--worktree-id` remains supported and always overrides discovery
 

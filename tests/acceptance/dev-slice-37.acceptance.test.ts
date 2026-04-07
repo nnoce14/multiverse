@@ -53,11 +53,12 @@ describe("worktree-id auto-discovery (ADR-0021)", () => {
 
   // --- Auto-discovery success ---
 
-  it("discovers worktree id from git state when --worktree-id is omitted (main checkout → 'main')", async () => {
-    // The test suite runs from the multiverse repo root, which is the main checkout.
-    // ADR-0021: main checkout resolves to the reserved identity "main" (ADR-0003).
+  it("discovers worktree id from git state when --worktree-id is omitted (uses path basename)", async () => {
+    // The test suite runs from the multiverse repo root.
+    // ADR-0021: all worktrees — primary checkout included — resolve to path.basename of the worktree path.
     const configPath = await makeTempConfigFile();
-    const repoCwd = process.cwd(); // multiverse repo root = main worktree
+    const repoCwd = process.cwd();
+    const expectedId = path.basename(repoCwd);
 
     const outcome = await runCli(
       ["derive", "--config", configPath, "--providers", providersModulePath],
@@ -67,7 +68,7 @@ describe("worktree-id auto-discovery (ADR-0021)", () => {
     expect(outcome.exitCode).toBe(0);
     const parsed = JSON.parse(outcome.stdout[0]!) as { ok: boolean; resourcePlans: Array<{ worktreeId: string }> };
     expect(parsed.ok).toBe(true);
-    expect(parsed.resourcePlans[0]?.worktreeId).toBe("main");
+    expect(parsed.resourcePlans[0]?.worktreeId).toBe(expectedId);
   });
 
   // --- Explicit override ---

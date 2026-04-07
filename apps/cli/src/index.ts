@@ -218,9 +218,8 @@ type WorktreeDiscoveryResult = { id: string } | { error: string };
  * Algorithm (ADR-0021):
  * 1. Run `git worktree list --porcelain` from cwd.
  * 2. Parse blocks to find the worktree whose path is a prefix of cwd.
- * 3. Main checkout (first block) → reserved identity "main" (ADR-0003).
- * 4. Linked worktree → path.basename of the worktree path.
- * 5. Any failure → return an error directing the caller to pass --worktree-id explicitly.
+ * 3. All matched worktrees — primary checkout included — use path.basename of the worktree path.
+ * 4. Any failure → return an error directing the caller to pass --worktree-id explicitly.
  */
 function discoverWorktreeId(cwd: string): WorktreeDiscoveryResult {
   let output: string;
@@ -239,15 +238,14 @@ function discoverWorktreeId(cwd: string): WorktreeDiscoveryResult {
 
   // Parse porcelain output: blocks separated by blank lines, each starting with "worktree <path>".
   const blocks = output.trim().split(/\n\n+/);
-  const worktrees: Array<{ path: string; isMain: boolean }> = [];
+  const worktrees: Array<{ path: string }> = [];
 
-  for (let i = 0; i < blocks.length; i++) {
-    const block = blocks[i];
+  for (const block of blocks) {
     if (!block) continue;
     const pathLine = block.split("\n").find((l) => l.startsWith("worktree "));
     if (!pathLine) continue;
     const worktreePath = pathLine.slice("worktree ".length).trim();
-    worktrees.push({ path: worktreePath, isMain: i === 0 });
+    worktrees.push({ path: worktreePath });
   }
 
   if (worktrees.length === 0) {
@@ -259,7 +257,7 @@ function discoverWorktreeId(cwd: string): WorktreeDiscoveryResult {
 
   // Find the worktree whose path is a prefix of (or equal to) cwd — longest match wins.
   const normalizedCwd = path.normalize(cwd);
-  let bestMatch: { path: string; isMain: boolean } | undefined;
+  let bestMatch: { path: string } | undefined;
   for (const wt of worktrees) {
     const normalizedWtPath = path.normalize(wt.path);
     if (
@@ -279,12 +277,7 @@ function discoverWorktreeId(cwd: string): WorktreeDiscoveryResult {
     };
   }
 
-  // Main checkout always uses the reserved identity "main" (ADR-0003).
-  if (bestMatch.isMain) {
-    return { id: "main" };
-  }
-
-  // Linked worktrees use the path basename.
+  // All worktrees — primary checkout and linked — use the path basename as the discovered id.
   const basename = path.basename(bestMatch.path);
   if (!basename) {
     return {
