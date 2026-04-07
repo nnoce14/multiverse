@@ -305,15 +305,59 @@ Cleanup only affects resources that declare `scopedCleanup: true` in `multiverse
 
 ## Reference: CLI options
 
-All Multiverse commands use these options. `--config` and `--providers` default to `./multiverse.json` and `./providers.ts` respectively. `--worktree-id` is always required.
+All Multiverse commands use these options. `--config` and `--providers` default to `./multiverse.json` and `./providers.ts` respectively. `--worktree-id` is optional when invoked from inside a git worktree — Multiverse discovers the identity from the worktree path automatically. Pass `--worktree-id` explicitly to override.
 
 ```
-pnpm cli run       [--config PATH] [--providers MODULE] --worktree-id VALUE -- <cmd> [args...]
-pnpm cli derive    [--config PATH] [--providers MODULE] --worktree-id VALUE [--format json|env]
-pnpm cli validate  [--config PATH] [--providers MODULE] --worktree-id VALUE
-pnpm cli reset     [--config PATH] [--providers MODULE] --worktree-id VALUE
-pnpm cli cleanup   [--config PATH] [--providers MODULE] --worktree-id VALUE
+pnpm cli run       [--config PATH] [--providers MODULE] [--worktree-id VALUE] -- <cmd> [args...]
+pnpm cli derive    [--config PATH] [--providers MODULE] [--worktree-id VALUE] [--format json|env]
+pnpm cli validate  [--config PATH] [--providers MODULE] [--worktree-id VALUE]
+pnpm cli reset     [--config PATH] [--providers MODULE] [--worktree-id VALUE]
+pnpm cli cleanup   [--config PATH] [--providers MODULE] [--worktree-id VALUE]
 ```
+
+---
+
+## Using the formal binary
+
+The `pnpm cli` workspace script is the primary development path. Multiverse also ships a compiled binary at `apps/cli/bin/multiverse.js` that can be invoked directly with `node`.
+
+### Step 1 — Build the binary
+
+From the multiverse repo root:
+
+```bash
+pnpm --filter @multiverse/cli build
+```
+
+This compiles `apps/cli/src/index.ts` to `apps/cli/dist/index.js`. The `bin/multiverse.js` wrapper is already committed — no additional setup is needed.
+
+### Step 2 — Invoke the compiled binary
+
+Replace `pnpm cli` with `node apps/cli/bin/multiverse.js`:
+
+```bash
+node apps/cli/bin/multiverse.js derive --config path/to/multiverse.json --providers path/to/providers.ts
+```
+
+The compiled binary and `pnpm cli` invoke the same underlying CLI logic. All commands, flags, auto-discovery, and conventional defaults behave identically.
+
+### TypeScript providers within the workspace
+
+Workspace provider packages (`@multiverse/provider-path-scoped`, etc.) export TypeScript source directly. Node.js cannot import them natively through the compiled binary. To load TypeScript provider files within the current workspace setup, register the tsx loader:
+
+```bash
+NODE_OPTIONS="--import tsx/esm" node apps/cli/bin/multiverse.js derive \
+  --config path/to/multiverse.json \
+  --providers path/to/providers.ts
+```
+
+`tsx` is available as a workspace devDependency when `pnpm install` has been run at the repo root.
+
+### What is deferred
+
+- A globally-linked `multiverse` command (requires `pnpm setup` and PATH configuration — environment-specific)
+- A binary that loads TypeScript providers without `NODE_OPTIONS` (requires compiling workspace packages to JavaScript)
+- Distribution outside the repository
 
 ---
 
@@ -334,3 +378,11 @@ Run from the directory that contains `providers.ts`, or pass `--providers /path/
 **Refusal: "Safe worktree scope cannot be determined"**
 
 `--worktree-id` was empty or blank. Pass a non-empty worktree identity string.
+
+**"Cannot determine worktree identity from git state"**
+
+Auto-discovery could not resolve a worktree identity from the current directory. Either the directory is not inside a git worktree, or git is unavailable. Pass `--worktree-id` explicitly.
+
+**"Cannot load providers module" when using the compiled binary**
+
+The binary cannot import TypeScript files natively. Run with `NODE_OPTIONS="--import tsx/esm"` as described in the "Using the formal binary" section above.
