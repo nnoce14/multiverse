@@ -52,7 +52,9 @@ Today’s repo includes:
 
 ## Current behavior being proven
 
-The current implementation proves the core loop for explicit declarations and deterministic derivation, plus the current `0.3.0-alpha.3` consumer-workflow path and the first `0.4.x` endpoint-provider extensibility proof.
+The current implementation proves the core loop for explicit declarations and deterministic derivation, plus the current consumer-workflow path and the first narrow `0.4.x` endpoint-provider extensibility proof now captured in `0.4.0-alpha.1`.
+
+`0.4.0-alpha.1` is a proof posture, not a broader maturity claim: it documents that the first additional endpoint provider shape now lives on `main` while the `0.3.x` consumer workflow remains unchanged and 1.0 continues to stay intentionally narrow.
 
 That includes:
 

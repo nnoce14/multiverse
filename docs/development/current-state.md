@@ -15,17 +15,16 @@ This is a short state-of-the-project document, not a full history.
 
 ## Current version posture
 
-Current version posture: **0.3.0-alpha.3**
+Current version posture: **0.4.0-alpha.1**
 
 Interpretation:
 
 * the core product thesis is proven in real workflows
 * the usable core of Multiverse has moved beyond isolated seam proofs
 * a richer composed application workflow has now been demonstrated through mixed-provider integration
-* the product is still in active proving, but the consumer-workflow question is now materially narrower than it was before ADR 0018 and ADR 0019
-* the current published project version remains `0.3.0-alpha.3`, while `main`
-  now includes the first narrow `0.4.x` extensibility proof with a second
-  endpoint-provider shape
+* the product remains in active proving, but the consumer-workflow question is now materially narrower than it was before ADR 0018 and ADR 0019
+* the current published project version is `0.4.0-alpha.1`, reflecting that `main` now contains the first narrow `0.4.x` extensibility proof for an additional endpoint-provider shape
+* `0.4.0-alpha.1` is explicitly a proof posture: it documents that the new provider shape is live while keeping the `0.3.x` consumer workflow unchanged and the 1.0 expectations intentionally narrow
 
 ## What is already proven
 

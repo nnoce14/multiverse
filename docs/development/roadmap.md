@@ -26,7 +26,7 @@ Multiverse development continues under the same core assumptions:
 
 ## Current version posture
 
-Current version posture: **0.3.0-alpha.3**
+Current version posture: **0.4.0-alpha.1**
 
 What that means:
 
@@ -35,13 +35,12 @@ What that means:
 * explicit `run` workflow exists
 * multiple provider shapes have been implemented and tested
 * a richer composed application workflow has now been proven through mixed-provider integration
-* the current `0.3.x` proving path now includes:
+* the `0.3.x` proving path now includes:
   * explicit app-native env mapping for resources and endpoints
   * typed endpoint mapping for `url` and `port`
   * an application-owned runtime-config boundary proof in `sample-compose`
-* the current published project version remains `0.3.0-alpha.3`
-* the common-case workflow is now credible enough that the first `0.4.x`
-  extensibility slice has been implemented on `main`
+* the current published project version is `0.4.0-alpha.1`
+* the common-case workflow is credible enough that the first `0.4.x` extensibility slice now lives on `main` and is being documented as a narrow proof
 
 ## Version roadmap
 
@@ -178,7 +177,7 @@ The project should not move beyond `0.3.x` until:
 * the richer proving app can be demonstrated and explained without author-only knowledge
 * the common-case workflow is stable enough to support broader extension and usability work
 
-At the current `0.3.0-alpha.3` posture, no additional single concrete product-behavior gap is defined in the source-of-truth documents. Remaining `0.3.x` work, if any, is more likely to be:
+At the current `0.4.0-alpha.1` posture, no additional single concrete product-behavior gap is defined in the source-of-truth documents. Remaining `0.3.x` work, if any, is more likely to be:
 
 * bounded stabilization of the chosen consumer model, or
 * documentation and transition work that makes readiness for `0.4.x` explicit
