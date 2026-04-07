@@ -27,7 +27,7 @@ The repository contains behavior-first design artifacts and a working implementa
 * a composed proving application in `apps/sample-compose/`
 * acceptance, contract, unit, and integration tests under `tests/`
 
-Implementation has progressed through 32 development slices. The core lifecycle
+Implementation has progressed through 33 development slices. The core lifecycle
 (derive, validate, reset, cleanup) is implemented across the current declared
 resource and endpoint model, with multi-resource and multi-endpoint support in
 place. The `0.3.x` work proved the main composed-application consumer workflow.
@@ -35,6 +35,11 @@ Slice 31 added the first narrow `0.4.x` endpoint-provider extensibility proof.
 Slice 32 added a provider authoring guide and a core/registry acceptance proof
 showing that a non-first-party provider — authored against only
 `@multiverse/provider-contracts` — integrates correctly through `deriveOne`.
+Slice 33 added a parameterized resource provider derive compliance suite
+(`tests/contracts/resource-provider.derive.contract.test.ts`) covering all
+first-party resource providers and a non-first-party inline case, making
+resource-side derive governance as explicit and executable as the endpoint-side
+compliance suite.
 
 ## Implementation Model
 

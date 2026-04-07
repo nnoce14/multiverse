@@ -104,6 +104,18 @@ types can be registered in a `ProviderRegistry` and consumed correctly through
 `deriveOne`. This is a core/registry seam proof; it does not address CLI
 invocation with an externally distributed provider, which is not yet in scope.
 
+**Is resource provider derive compliance governable in the same way endpoint
+compliance is?**
+
+Slice 33 answers yes: `tests/contracts/resource-provider.derive.contract.test.ts`
+is a single parameterized compliance suite covering all four first-party resource
+providers and a non-first-party inline provider under the same six universal
+derive assertions. Adding a new resource provider to the compliance gate is now
+one entry in `providerCases`. This mirrors the endpoint-side pattern already
+established in `endpoint-provider.derive.contract.test.ts`. Lifecycle capability
+compliance (reset, cleanup, validate) remains in the existing per-provider
+contract files, which are unchanged.
+
 ## Current priority
 
 The current priority is:
@@ -111,28 +123,23 @@ The current priority is:
 **Making the `0.4.x` extension story feel repeatable and governable, not just
 possible**
 
-Slice 32 established that the contract is a real authoring seam. The remaining
-`0.4.x` question is whether the extension story holds up under real pressure —
-meaning a second author or a different kind of extension can follow the established
-pattern without discovering hidden gaps in the contract, the authoring guidance,
-or the core boundary.
-
-That question could be answered through another meaningful provider shape if a
-product-relevant one exists, through strengthening the authoring or compliance
-workflow, or through another form of extension-seam hardening. The direction
-should follow the most honest remaining gap, not a fixed expectation of
-provider-count.
+Slices 31–33 have progressively strengthened the extension story: a second
+endpoint provider shape (Slice 31), a non-first-party authoring proof and guide
+(Slice 32), and a parameterized derive compliance suite that makes resource
+provider governance executable (Slice 33). The remaining question is whether
+any gap in the contract, authoring guidance, or core boundary would still
+surface for a second author following the documented path.
 
 ## What kinds of work are highest-value right now
 
 Examples of work that are strongly aligned with the current phase:
 
-* identifying and closing the most honest remaining gap in the extension story
-  (authoring workflow, compliance verification, contract clarity, or a
-  product-relevant second provider shape — whichever is most load-bearing)
-* refining the provider authoring guide if real authoring reveals gaps
-* confirming that the core/provider boundary holds clearly enough that a second
-  author could follow it without help
+* identifying whether any material gap remains in the provider extension story
+  that a second author would discover when following the guide and compliance suite
+* confirming the `0.4.x` exit criteria are met well enough to consider the
+  extensibility proof complete
+* transition planning toward `0.5.x` early outside usability if no material
+  `0.4.x` gap remains
 
 ## What is intentionally deferred
 
