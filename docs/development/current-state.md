@@ -152,28 +152,36 @@ clarifies that `pnpm cli` runs from the multiverse repo root.
 command — without violating the refusal-first contract?**
 
 Slice 37 answers yes: when `--worktree-id` is omitted, the CLI now attempts strict
-git-state discovery using `git worktree list --porcelain`. The main checkout resolves
-to the reserved identity `"main"` (ADR-0003); linked worktrees resolve to the path
-basename. If discovery cannot safely resolve (not in a git repo, git unavailable,
-no matching worktree path), the CLI refuses with an actionable message directing
-the caller to pass `--worktree-id` explicitly. The flag remains supported and always
-overrides discovery. ADR-0021 governs this decision, amending ADR-0014.
+git-state discovery using `git worktree list --porcelain`. All matched worktrees —
+primary checkout and linked — resolve to `path.basename` of the worktree path.
+If discovery cannot safely resolve (not in a git repo, git unavailable, no matching
+worktree path), the CLI refuses with an actionable message directing the caller to
+pass `--worktree-id` explicitly. The flag remains supported and always overrides
+discovery. ADR-0021 governs this decision, amending ADR-0014.
+
+**Is the formal compiled binary documented and proven as an alternative invocation
+path?**
+
+Slice 38 proves `node apps/cli/bin/multiverse.js` as the formal binary invocation.
+The build step (`pnpm --filter @multiverse/cli build`) produces the compiled binary.
+All CLI behavior — auto-discovery, conventional defaults, all commands — is
+identical through the compiled binary and the `pnpm cli` dev path. The external-demo-
+guide now documents the build step, direct invocation, and the `NODE_OPTIONS=
+"--import tsx/esm"` requirement for TypeScript provider files in the current
+workspace setup. Explicitly deferred: globally-linked `multiverse` command and a
+binary that loads TypeScript providers without a loader.
 
 ## Current priority
 
 The current priority is:
 
-**`0.5.x` early outside usability — common-path friction closed, formal binary path next**
+**`0.5.x` early outside usability — in-repo path and formal binary path documented**
 
-Slices 36 and 37 have closed the two most load-bearing cold-start gaps in the
-in-repo workflow: the guide now states what the reader needs, and the CLI no longer
-requires `--worktree-id` when invoked from inside a git worktree.
-
-The remaining 0.5.x proving question is whether a second engineer can succeed
-end to end: following the guide, running an isolated application, and confirming
-the parallel-worktree and reset/cleanup behavior. The formal `multiverse` binary
-path (build + link + invoke) is a follow-on slice after the in-repo path is
-confirmed reproducible.
+Slices 36, 37, and 38 have closed the three most load-bearing cold-start gaps:
+the guide states prerequisites explicitly, auto-discovery removes `--worktree-id`
+friction for the common case, and the formal binary path is now documented and
+proven. The remaining 0.5.x question is end-to-end reproducibility: can a second
+engineer follow the guide from scratch and successfully run an isolated application?
 
 ## What kinds of work are highest-value right now
 
@@ -181,8 +189,9 @@ Examples of work that are strongly aligned with the current `0.5.x` phase:
 
 * proving end-to-end reproducibility: a second engineer following the updated
   external-demo-guide succeeds without live guidance
-* documenting and proving the formal `multiverse` binary path (build, link, invoke)
-  so users who do not want to clone the repo have a usable path
+* proving the globally-linked `multiverse` binary path (pnpm setup + link + invoke)
+* eliminating the `NODE_OPTIONS` requirement for TypeScript providers with the
+  compiled binary (requires compiling workspace packages to JavaScript)
 
 ## What is intentionally deferred
 
