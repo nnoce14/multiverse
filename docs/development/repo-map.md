@@ -27,7 +27,7 @@ The repository contains behavior-first design artifacts and a working implementa
 * a composed proving application in `apps/sample-compose/`
 * acceptance, contract, unit, and integration tests under `tests/`
 
-Implementation has progressed through 33 development slices. The core lifecycle
+Implementation has progressed through 34 development slices. The core lifecycle
 (derive, validate, reset, cleanup) is implemented across the current declared
 resource and endpoint model, with multi-resource and multi-endpoint support in
 place. The `0.3.x` work proved the main composed-application consumer workflow.
@@ -39,7 +39,10 @@ Slice 33 added a parameterized resource provider derive compliance suite
 (`tests/contracts/resource-provider.derive.contract.test.ts`) covering all
 first-party resource providers and a non-first-party inline case, making
 resource-side derive governance as explicit and executable as the endpoint-side
-compliance suite.
+compliance suite. Slice 34 fixed a load-bearing usability gap: the CLI now
+surfaces the underlying Node.js error when a providers module fails to load or a
+config file cannot be parsed, instead of swallowing the error in a bare
+`catch {}` block.
 
 ## Implementation Model
 

@@ -116,19 +116,29 @@ established in `endpoint-provider.derive.contract.test.ts`. Lifecycle capability
 compliance (reset, cleanup, validate) remains in the existing per-provider
 contract files, which are unchanged.
 
+**Does the provider registration and loading path surface actionable errors to a
+second author?**
+
+Slice 34 addresses this: the CLI's `loadProviderRegistry` and
+`readRepositoryConfiguration` functions previously swallowed underlying Node.js
+errors in bare `catch {}` blocks. A provider author whose module failed to load
+(syntax error, missing import, wrong path) received only an opaque file-path echo.
+Both catch blocks now capture and include the underlying error message. This is
+the highest-signal usability gap found in the 0.4.x hardening audit.
+
 ## Current priority
 
 The current priority is:
 
-**Making the `0.4.x` extension story feel repeatable and governable, not just
-possible**
+**Confirming the `0.4.x` extension story is complete enough to assess whether any
+material gap remains before transitioning to `0.5.x`**
 
-Slices 31–33 have progressively strengthened the extension story: a second
+Slices 31–34 have progressively strengthened the extension story: a second
 endpoint provider shape (Slice 31), a non-first-party authoring proof and guide
-(Slice 32), and a parameterized derive compliance suite that makes resource
-provider governance executable (Slice 33). The remaining question is whether
-any gap in the contract, authoring guidance, or core boundary would still
-surface for a second author following the documented path.
+(Slice 32), a parameterized derive compliance suite (Slice 33), and a narrow
+CLI error-surfacing fix that removes the most load-bearing usability gap a second
+author would encounter (Slice 34). The remaining question is whether any other
+gap exists that would surface for a provider author following the documented path.
 
 ## What kinds of work are highest-value right now
 
