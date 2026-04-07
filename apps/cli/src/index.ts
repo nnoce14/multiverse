@@ -232,8 +232,9 @@ async function readRepositoryConfiguration(
   try {
     const raw = await readFile(configPath, "utf8");
     return JSON.parse(raw) as RepositoryConfiguration;
-  } catch {
-    return usage(`Cannot read config file: ${configPath}`);
+  } catch (err) {
+    const detail = err instanceof Error ? err.message : String(err);
+    return usage(`Cannot read config file: ${configPath}\n${detail}`);
   }
 }
 
@@ -257,8 +258,9 @@ async function loadProviderRegistry(
   try {
     const moduleUrl = pathToFileURL(path.resolve(providersModulePath)).href;
     moduleExports = (await import(moduleUrl)) as { default?: unknown; providers?: unknown };
-  } catch {
-    return usage(`Cannot load providers module: ${providersModulePath}`);
+  } catch (err) {
+    const detail = err instanceof Error ? err.message : String(err);
+    return usage(`Cannot load providers module: ${providersModulePath}\n${detail}`);
   }
 
   const candidate = moduleExports.providers ?? moduleExports.default;
