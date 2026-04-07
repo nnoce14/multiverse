@@ -202,31 +202,40 @@ An application-owned runtime-config boundary can then read `DATABASE_PATH`, `APP
 From the **multiverse repo root** (where `pnpm cli` is available and where `multiverse.json` and `providers.ts` live by default):
 
 ```bash
-pnpm cli run --worktree-id <id> -- node server.js
+pnpm cli run -- node server.js
 ```
 
-`--worktree-id` is the identity of the current worktree. Use the git branch name or worktree path — any stable, unique string that identifies this checkout.
+When invoked from inside a git worktree, Multiverse discovers the worktree identity automatically from the git worktree path. You do not need to pass `--worktree-id` in the common case.
+
+If you need to override the discovered identity, or if Multiverse cannot determine it from git state, pass `--worktree-id` explicitly:
+
+```bash
+pnpm cli run --worktree-id feature-login -- node server.js
+```
+
+`--worktree-id` always overrides discovery. If automatic discovery is ambiguous or git is unavailable, Multiverse refuses with an actionable message directing you to pass `--worktree-id` explicitly.
 
 **With defaults applied** (when `multiverse.json` and `providers.ts` are in the current directory):
 
 ```bash
-# Starts server with isolated DB path and port for this worktree
-pnpm cli run --worktree-id feature-login -- node server.js
+# Starts server with isolated DB path and port for the current git worktree
+pnpm cli run -- node server.js
 ```
 
 Multiverse will:
 
-1. Load `./multiverse.json` and `./providers.ts`
-2. Derive isolated values for `feature-login`
-3. Inject `MULTIVERSE_RESOURCE_APP_DB`, `MULTIVERSE_ENDPOINT_HTTP`, and `MULTIVERSE_WORKTREE_ID` into the process environment
-   If `appEnv` aliases are declared, inject those aliases too
-4. Start `node server.js` with those values
-5. Pass the process's stdout and stderr through unchanged
-6. Exit with the same exit code as `node server.js`
+1. Resolve the worktree identity (from `--worktree-id` if provided, or from git state)
+2. Load `./multiverse.json` and `./providers.ts`
+3. Derive isolated values for the resolved worktree
+4. Inject `MULTIVERSE_RESOURCE_APP_DB`, `MULTIVERSE_ENDPOINT_HTTP`, and `MULTIVERSE_WORKTREE_ID` into the process environment;
+   if `appEnv` aliases are declared, inject those aliases too
+5. Start `node server.js` with those values
+6. Pass the process's stdout and stderr through unchanged
+7. Exit with the same exit code as `node server.js`
 
 If derivation fails for any reason (invalid config, unknown provider, unsafe scope), Multiverse writes a JSON refusal to stderr and exits non-zero. The child process is never started.
 
-*Note*: In the common case, no `--config` or `--providers` arguments are needed. When `multiverse.json` and `providers.ts` live at the repository root, Multiverse uses those files automatically.
+*Note*: In the common case, no `--config`, `--providers`, or `--worktree-id` arguments are needed. When `multiverse.json` and `providers.ts` live at the repository root and you are inside a git worktree, Multiverse resolves everything automatically.
 
 ---
 

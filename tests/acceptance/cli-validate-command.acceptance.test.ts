@@ -250,8 +250,18 @@ describe("CLI validate command", () => {
     });
   });
 
-  it("returns usage error when --worktree-id is missing", async () => {
-    const outcome = await runCli(["validate", "--config", "/nonexistent/path.json", "--providers", providersModulePath]);
+  it("returns usage error directing user to pass --worktree-id when cwd is not inside a git worktree", async () => {
+    // Run from a temp directory that is not inside a git repository.
+    // Discovery cannot resolve and must refuse with actionable guidance (ADR-0021).
+    const tempDir = await mkdtemp(path.join(tmpdir(), "multiverse-validate-test-"));
+    tempDirs.push(tempDir);
+    // Write a minimal config so the failure is from discovery, not missing config.
+    await writeFile(path.join(tempDir, "multiverse.json"), JSON.stringify({ resources: [], endpoints: [] }));
+
+    const outcome = await runCli(
+      ["validate", "--providers", providersModulePath],
+      { cwd: tempDir }
+    );
 
     expect(outcome.exitCode).toBe(1);
     expect(outcome.stderr[0]).toMatch(/--worktree-id/);

@@ -148,15 +148,26 @@ explicit. Prerequisites now list the concrete clone and install steps. Step 2 cl
 that provider imports are workspace packages, not separately installable. Step 4
 clarifies that `pnpm cli` runs from the multiverse repo root.
 
+**Does the CLI reduce the most common friction point — requiring `--worktree-id` on every
+command — without violating the refusal-first contract?**
+
+Slice 37 answers yes: when `--worktree-id` is omitted, the CLI now attempts strict
+git-state discovery using `git worktree list --porcelain`. The main checkout resolves
+to the reserved identity `"main"` (ADR-0003); linked worktrees resolve to the path
+basename. If discovery cannot safely resolve (not in a git repo, git unavailable,
+no matching worktree path), the CLI refuses with an actionable message directing
+the caller to pass `--worktree-id` explicitly. The flag remains supported and always
+overrides discovery. ADR-0021 governs this decision, amending ADR-0014.
+
 ## Current priority
 
 The current priority is:
 
-**`0.5.x` early outside usability — in-repo path proven, binary distribution path next**
+**`0.5.x` early outside usability — common-path friction closed, formal binary path next**
 
-Slice 36 has closed the most load-bearing cold-start documentation gap: the
-external-demo-guide now explicitly states what the reader needs and does not
-assume they can acquire `@multiverse/provider-*` from npm.
+Slices 36 and 37 have closed the two most load-bearing cold-start gaps in the
+in-repo workflow: the guide now states what the reader needs, and the CLI no longer
+requires `--worktree-id` when invoked from inside a git worktree.
 
 The remaining 0.5.x proving question is whether a second engineer can succeed
 end to end: following the guide, running an isolated application, and confirming
@@ -171,8 +182,7 @@ Examples of work that are strongly aligned with the current `0.5.x` phase:
 * proving end-to-end reproducibility: a second engineer following the updated
   external-demo-guide succeeds without live guidance
 * documenting and proving the formal `multiverse` binary path (build, link, invoke)
-* making the `pnpm cli` in-repo path and the formal `multiverse` binary path
-  explicit and honest in the docs
+  so users who do not want to clone the repo have a usable path
 
 ## What is intentionally deferred
 
