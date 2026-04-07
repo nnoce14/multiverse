@@ -175,13 +175,7 @@ binary that loads TypeScript providers without a loader.
 
 The current priority is:
 
-**`0.5.x` early outside usability — in-repo path and formal binary path documented**
-
-Slices 36, 37, and 38 have closed the three most load-bearing cold-start gaps:
-the guide states prerequisites explicitly, auto-discovery removes `--worktree-id`
-friction for the common case, and the formal binary path is now documented and
-proven. The remaining 0.5.x question is end-to-end reproducibility: can a second
-engineer follow the guide from scratch and successfully run an isolated application?
+**`0.5.x` early outside usability — in-repo and formal binary paths are documented; the remaining proving question is end-to-end second-engineer reproducibility.**
 
 ## What kinds of work are highest-value right now
 
