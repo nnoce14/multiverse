@@ -27,7 +27,7 @@ The repository contains behavior-first design artifacts and a working implementa
 * a composed proving application in `apps/sample-compose/`
 * acceptance, contract, unit, and integration tests under `tests/`
 
-Implementation has progressed through 35 development slices. The core lifecycle
+Implementation has progressed through 37 development slices. The core lifecycle
 (derive, validate, reset, cleanup) is implemented across the current declared
 resource and endpoint model, with multi-resource and multi-endpoint support in
 place. The `0.3.x` work proved the main composed-application consumer workflow.
@@ -45,7 +45,13 @@ config file cannot be parsed, instead of swallowing the error in a bare
 `catch {}` block. Slice 35 closed the last named 0.4.x gap by proving that the
 full `providers.ts` → `pnpm cli derive --providers` path works for a provider
 authored against only `@multiverse/provider-contracts`, extending the Slice 32
-core/registry seam proof to cover CLI invocation.
+core/registry seam proof to cover CLI invocation. Slice 36 made the in-repo
+`pnpm cli` path honest and followable from scratch by adding explicit prerequisites
+and a "How this guide works" section to the external-demo-guide. Slice 37
+implements automatic worktree-id discovery (ADR-0021): when `--worktree-id` is
+omitted, the CLI reads the git worktree path and derives the identity from the
+path basename (main checkout → `"main"`), refusing with an actionable message
+when discovery cannot safely resolve.
 
 ## Implementation Model
 

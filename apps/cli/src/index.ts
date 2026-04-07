@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
@@ -209,9 +210,106 @@ interface CommonOptions {
   providersModulePath: string;
 }
 
+type WorktreeDiscoveryResult = { id: string } | { error: string };
+
+/**
+ * Discover worktree identity from git state when --worktree-id is omitted.
+ *
+ * Algorithm (ADR-0021):
+ * 1. Run `git worktree list --porcelain` from cwd.
+ * 2. Parse blocks to find the worktree whose path is a prefix of cwd.
+ * 3. Main checkout (first block) → reserved identity "main" (ADR-0003).
+ * 4. Linked worktree → path.basename of the worktree path.
+ * 5. Any failure → return an error directing the caller to pass --worktree-id explicitly.
+ */
+function discoverWorktreeId(cwd: string): WorktreeDiscoveryResult {
+  let output: string;
+  try {
+    output = execFileSync("git", ["worktree", "list", "--porcelain"], {
+      cwd,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"]
+    });
+  } catch {
+    return {
+      error:
+        "Cannot determine worktree identity from git state: git is unavailable or this is not a git repository. Pass --worktree-id explicitly."
+    };
+  }
+
+  // Parse porcelain output: blocks separated by blank lines, each starting with "worktree <path>".
+  const blocks = output.trim().split(/\n\n+/);
+  const worktrees: Array<{ path: string; isMain: boolean }> = [];
+
+  for (let i = 0; i < blocks.length; i++) {
+    const block = blocks[i];
+    if (!block) continue;
+    const pathLine = block.split("\n").find((l) => l.startsWith("worktree "));
+    if (!pathLine) continue;
+    const worktreePath = pathLine.slice("worktree ".length).trim();
+    worktrees.push({ path: worktreePath, isMain: i === 0 });
+  }
+
+  if (worktrees.length === 0) {
+    return {
+      error:
+        "Cannot determine worktree identity from git state: no worktrees found. Pass --worktree-id explicitly."
+    };
+  }
+
+  // Find the worktree whose path is a prefix of (or equal to) cwd — longest match wins.
+  const normalizedCwd = path.normalize(cwd);
+  let bestMatch: { path: string; isMain: boolean } | undefined;
+  for (const wt of worktrees) {
+    const normalizedWtPath = path.normalize(wt.path);
+    if (
+      normalizedCwd === normalizedWtPath ||
+      normalizedCwd.startsWith(normalizedWtPath + path.sep)
+    ) {
+      if (!bestMatch || normalizedWtPath.length > path.normalize(bestMatch.path).length) {
+        bestMatch = wt;
+      }
+    }
+  }
+
+  if (!bestMatch) {
+    return {
+      error:
+        "Cannot determine worktree identity from git state: current directory is not within a known git worktree. Pass --worktree-id explicitly."
+    };
+  }
+
+  // Main checkout always uses the reserved identity "main" (ADR-0003).
+  if (bestMatch.isMain) {
+    return { id: "main" };
+  }
+
+  // Linked worktrees use the path basename.
+  const basename = path.basename(bestMatch.path);
+  if (!basename) {
+    return {
+      error:
+        "Cannot determine worktree identity from git state: worktree path basename is empty. Pass --worktree-id explicitly."
+    };
+  }
+
+  return { id: basename };
+}
+
 function readCommonOptions(args: string[], cwd: string): CommonOptions | CliResult {
-  const worktreeId = readRequiredOption(args, "--worktree-id");
-  if (isCliResult(worktreeId)) return worktreeId;
+  const explicitWorktreeId = readOption(args, "--worktree-id");
+
+  let worktreeId: string;
+  if (explicitWorktreeId !== undefined) {
+    worktreeId = explicitWorktreeId;
+  } else {
+    const discovery = discoverWorktreeId(cwd);
+    if ("error" in discovery) {
+      return usage(discovery.error);
+    }
+    worktreeId = discovery.id;
+  }
+
   return {
     configPath: readOption(args, "--config") ?? path.resolve(cwd, "multiverse.json"),
     worktreeId,
