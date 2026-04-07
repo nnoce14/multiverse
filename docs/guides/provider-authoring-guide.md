@@ -314,6 +314,25 @@ present in the registry.
 
 ---
 
+## Verifying compliance
+
+To verify that your `deriveResource` implementation satisfies the universal
+contract requirements, add your provider to the `providerCases` array in
+`tests/contracts/resource-provider.derive.contract.test.ts` and run:
+
+```bash
+pnpm test:contracts
+```
+
+That file is the single parameterized source of truth for derive compliance —
+the same suite all first-party resource providers must pass. It covers shape,
+determinism, worktree isolation, and `unsafe_scope` refusal. Lifecycle
+capability compliance (reset, cleanup, validate), if your provider declares
+those capabilities, is not covered there; write focused tests for those
+separately, following the existing per-provider contract files as reference.
+
+---
+
 ## Scope note
 
 The seam proven by this guide is: **implement the contract, register in the
