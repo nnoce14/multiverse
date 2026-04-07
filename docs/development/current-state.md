@@ -108,24 +108,31 @@ invocation with an externally distributed provider, which is not yet in scope.
 
 The current priority is:
 
-**Advancing the `0.4.x` extensibility proof by addressing the remaining exit
-criteria: adding at least one more meaningful provider shape and ensuring the
-provider authoring story is understandable to someone arriving from outside**
+**Making the `0.4.x` extension story feel repeatable and governable, not just
+possible**
 
-Slice 32 delivered a narrow provider authoring guide and a core/registry seam
-proof. The remaining open question for `0.4.x` is whether at least one additional
-meaningful resource or endpoint provider shape can be added by following the
-established authoring pattern.
+Slice 32 established that the contract is a real authoring seam. The remaining
+`0.4.x` question is whether the extension story holds up under real pressure —
+meaning a second author or a different kind of extension can follow the established
+pattern without discovering hidden gaps in the contract, the authoring guidance,
+or the core boundary.
+
+That question could be answered through another meaningful provider shape if a
+product-relevant one exists, through strengthening the authoring or compliance
+workflow, or through another form of extension-seam hardening. The direction
+should follow the most honest remaining gap, not a fixed expectation of
+provider-count.
 
 ## What kinds of work are highest-value right now
 
 Examples of work that are strongly aligned with the current phase:
 
-* adding a second meaningful provider shape that exercises the authoring pattern
-  documented in Slice 32
-* refining the provider authoring guide if the new provider reveals a gap
-* confirming that the core/provider boundary holds cleanly across at least two
-  extension examples, not just one
+* identifying and closing the most honest remaining gap in the extension story
+  (authoring workflow, compliance verification, contract clarity, or a
+  product-relevant second provider shape — whichever is most load-bearing)
+* refining the provider authoring guide if real authoring reveals gaps
+* confirming that the core/provider boundary holds clearly enough that a second
+  author could follow it without help
 
 ## What is intentionally deferred
 
