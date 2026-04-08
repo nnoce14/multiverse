@@ -173,7 +173,7 @@ binary that loads TypeScript providers without a loader.
 
 **Are the most load-bearing cold-start friction points in the documented workflow fixed?**
 
-Slice 39 closes two load-bearing friction points found during a cold-start walkthrough:
+Slice 39 closes two load-bearing friction points identified during pre-work cold-start investigation:
 (1) `readOption` silently dropped equals-form arguments (`--flag=value`); the guide's
 Step 6 shows `--format=env` but the CLI returned JSON — no error, wrong output.
 Fixed by extending `readOption` to handle both `--flag value` and `--flag=value` forms.
@@ -183,6 +183,18 @@ without their own app could not complete the walkthrough. Fixed by adding a conc
 "Try it with the sample application" subsection pointing to `apps/sample-express/`.
 Minor: Step 5 port examples were concrete values that did not match actual derivation
 output; replaced with a note that ports are derived deterministically from worktree id.
+
+**Did the cold-start walkthrough confirm the documented workflow is reproducible?**
+
+Slice 40 performed a full cold-start walkthrough of the external-demo-guide workflow
+against `main`. Every documented step succeeded: sample-express runs and prints the
+expected output, multi-worktree isolation produces distinct paths and ports, reset and
+cleanup work, the formal binary path builds and invokes correctly, and auto-discovery
+resolves the worktree identity without `--worktree-id`. The two remaining truth-alignment
+gaps found were: (1) README stated `--worktree-id` is "always required" — stale since
+Slice 37; fixed. (2) `roadmap.md` version posture read `0.4.0-alpha.1` — stale since
+the `0.5.0-alpha.1` bump; fixed. No remaining cold-start blockers were found in the
+documented in-repo workflow.
 
 ## Current priority
 

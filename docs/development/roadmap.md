@@ -26,7 +26,7 @@ Multiverse development continues under the same core assumptions:
 
 ## Current version posture
 
-Current version posture: **0.4.0-alpha.1**
+Current version posture: **0.5.0-alpha.1**
 
 What that means:
 
@@ -35,12 +35,10 @@ What that means:
 * explicit `run` workflow exists
 * multiple provider shapes have been implemented and tested
 * a richer composed application workflow has now been proven through mixed-provider integration
-* the `0.3.x` proving path now includes:
-  * explicit app-native env mapping for resources and endpoints
-  * typed endpoint mapping for `url` and `port`
-  * an application-owned runtime-config boundary proof in `sample-compose`
-* the current published project version is `0.4.0-alpha.1`
-* the common-case workflow is credible enough that the first `0.4.x` extensibility slice now lives on `main` and is being documented as a narrow proof
+* the `0.4.x` extensibility wave is complete: new provider shapes, non-first-party authoring, CLI invocation proof
+* automatic worktree-id discovery is implemented (Slice 37); `--worktree-id` is now optional in common use
+* the documented external-demo-guide workflow is reproducible from scratch by a second engineer
+* `0.5.0-alpha.1` marks the early outside usability phase; the next proving question is the globally-linked binary path
 
 ## Version roadmap
 

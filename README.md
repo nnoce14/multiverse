@@ -157,7 +157,7 @@ Examples:
 pnpm cli derive --worktree-id <id>
 
 # Derive as shell-sourceable KEY=VALUE pairs
-pnpm cli derive --worktree-id <id> --format=env
+pnpm cli derive --worktree-id <id> --format env
 
 # Run a command with derived values injected as env vars
 pnpm cli run --worktree-id <id> -- node server.js
@@ -170,7 +170,7 @@ pnpm cli reset --worktree-id <id>
 pnpm cli cleanup --worktree-id <id>
 ```
 
-`--config` defaults to `./multiverse.json` and `--providers` defaults to `./providers.ts` when not specified. `--worktree-id` is always required.
+`--config` defaults to `./multiverse.json` and `--providers` defaults to `./providers.ts` when not specified. `--worktree-id` is optional when invoked from inside a git worktree — Multiverse discovers the identity from the worktree path automatically. Pass `--worktree-id` explicitly to override or when git state is unavailable.
 
 `run` injects both canonical `MULTIVERSE_*` transport vars and explicit app-native values declared with `appEnv`. For endpoints, that includes typed mapping for `url` and `port`. The preferred application pattern is to read those app-owned names at one runtime-config boundary rather than scatter direct `MULTIVERSE_*` reads through the app.
 
