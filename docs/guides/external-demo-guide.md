@@ -373,10 +373,69 @@ NODE_OPTIONS="--import tsx/esm" node apps/cli/bin/multiverse.js derive \
 
 `tsx` is available as a workspace devDependency when `pnpm install` has been run at the repo root.
 
+### Globally-linked binary (within-workspace proof)
+
+You can link the compiled binary globally so that `multiverse` is available as a
+shell command. This is proven within the multiverse workspace — see the structural
+limitation below.
+
+**Step 1** — Run `pnpm setup` to configure pnpm's global bin directory:
+
+```bash
+pnpm setup
+source ~/.bashrc   # or open a new terminal
+```
+
+`pnpm setup` appends `PNPM_HOME` to your shell profile and needs to take effect
+before the next step.
+
+**Step 2** — Build the binary (if not already built):
+
+```bash
+pnpm --filter @multiverse/cli build
+```
+
+**Step 3** — Link the CLI package globally:
+
+```bash
+cd apps/cli
+pnpm link --global
+```
+
+This places a `multiverse` executable in `$PNPM_HOME`. Verify with:
+
+```bash
+multiverse --help
+```
+
+**Step 4** — Invoke with `NODE_OPTIONS` set:
+
+```bash
+NODE_OPTIONS="--import tsx/esm" multiverse derive \
+  --config apps/sample-express/multiverse.json \
+  --providers apps/sample-express/providers.ts
+```
+
+All commands behave identically to `pnpm cli` and `node apps/cli/bin/multiverse.js`.
+
+**Structural limitation:** This path is proven within the multiverse workspace.
+`tsx` is a workspace devDependency — `NODE_OPTIONS="--import tsx/esm"` resolves
+it relative to the current directory. Outside the workspace directory, the tsx
+package cannot be found and the binary will fail to load TypeScript providers.
+Additionally, provider packages (`@multiverse/provider-path-scoped`, etc.) are
+workspace-local and not published to npm, so any `providers.ts` must import from
+the workspace regardless of where the binary is invoked from.
+
+**To remove the global link:**
+
+```bash
+pnpm remove --global @multiverse/cli
+```
+
 ### What is deferred
 
-- A globally-linked `multiverse` command (requires `pnpm setup` and PATH configuration — environment-specific)
-- A binary that loads TypeScript providers without `NODE_OPTIONS` (requires compiling workspace packages to JavaScript)
+- A globally-linked `multiverse` command usable from outside the multiverse workspace (requires either globally installing tsx, or compiling workspace packages to JavaScript)
+- A binary that loads TypeScript providers without `NODE_OPTIONS`
 - Distribution outside the repository
 
 ---

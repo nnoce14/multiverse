@@ -629,7 +629,7 @@ export async function runCli(args: string[], options: RunCliOptions = {}): Promi
   }
 
   return usage(
-    "Usage: multiverse <validate-worktree --worktree-id VALUE | validate-repository --config PATH | derive [--config PATH] [--providers MODULE] --worktree-id VALUE | validate [--config PATH] [--providers MODULE] --worktree-id VALUE | reset [--config PATH] [--providers MODULE] --worktree-id VALUE | cleanup [--config PATH] [--providers MODULE] --worktree-id VALUE | run [--config PATH] [--providers MODULE] --worktree-id VALUE -- <cmd> [args...]>"
+    "Usage: multiverse <validate-worktree --worktree-id VALUE | validate-repository --config PATH | derive [--config PATH] [--providers MODULE] [--worktree-id VALUE] | validate [--config PATH] [--providers MODULE] [--worktree-id VALUE] | reset [--config PATH] [--providers MODULE] [--worktree-id VALUE] | cleanup [--config PATH] [--providers MODULE] [--worktree-id VALUE] | run [--config PATH] [--providers MODULE] [--worktree-id VALUE] -- <cmd> [args...]>"
   );
 }
 
