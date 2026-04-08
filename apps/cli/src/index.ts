@@ -183,12 +183,18 @@ function usage(message: string): CliResult {
 }
 
 function readOption(args: string[], name: string): string | undefined {
-  const index = args.indexOf(name);
-  if (index === -1) {
-    return undefined;
+  // Support both "--flag value" (space form) and "--flag=value" (equals form).
+  const equalsPrefix = `${name}=`;
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i]!;
+    if (arg === name) {
+      return args[i + 1];
+    }
+    if (arg.startsWith(equalsPrefix)) {
+      return arg.slice(equalsPrefix.length);
+    }
   }
-
-  return args[index + 1];
+  return undefined;
 }
 
 function readRequiredOption(

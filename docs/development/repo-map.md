@@ -27,7 +27,7 @@ The repository contains behavior-first design artifacts and a working implementa
 * a composed proving application in `apps/sample-compose/`
 * acceptance, contract, unit, and integration tests under `tests/`
 
-Implementation has progressed through 38 development slices. The core lifecycle
+Implementation has progressed through 39 development slices. The core lifecycle
 (derive, validate, reset, cleanup) is implemented across the current declared
 resource and endpoint model, with multi-resource and multi-endpoint support in
 place. The `0.3.x` work proved the main composed-application consumer workflow.
@@ -54,7 +54,12 @@ path basename (uniform rule for all worktrees), refusing with an actionable mess
 when discovery cannot safely resolve. Slice 38 documents and proves the formal
 compiled binary path (`node apps/cli/bin/multiverse.js`) including the build step
 and the `NODE_OPTIONS="--import tsx/esm"` requirement for TypeScript providers in
-the current workspace setup.
+the current workspace setup. Slice 39 closes two load-bearing cold-start friction
+points: (1) CLI `readOption` now supports both `--flag value` and `--flag=value`
+forms (equals form was silently dropped, causing `--format=env` to return JSON and
+`--worktree-id=X` to fall back to discovery); (2) the external-demo-guide Step 4
+now includes a concrete `apps/sample-express` run command for cold-start readers
+without their own application.
 
 ## Implementation Model
 

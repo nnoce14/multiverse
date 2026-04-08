@@ -237,29 +237,47 @@ If derivation fails for any reason (invalid config, unknown provider, unsafe sco
 
 *Note*: In the common case, no `--config`, `--providers`, or `--worktree-id` arguments are needed. When `multiverse.json` and `providers.ts` live at the repository root and you are inside a git worktree, Multiverse resolves everything automatically.
 
+**Try it with the sample application:** The multiverse repository includes a sample Express application at `apps/sample-express/`. It is already configured with the `multiverse.json` and `providers.ts` from Steps 1 and 2. To run it:
+
+```bash
+pnpm cli run \
+  --config apps/sample-express/multiverse.json \
+  --providers apps/sample-express/providers.ts \
+  -- npx tsx apps/sample-express/src/index.ts
+```
+
+The sample app reads `MULTIVERSE_RESOURCE_APP_DB` and `MULTIVERSE_ENDPOINT_HTTP` and starts an Express server on the derived port. You should see output like:
+
+```
+Sample Express app running at http://localhost:XXXX
+Database: /tmp/multiverse-sample-express/app-db/<worktree-id>
+```
+
 ---
 
 ## Step 5 — Run two worktrees simultaneously
 
-Open two terminals. Each runs the same application but at different isolated paths and ports.
+This step requires two separate git worktree checkouts of the same repository running in parallel. Each checkout gets its own worktree directory and its own worktree identity.
 
-**Terminal 1 (main branch):**
+With real git worktrees, Multiverse discovers the identity for each checkout automatically from the worktree directory name. You can also pass `--worktree-id` explicitly to use a specific identity string.
+
+**Terminal 1 (first worktree or main checkout):**
 
 ```bash
 pnpm cli run --worktree-id main -- node server.js
 # → MULTIVERSE_RESOURCE_APP_DB=/tmp/my-app-multiverse/app-db/main
-# → MULTIVERSE_ENDPOINT_HTTP=http://localhost:5100
+# → MULTIVERSE_ENDPOINT_HTTP=http://localhost:<derived-port-for-main>
 ```
 
-**Terminal 2 (feature-login branch):**
+**Terminal 2 (second worktree — feature-login directory):**
 
 ```bash
 pnpm cli run --worktree-id feature-login -- node server.js
 # → MULTIVERSE_RESOURCE_APP_DB=/tmp/my-app-multiverse/app-db/feature-login
-# → MULTIVERSE_ENDPOINT_HTTP=http://localhost:5101
+# → MULTIVERSE_ENDPOINT_HTTP=http://localhost:<derived-port-for-feature-login>
 ```
 
-Each instance uses its own database path and port. State written through one does not appear in the other.
+Each instance uses its own database path and port. The port values are deterministic: each worktree id maps to a stable port derived from `basePort` (5100 in the example providers). State written through one does not appear in the other.
 
 *Note*: Keep the worktree directory name, branch name, and `--worktree-id` aligned when possible. Multiverse only requires a stable non-empty worktree identity, but matching those values makes the workflow easier to reason about and reduces operator mistakes.
 
@@ -274,10 +292,12 @@ To see what values Multiverse would derive without starting the app:
 pnpm cli derive --worktree-id feature-login
 
 # Shell-sourceable KEY=VALUE pairs
-pnpm cli derive --worktree-id feature-login --format=env
+pnpm cli derive --worktree-id feature-login --format env
 ```
 
-The `--format=env` output uses the same variable names that `pnpm cli run` injects.
+Both `--format env` (space form) and `--format=env` (equals form) are accepted.
+
+The `--format env` output uses the same variable names that `pnpm cli run` injects.
 
 ---
 
@@ -305,7 +325,7 @@ Cleanup only affects resources that declare `scopedCleanup: true` in `multiverse
 
 ## Reference: CLI options
 
-All Multiverse commands use these options. `--config` and `--providers` default to `./multiverse.json` and `./providers.ts` respectively. `--worktree-id` is optional when invoked from inside a git worktree — Multiverse discovers the identity from the worktree path automatically. Pass `--worktree-id` explicitly to override.
+All Multiverse commands use these options. `--config` and `--providers` default to `./multiverse.json` and `./providers.ts` respectively. `--worktree-id` is optional when invoked from inside a git worktree — Multiverse discovers the identity from the worktree path automatically. Pass `--worktree-id` explicitly to override. All flags accept both space form (`--flag value`) and equals form (`--flag=value`).
 
 ```
 pnpm cli run       [--config PATH] [--providers MODULE] [--worktree-id VALUE] -- <cmd> [args...]
