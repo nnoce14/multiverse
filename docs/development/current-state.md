@@ -196,19 +196,33 @@ Slice 37; fixed. (2) `roadmap.md` version posture read `0.4.0-alpha.1` — stale
 the `0.5.0-alpha.1` bump; fixed. No remaining cold-start blockers were found in the
 documented in-repo workflow.
 
+**Is the globally-linked binary path provable and honest to document?**
+
+Slice 41 performed a walkthrough of the globally-linked binary path. The binary
+links and invokes correctly (`pnpm setup` → `pnpm --filter @multiverse/cli build`
+→ `cd apps/cli && pnpm link --global` → `NODE_OPTIONS="--import tsx/esm" multiverse`).
+All commands behave identically to `pnpm cli` from within the workspace. However,
+the path does NOT work from outside the workspace: `tsx` is a workspace devDependency
+and resolves relative to CWD; provider packages are workspace-local and not on npm.
+The guide now documents the within-workspace proof with the structural limitation
+stated explicitly. The stale usage/help string (showed `--worktree-id` as required
+in `derive`, `validate`, `reset`, `cleanup`, `run` after Slice 37 made it optional)
+was also fixed.
+
 ## Current priority
 
 The current priority is:
 
-**`0.5.x` early outside usability — the common-case workflow is reproducible from scratch; the next proving question is the globally-linked binary path.**
+**`0.5.x` early outside usability — all documented in-repo and within-workspace binary paths are proven; the remaining `0.5.x` question is whether `NODE_OPTIONS` can be eliminated for TypeScript providers.**
 
 ## What kinds of work are highest-value right now
 
 Examples of work that are strongly aligned with the current `0.5.x` phase:
 
-* proving the globally-linked `multiverse` binary path (pnpm setup + link + invoke)
 * eliminating the `NODE_OPTIONS` requirement for TypeScript providers with the
   compiled binary (requires compiling workspace packages to JavaScript)
+* proving the globally-linked binary from outside the workspace (requires globally
+  installing tsx or publishing provider packages)
 
 ## What is intentionally deferred
 

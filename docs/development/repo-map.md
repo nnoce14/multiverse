@@ -27,7 +27,7 @@ The repository contains behavior-first design artifacts and a working implementa
 * a composed proving application in `apps/sample-compose/`
 * acceptance, contract, unit, and integration tests under `tests/`
 
-Implementation has progressed through 40 development slices. The core lifecycle
+Implementation has progressed through 41 development slices. The core lifecycle
 (derive, validate, reset, cleanup) is implemented across the current declared
 resource and endpoint model, with multi-resource and multi-endpoint support in
 place. The `0.3.x` work proved the main composed-application consumer workflow.
@@ -62,6 +62,11 @@ now includes a concrete `apps/sample-express` run command for cold-start readers
 without their own application. Slice 40 performed a confirmed cold-start walkthrough
 of the full documented workflow — every step succeeded — and fixed two stale
 truth-alignment claims in `README.md` and `roadmap.md` left behind by earlier slices.
+Slice 41 performed a walkthrough of the globally-linked binary path: proven within
+the workspace (`pnpm setup` + `pnpm link --global` + `NODE_OPTIONS`), with the
+structural limitation (tsx workspace-local, provider packages not on npm) documented
+explicitly; also fixed the stale CLI usage string that showed `--worktree-id` as
+required after Slice 37 made it optional.
 
 ## Implementation Model
 
