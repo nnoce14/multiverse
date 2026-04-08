@@ -188,14 +188,12 @@ output; replaced with a note that ports are derived deterministically from workt
 
 The current priority is:
 
-**`0.5.x` early outside usability — the documented common-case workflow is now reproducible from scratch; the next proving question is the globally-linked binary path.**
+**`0.5.x` early outside usability — the common-case workflow is reproducible from scratch; the next proving question is the globally-linked binary path.**
 
 ## What kinds of work are highest-value right now
 
 Examples of work that are strongly aligned with the current `0.5.x` phase:
 
-* proving end-to-end reproducibility: a second engineer following the updated
-  external-demo-guide succeeds without live guidance
 * proving the globally-linked `multiverse` binary path (pnpm setup + link + invoke)
 * eliminating the `NODE_OPTIONS` requirement for TypeScript providers with the
   compiled binary (requires compiling workspace packages to JavaScript)
