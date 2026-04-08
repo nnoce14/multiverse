@@ -65,7 +65,7 @@ describe("dev-slice-43: compiled binary TypeScript provider loading without manu
       "wt-slice43"
     ]);
 
-    expect(outcome.exitCode).toBe(0);
+    expect(outcome.exitCode, `binary exited ${outcome.exitCode}; stderr: ${outcome.stderr}`).toBe(0);
     const parsed = JSON.parse(outcome.stdout.trim()) as {
       ok: boolean;
       resourcePlans: Array<{ worktreeId: string }>;
