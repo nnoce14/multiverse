@@ -39,7 +39,8 @@ What that means:
 * automatic worktree-id discovery is implemented (Slice 37); `--worktree-id` is now optional in common use
 * the documented external-demo-guide workflow is reproducible from scratch by a second engineer, including the real two-worktree Step 5 proof (Slice 42)
 * the globally-linked binary path is proven within the workspace (Slice 41)
-* the remaining `0.5.x` usability gap is eliminating the manual `NODE_OPTIONS` requirement for TypeScript providers on the compiled/global binary path
+* manual `NODE_OPTIONS` is no longer required for TypeScript providers on the compiled/global binary path in workspace scope (Slice 43)
+* outside-workspace packaging/distribution remains explicitly deferred
 
 ## Version roadmap
 
@@ -480,8 +481,8 @@ It should mean that the product is trustworthy in its intended scope.
 The current near-term direction is:
 
 * preserve and truth-align the now-proven second-engineer documented workflow
-* remove the highest remaining usability friction in that workflow: manual
-  `NODE_OPTIONS="--import tsx/esm"` for TypeScript providers on the compiled/global binary path
+* keep narrow usability hardening focused on the proven 0.5.x common path,
+  without broadening product scope
 * keep the `pnpm cli` in-repo path and formal binary path explicit and honest in docs
 
 The provider model and consumer workflow are now stable enough that the remaining

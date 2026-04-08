@@ -348,16 +348,43 @@ function isProviderRegistry(value: unknown): value is ProviderRegistry {
   );
 }
 
+function isTypeScriptModulePath(modulePath: string): boolean {
+  const ext = path.extname(modulePath).toLowerCase();
+  return ext === ".ts" || ext === ".mts" || ext === ".cts";
+}
+
+async function importTypeScriptModuleWithTsx(
+  moduleUrl: string
+): Promise<{ default?: unknown; providers?: unknown }> {
+  const api = (await import("tsx/esm/api")) as {
+    tsImport: (specifier: string, options: string | { parentURL: string }) => Promise<unknown>;
+  };
+
+  const loaded = await api.tsImport(moduleUrl, import.meta.url);
+  return loaded as { default?: unknown; providers?: unknown };
+}
+
 async function loadProviderRegistry(
   providersModulePath: string
 ): Promise<ProviderRegistry | CliResult> {
+  const resolvedModulePath = path.resolve(providersModulePath);
+  const moduleUrl = pathToFileURL(resolvedModulePath).href;
   let moduleExports: { default?: unknown; providers?: unknown };
+
   try {
-    const moduleUrl = pathToFileURL(path.resolve(providersModulePath)).href;
     moduleExports = (await import(moduleUrl)) as { default?: unknown; providers?: unknown };
   } catch (err) {
-    const detail = err instanceof Error ? err.message : String(err);
-    return usage(`Cannot load providers module: ${providersModulePath}\n${detail}`);
+    if (isTypeScriptModulePath(resolvedModulePath)) {
+      try {
+        moduleExports = await importTypeScriptModuleWithTsx(moduleUrl);
+      } catch (tsxErr) {
+        const detail = tsxErr instanceof Error ? tsxErr.message : String(tsxErr);
+        return usage(`Cannot load providers module: ${providersModulePath}\n${detail}`);
+      }
+    } else {
+      const detail = err instanceof Error ? err.message : String(err);
+      return usage(`Cannot load providers module: ${providersModulePath}\n${detail}`);
+    }
   }
 
   const candidate = moduleExports.providers ?? moduleExports.default;
