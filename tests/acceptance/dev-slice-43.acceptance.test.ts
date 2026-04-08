@@ -45,15 +45,20 @@ describe("dev-slice-43: compiled binary TypeScript provider loading without manu
   it("loads a TypeScript providers module on the compiled binary path without NODE_OPTIONS (workspace scope)", async () => {
     const repoRoot = process.cwd();
 
-    // Ensure the compiled binary reflects current source before invocation.
-    execFileSync(
-      "node",
-      ["node_modules/typescript/bin/tsc", "--project", "apps/cli/tsconfig.build.json"],
-      {
+    // Build the full compiled-binary dependency chain in topological order before invocation.
+    // @multiverse/core and @multiverse/provider-contracts export dist/index.js (not TS source),
+    // so they must be compiled before the CLI binary can run outside the tsx dev path.
+    const tsc = ["node_modules/typescript/bin/tsc"];
+    for (const [project] of [
+      ["packages/provider-contracts/tsconfig.build.json"],
+      ["packages/core/tsconfig.build.json"],
+      ["apps/cli/tsconfig.build.json"]
+    ]) {
+      execFileSync("node", [...tsc, "--project", project], {
         cwd: repoRoot,
         stdio: "pipe"
-      }
-    );
+      });
+    }
 
     const outcome = await runCompiledCli([
       "derive",
