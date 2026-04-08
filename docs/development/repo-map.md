@@ -303,7 +303,7 @@ Primary code targets in the current implementation phase include:
 
 Current implementation work should follow the active development slice and task documents under `docs/development/`.
 
-Slices 01–31 have been implemented. Subsequent work is tracked through current
+Slices 01–42 have been implemented. Subsequent work is tracked through current
 development documents and the repository’s open issues.
 
 Contributors and agents should use those sources to determine what behavior is currently in scope.
