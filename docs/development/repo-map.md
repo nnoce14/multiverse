@@ -27,7 +27,7 @@ The repository contains behavior-first design artifacts and a working implementa
 * a composed proving application in `apps/sample-compose/`
 * acceptance, contract, unit, and integration tests under `tests/`
 
-Implementation has progressed through 39 development slices. The core lifecycle
+Implementation has progressed through 40 development slices. The core lifecycle
 (derive, validate, reset, cleanup) is implemented across the current declared
 resource and endpoint model, with multi-resource and multi-endpoint support in
 place. The `0.3.x` work proved the main composed-application consumer workflow.
@@ -59,7 +59,9 @@ points: (1) CLI `readOption` now supports both `--flag value` and `--flag=value`
 forms (equals form was silently dropped, causing `--format=env` to return JSON and
 `--worktree-id=X` to fall back to discovery); (2) the external-demo-guide Step 4
 now includes a concrete `apps/sample-express` run command for cold-start readers
-without their own application.
+without their own application. Slice 40 performed a confirmed cold-start walkthrough
+of the full documented workflow — every step succeeded — and fixed two stale
+truth-alignment claims in `README.md` and `roadmap.md` left behind by earlier slices.
 
 ## Implementation Model
 
