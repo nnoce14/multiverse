@@ -259,25 +259,43 @@ Database: /tmp/multiverse-sample-express/app-db/<worktree-id>
 
 This step requires two separate git worktree checkouts of the same repository running in parallel. Each checkout gets its own worktree directory and its own worktree identity.
 
-With real git worktrees, Multiverse discovers the identity for each checkout automatically from the worktree directory name. You can also pass `--worktree-id` explicitly to use a specific identity string.
+With real git worktrees, Multiverse discovers the identity for each checkout automatically from the worktree directory name. In the common case, no `--worktree-id` flag is needed.
 
 **Terminal 1 (first worktree or main checkout):**
 
 ```bash
-pnpm cli run --worktree-id main -- node server.js
-# → MULTIVERSE_RESOURCE_APP_DB=/tmp/my-app-multiverse/app-db/main
-# → MULTIVERSE_ENDPOINT_HTTP=http://localhost:<derived-port-for-main>
+pnpm cli run \
+  --config apps/sample-express/multiverse.json \
+  --providers apps/sample-express/providers.ts \
+  -- npx tsx apps/sample-express/src/index.ts
+# → MULTIVERSE_WORKTREE_ID=<first-worktree-directory-name>
+# → MULTIVERSE_RESOURCE_APP_DB=/tmp/multiverse-sample-express/app-db/<first-worktree-directory-name>
+# → MULTIVERSE_ENDPOINT_HTTP=http://localhost:<derived-port-for-first-worktree>
 ```
 
-**Terminal 2 (second worktree — feature-login directory):**
+**Terminal 2 (second worktree checkout):**
 
 ```bash
-pnpm cli run --worktree-id feature-login -- node server.js
-# → MULTIVERSE_RESOURCE_APP_DB=/tmp/my-app-multiverse/app-db/feature-login
-# → MULTIVERSE_ENDPOINT_HTTP=http://localhost:<derived-port-for-feature-login>
+pnpm cli run \
+  --config apps/sample-express/multiverse.json \
+  --providers apps/sample-express/providers.ts \
+  -- npx tsx apps/sample-express/src/index.ts
+# → MULTIVERSE_WORKTREE_ID=<second-worktree-directory-name>
+# → MULTIVERSE_RESOURCE_APP_DB=/tmp/multiverse-sample-express/app-db/<second-worktree-directory-name>
+# → MULTIVERSE_ENDPOINT_HTTP=http://localhost:<derived-port-for-second-worktree>
 ```
 
 Each instance uses its own database path and port. The port values are deterministic: each worktree id maps to a stable port derived from `basePort` (5100 in the example providers). State written through one does not appear in the other.
+
+If you need to override the discovered identity, `--worktree-id` remains available:
+
+```bash
+pnpm cli run \
+  --config apps/sample-express/multiverse.json \
+  --providers apps/sample-express/providers.ts \
+  --worktree-id feature-login \
+  -- npx tsx apps/sample-express/src/index.ts
+```
 
 *Note*: Keep the worktree directory name, branch name, and `--worktree-id` aligned when possible. Multiverse only requires a stable non-empty worktree identity, but matching those values makes the workflow easier to reason about and reduces operator mistakes.
 
