@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@multiverse/core": "workspace:*",
-    "@multiverse/provider-contracts": "workspace:*"
+    "@multiverse/provider-contracts": "workspace:*",
+    "tsx": "^4.21.0"
   }
 }

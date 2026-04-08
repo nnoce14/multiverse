@@ -219,20 +219,30 @@ worktree identities differ and produce non-colliding DB paths and ports. Step 5 
 uses the concrete sample-express command and documents auto-discovery for real
 worktrees, with `--worktree-id` retained as an explicit override.
 
+**Can the compiled/global binary path load TypeScript providers without manual `NODE_OPTIONS` in workspace scope?**
+
+Slice 43 answers yes. The CLI now applies a narrow TypeScript-provider loading
+fallback through `tsx/esm/api` when a TypeScript providers module is supplied on
+the compiled/global binary path. In current workspace scope, a second engineer can
+invoke `node apps/cli/bin/multiverse.js` or a globally-linked `multiverse` command
+with a TypeScript providers module without manually setting
+`NODE_OPTIONS="--import tsx/esm"`. Outside-workspace provider packaging and
+distribution remain deferred.
+
 ## Current priority
 
 The current priority is:
 
-**`0.5.x` early outside usability — all documented in-repo and within-workspace binary paths are proven; the remaining `0.5.x` question is whether `NODE_OPTIONS` can be eliminated for TypeScript providers.**
+**`0.5.x` early outside usability — the documented in-repo and within-workspace binary paths are proven, including real multi-worktree proof and no-manual-`NODE_OPTIONS` TypeScript provider loading in workspace scope. The remaining outside-workspace packaging/distribution gap is explicitly deferred.**
 
 ## What kinds of work are highest-value right now
 
 Examples of work that are strongly aligned with the current `0.5.x` phase:
 
-* eliminating the `NODE_OPTIONS` requirement for TypeScript providers with the
-  compiled binary (requires compiling workspace packages to JavaScript)
-* proving the globally-linked binary from outside the workspace (requires globally
-  installing tsx or publishing provider packages)
+* bounded truth-alignment and documentation clarity for the now-proven 0.5.x
+  common workflow
+* targeted stability hardening that does not broaden scope or introduce new
+  product behavior
 
 ## What is intentionally deferred
 

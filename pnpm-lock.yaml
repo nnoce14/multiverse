@@ -59,6 +59,9 @@ importers:
       '@multiverse/provider-contracts':
         specifier: workspace:*
         version: link:../../packages/provider-contracts
+      tsx:
+        specifier: ^4.21.0
+        version: 4.21.0
 
   apps/sample-compose:
     dependencies:

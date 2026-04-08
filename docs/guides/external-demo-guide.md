@@ -381,15 +381,15 @@ The compiled binary and `pnpm cli` invoke the same underlying CLI logic. All com
 
 ### TypeScript providers within the workspace
 
-Workspace provider packages (`@multiverse/provider-path-scoped`, etc.) export TypeScript source directly. Node.js cannot import them natively through the compiled binary. To load TypeScript provider files within the current workspace setup, register the tsx loader:
+Workspace provider packages (`@multiverse/provider-path-scoped`, etc.) export TypeScript source directly. On the compiled and globally-linked binary paths, Multiverse now auto-loads TypeScript provider modules in workspace scope. Manual `NODE_OPTIONS` is not required.
 
 ```bash
-NODE_OPTIONS="--import tsx/esm" node apps/cli/bin/multiverse.js derive \
+node apps/cli/bin/multiverse.js derive \
   --config path/to/multiverse.json \
   --providers path/to/providers.ts
 ```
 
-`tsx` is available as a workspace devDependency when `pnpm install` has been run at the repo root.
+This relies on `tsx` being available in the workspace dependency graph (true after `pnpm install` at the multiverse repo root).
 
 ### Globally-linked binary (within-workspace proof)
 
@@ -426,10 +426,10 @@ This places a `multiverse` executable in `$PNPM_HOME`. Verify with:
 multiverse --help
 ```
 
-**Step 4** — Invoke with `NODE_OPTIONS` set:
+**Step 4** — Invoke:
 
 ```bash
-NODE_OPTIONS="--import tsx/esm" multiverse derive \
+multiverse derive \
   --config apps/sample-express/multiverse.json \
   --providers apps/sample-express/providers.ts
 ```
@@ -437,10 +437,7 @@ NODE_OPTIONS="--import tsx/esm" multiverse derive \
 All commands behave identically to `pnpm cli` and `node apps/cli/bin/multiverse.js`.
 
 **Structural limitation:** This path is proven within the multiverse workspace.
-`tsx` is a workspace devDependency — `NODE_OPTIONS="--import tsx/esm"` resolves
-it relative to the current directory. Outside the workspace directory, the tsx
-package cannot be found and the binary will fail to load TypeScript providers.
-Additionally, provider packages (`@multiverse/provider-path-scoped`, etc.) are
+Provider packages (`@multiverse/provider-path-scoped`, etc.) are
 workspace-local and not published to npm, so any `providers.ts` must import from
 the workspace regardless of where the binary is invoked from.
 
@@ -452,8 +449,7 @@ pnpm remove --global @multiverse/cli
 
 ### What is deferred
 
-- A globally-linked `multiverse` command usable from outside the multiverse workspace (requires either globally installing tsx, or compiling workspace packages to JavaScript)
-- A binary that loads TypeScript providers without `NODE_OPTIONS`
+- A globally-linked `multiverse` command usable for non-workspace repositories
 - Distribution outside the repository
 
 ---
@@ -482,4 +478,4 @@ Auto-discovery could not resolve a worktree identity from the current directory.
 
 **"Cannot load providers module" when using the compiled binary**
 
-The binary cannot import TypeScript files natively. Run with `NODE_OPTIONS="--import tsx/esm"` as described in the "Using the formal binary" section above.
+Ensure you are using a providers module whose imports resolve in the current workspace (for example `apps/sample-express/providers.ts` from the multiverse repo root). Outside-workspace provider packaging remains deferred.

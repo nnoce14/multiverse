@@ -54,7 +54,7 @@ Today’s repo includes:
 
 The current implementation proves the core loop for explicit declarations and deterministic derivation, the composed application consumer workflow, and a complete provider extensibility story now captured in `0.5.0-alpha.1`.
 
-`0.5.0-alpha.1` is the early outside-usability phase. The `0.4.x` extensibility proof is complete (new provider shapes, non-first-party authoring, CLI invocation proof), and the documented second-engineer workflow is now proven, including real two-worktree auto-discovery/isolation for Step 5. The remaining `0.5.x` usability gap is removing the manual `NODE_OPTIONS="--import tsx/esm"` requirement for TypeScript providers on the compiled/global binary path. 1.0 remains intentionally narrow.
+`0.5.0-alpha.1` is the early outside-usability phase. The `0.4.x` extensibility proof is complete (new provider shapes, non-first-party authoring, CLI invocation proof), and the documented second-engineer workflow is now proven, including real two-worktree auto-discovery/isolation for Step 5 and no-manual-`NODE_OPTIONS` TypeScript provider loading in workspace scope on compiled/global binary paths. 1.0 remains intentionally narrow; outside-workspace packaging and distribution remain deferred.
 
 That includes:
 

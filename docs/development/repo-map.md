@@ -27,7 +27,7 @@ The repository contains behavior-first design artifacts and a working implementa
 * a composed proving application in `apps/sample-compose/`
 * acceptance, contract, unit, and integration tests under `tests/`
 
-Implementation has progressed through 42 development slices. The core lifecycle
+Implementation has progressed through 43 development slices. The core lifecycle
 (derive, validate, reset, cleanup) is implemented across the current declared
 resource and endpoint model, with multi-resource and multi-endpoint support in
 place. The `0.3.x` work proved the main composed-application consumer workflow.
@@ -69,7 +69,10 @@ explicitly; also fixed the stale CLI usage string that showed `--worktree-id` as
 required after Slice 37 made it optional. Slice 42 adds a real-worktree acceptance
 proof for Step 5 of the external-demo-guide: a test-owned `git worktree add` checkout
 is created, `derive` is run from both directories without `--worktree-id`, and the
-resolved identities and derived DB path/port values are proven distinct.
+resolved identities and derived DB path/port values are proven distinct. Slice 43
+removes the remaining manual `NODE_OPTIONS` friction for TypeScript providers on
+compiled/global binary paths in workspace scope by adding a narrow provider-module
+loading fallback through `tsx/esm/api`.
 
 ## Implementation Model
 
@@ -303,7 +306,7 @@ Primary code targets in the current implementation phase include:
 
 Current implementation work should follow the active development slice and task documents under `docs/development/`.
 
-Slices 01–42 have been implemented. Subsequent work is tracked through current
+Slices 01–43 have been implemented. Subsequent work is tracked through current
 development documents and the repository’s open issues.
 
 Contributors and agents should use those sources to determine what behavior is currently in scope.
