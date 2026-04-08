@@ -171,11 +171,24 @@ guide now documents the build step, direct invocation, and the `NODE_OPTIONS=
 workspace setup. Explicitly deferred: globally-linked `multiverse` command and a
 binary that loads TypeScript providers without a loader.
 
+**Are the most load-bearing cold-start friction points in the documented workflow fixed?**
+
+Slice 39 closes two load-bearing friction points found during a cold-start walkthrough:
+(1) `readOption` silently dropped equals-form arguments (`--flag=value`); the guide's
+Step 6 shows `--format=env` but the CLI returned JSON — no error, wrong output.
+Fixed by extending `readOption` to handle both `--flag value` and `--flag=value` forms.
+All flags (`--config`, `--providers`, `--worktree-id`, `--format`) inherit the fix.
+(2) Guide Step 4 used the generic placeholder `node server.js`; a cold-start reader
+without their own app could not complete the walkthrough. Fixed by adding a concrete
+"Try it with the sample application" subsection pointing to `apps/sample-express/`.
+Minor: Step 5 port examples were concrete values that did not match actual derivation
+output; replaced with a note that ports are derived deterministically from worktree id.
+
 ## Current priority
 
 The current priority is:
 
-**`0.5.x` early outside usability — in-repo and formal binary paths are documented; the remaining proving question is end-to-end second-engineer reproducibility.**
+**`0.5.x` early outside usability — the documented common-case workflow is now reproducible from scratch; the next proving question is the globally-linked binary path.**
 
 ## What kinds of work are highest-value right now
 
