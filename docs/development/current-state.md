@@ -209,6 +209,16 @@ stated explicitly. The stale usage/help string (showed `--worktree-id` as requir
 in `derive`, `validate`, `reset`, `cleanup`, `run` after Slice 37 made it optional)
 was also fixed.
 
+**Is real multi-worktree isolation with auto-discovery proven against actual `git worktree add` checkouts?**
+
+Slice 42 closes the last load-bearing workflow proof gap in the external-demo-guide:
+Step 5 had only been simulated with explicit `--worktree-id` values. A new acceptance
+test now creates a real linked worktree checkout, runs `derive` from both the primary
+checkout and the linked worktree without `--worktree-id`, and proves that discovered
+worktree identities differ and produce non-colliding DB paths and ports. Step 5 now
+uses the concrete sample-express command and documents auto-discovery for real
+worktrees, with `--worktree-id` retained as an explicit override.
+
 ## Current priority
 
 The current priority is:
