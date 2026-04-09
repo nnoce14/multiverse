@@ -183,6 +183,8 @@ const USAGE_LINES = [
   "  reset      [--config PATH] [--providers MODULE] [--worktree-id VALUE]",
   "  cleanup    [--config PATH] [--providers MODULE] [--worktree-id VALUE]",
   "  run        [--config PATH] [--providers MODULE] [--worktree-id VALUE] -- <cmd> [args...]",
+  "",
+  "Utility commands (declaration validation):",
   "  validate-worktree    --worktree-id VALUE",
   "  validate-repository  --config PATH",
   "",

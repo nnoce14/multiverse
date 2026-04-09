@@ -18,7 +18,11 @@ This document covers the five primary CLI commands:
 - `cleanup`
 - `run`
 
-It does not cover `validate-worktree` or `validate-repository`.
+It does not cover `validate-worktree` or `validate-repository`. Those two commands perform
+declaration validation — checking that a worktree identity string or repository configuration
+file is well-formed before any isolation operation. They are utility commands, not primary
+workflow commands, and their output shapes are not part of the public stability contract
+documented here.
 
 ---
 
