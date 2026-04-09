@@ -337,6 +337,21 @@ separate question deferred to a later 0.7.x slice. Acceptance tests were added f
 and `-h` exit code and output routing; the Slice 41 tests for usage string content were
 updated to work with multi-line output.
 
+**Is there a source-of-truth spec for the output shapes of primary CLI commands, and are they
+executable as tests?**
+
+Slice 51 answers yes, after two additions. (1) A new spec document,
+`docs/spec/cli-output-shapes.md`, records the stable output contract for `derive`, `validate`,
+`reset`, `cleanup`, and `run`: per-command success and failure shapes, the shared refusal shape
+and four categories, output routing (stdout vs stderr), the one-JSON-line-per-invocation rule,
+and the `derive --format=env` KEY=VALUE convention. The `run` stdout/stderr asymmetry (refusal
+to stderr, unlike other commands) is documented explicitly; it was identified in Slice 47 and
+intentionally preserved. (2) A new acceptance test file,
+`tests/acceptance/cli-output-shapes.acceptance.test.ts`, makes the spec executable: it verifies
+field names, output routing, and exit codes for every primary command in both success and failure
+paths. No production code was changed. Deferred: `validate-worktree`/`validate-repository`
+output shape classification; per-command help; utility-command surface classification.
+
 ## Current priority
 
 The current priority is:
