@@ -31,6 +31,20 @@ In 1.0, the tool distinguishes between the following business failure categories
 
 These categories are distinct and must not be treated as interchangeable.
 
+### Category names: spec form and contract form
+
+This document uses human-readable names (spaces, lowercase): "invalid configuration",
+"unsupported capability", "unsafe scope", "provider failure".
+
+The `Refusal` type in `@multiverse/provider-contracts` uses machine-readable identifiers
+(underscores): `"invalid_configuration"`, `"unsupported_capability"`, `"unsafe_scope"`,
+`"provider_failure"`.
+
+Both forms refer to the same four categories. The spec uses human-readable names because
+it is a business rules document. The contract type uses underscore identifiers because it
+is a code-level API. A reader seeing both forms in different documents is not seeing an
+inconsistency — they are seeing the same categories expressed at different layers.
+
 ### Invalid Configuration
 
 Invalid configuration occurs when repository declarations violate required business rules.
@@ -66,6 +80,7 @@ This includes, but is not limited to:
 
 - derive
 - validate
+- run
 - reset
 - cleanup
 
