@@ -139,7 +139,7 @@ pnpm test:acceptance
 pnpm test:contracts
 pnpm test:unit
 pnpm typecheck
-pnpm cli
+pnpm cli --help
 ```
 
 ## CLI usage
@@ -204,6 +204,7 @@ Core product and architecture docs:
 * `docs/spec/provider-model.md`
 * `docs/spec/endpoint-model.md`
 * `docs/spec/safety-and-refusal.md`
+* `docs/spec/cli-output-shapes.md` — stable output contract for all primary commands (JSON shapes, field names, output routing)
 * `docs/adr/0001-git-worktrees-only-1.0.md`
 * `docs/adr/0004-resource-isolation-strategies.md`
 * `docs/adr/0005-providers-implement-isolation-contracts.md`
