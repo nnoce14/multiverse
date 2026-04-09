@@ -70,3 +70,33 @@ Then the provider does not proceed silently with the destructive action
 Given a declared provider
 When the tool evaluates the provider's declared capabilities
 Then the provider does not claim support for a capability it cannot safely perform
+
+## Scenario: reset intent is to prepare isolated state for fresh use
+
+Given a declared provider with reset capability
+When the tool requests reset for a worktree instance
+Then the isolated state for that instance is prepared for fresh use
+And the worktree instance is expected to continue in use after reset
+
+## Scenario: cleanup intent is permanent removal of isolated state
+
+Given a declared provider with cleanup capability
+When the tool requests cleanup for a worktree instance
+Then the isolated state for that instance is permanently removed
+And the worktree instance is not expected to continue in use after cleanup
+
+## Scenario: provider with no owned state may implement reset as scope-confirmation
+
+Given a declared provider with reset capability
+And the provider owns no mutable state of its own
+When the tool requests reset for a worktree instance
+Then the provider may return scope-confirmation metadata without performing side effects
+And the worktree scope boundary is confirmed as correctly recognized
+
+## Scenario: provider with no owned state may implement cleanup as scope-confirmation
+
+Given a declared provider with cleanup capability
+And the provider owns no mutable state of its own
+When the tool requests cleanup for a worktree instance
+Then the provider may return scope-confirmation metadata without performing side effects
+And the worktree scope boundary is confirmed as correctly recognized

@@ -239,7 +239,21 @@ cross-reference is in `docs/development/dev-slice-44-scenario-map.md`. Key findi
 no first-party provider implements `validateResource()` (spec gap); the scope-confirmation
 vs effectful lifecycle distinction is proven in code but absent from spec docs; the
 worktree identity scenario for the main checkout is inconsistent with ADR-0021
-auto-discovery behavior. Four follow-on slices (45–48) are proposed to close these gaps.
+auto-discovery behavior. Four follow-on slices (45–49) are proposed to close these gaps.
+
+**Are the lifecycle semantics — reset vs cleanup intent and scope-confirmation vs effectful
+behavior — expressed clearly in source-of-truth documents?**
+
+Slice 45 answers yes. `docs/spec/provider-model.md` now clearly distinguishes reset
+intent ("prepare for fresh use; instance continues") from cleanup intent ("permanent
+removal; instance no longer expected in use"). A scope-confirmation pattern is defined
+for providers that own no mutable state: they may declare and implement reset/cleanup by
+returning scope metadata without side effects, which is the correct behavior for logical-
+identifier handles. `docs/scenarios/provider-model.scenarios.md` adds four scenarios
+covering these distinctions. `docs/guides/provider-authoring-guide.md` adds a practical
+scope-confirmation section with a code example, and a built-in provider reference
+documenting process-scoped readiness (fixed-interval wait after spawn) and the
+process-port-scoped `{PORT}` placeholder substitution.
 
 ## Current priority
 
