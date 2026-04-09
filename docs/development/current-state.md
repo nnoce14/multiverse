@@ -355,15 +355,16 @@ The following remain explicitly deferred:
 
 When deciding what to work on next, prefer work that answers the current proving question:
 
-**Are Multiverse lifecycle semantics, refusal behavior, and naming consistent and
-trustworthy across providers, docs, and CLI output?**
+**Is the public CLI surface — command names, flags, invocation patterns, help text, and
+output format conventions — stable and intentional enough that a user would not be forced
+to relearn it between minor versions?**
 
 Use this preference order:
 
-1. identify lifecycle or refusal behavior that is ambiguous or inconsistent across provider types
-2. establish clear definitions through spec or ADR work before writing implementation code
-3. validate that docs, code, and CLI output use consistent terminology
-4. only then broader surface polish or new capabilities
+1. audit the CLI surface before changing it — identify specific inconsistencies across help text, output shape, flag naming, and guide examples
+2. establish expected output shapes and invocation conventions in source-of-truth docs before modifying code
+3. assess whether utility commands (`validate-worktree`, `validate-repository`) belong on the same public surface as the primary commands
+4. only then implementation changes that align code with the stabilized surface spec
 
 ## Related documents
 
