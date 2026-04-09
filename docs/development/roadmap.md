@@ -26,7 +26,7 @@ Multiverse development continues under the same core assumptions:
 
 ## Current version posture
 
-Current version posture: **0.5.0-alpha.1**
+Current version posture: **0.6.0-alpha.1**
 
 What that means:
 
@@ -40,6 +40,8 @@ What that means:
 * the documented external-demo-guide workflow is reproducible from scratch by a second engineer, including the real two-worktree Step 5 proof (Slice 42)
 * the globally-linked binary path is proven within the workspace (Slice 41)
 * manual `NODE_OPTIONS` is no longer required for TypeScript providers on the compiled/global binary path in workspace scope (Slice 43)
+* all `0.5.x` exit criteria are met; the early outside-usability phase is complete in substance
+* `0.6.0-alpha.1` enters the semantic stability phase: lifecycle semantics, refusal behavior, and naming consistency are the next proving target
 * outside-workspace packaging/distribution remains explicitly deferred
 
 ## Version roadmap
@@ -480,14 +482,15 @@ It should mean that the product is trustworthy in its intended scope.
 
 The current near-term direction is:
 
-* preserve and truth-align the now-proven second-engineer documented workflow
-* keep narrow usability hardening focused on the proven 0.5.x common path,
-  without broadening product scope
-* keep the `pnpm cli` in-repo path and formal binary path explicit and honest in docs
+* begin `0.6.x` semantic stability work through spec and ADR groundwork before any implementation
+* audit lifecycle semantics (reset, cleanup, validate) for consistency across provider types
+* clarify refusal behavior and ensure error/refusal messages are actionable and consistent
+* identify naming inconsistencies across docs, code, and CLI output
 
-The provider model and consumer workflow are now stable enough that the remaining
-0.5.x work is about usability, reproducibility, and honest documentation — not
-proving new product behaviors.
+The `0.5.x` work is complete. The documented second-engineer workflow is proven and
+truth-aligned. The next honest proving question is whether lifecycle semantics, refusal
+behavior, and naming are consistent and trustworthy — not adding new product behaviors
+or broadening scope.
 
 Provider-ecosystem formalization and external distribution remain deferred.
 

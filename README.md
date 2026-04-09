@@ -52,9 +52,9 @@ Today’s repo includes:
 
 ## Current behavior being proven
 
-The current implementation proves the core loop for explicit declarations and deterministic derivation, the composed application consumer workflow, and a complete provider extensibility story now captured in `0.5.0-alpha.1`.
+The current implementation proves the core loop for explicit declarations and deterministic derivation, the composed application consumer workflow, and a complete provider extensibility story. The `0.5.x` early outside-usability phase is complete: the documented second-engineer workflow is proven end-to-end, including real two-worktree auto-discovery/isolation and no-manual-`NODE_OPTIONS` TypeScript provider loading in workspace scope on compiled/global binary paths. `0.6.0-alpha.1` begins the semantic stability phase.
 
-`0.5.0-alpha.1` is the early outside-usability phase. The `0.4.x` extensibility proof is complete (new provider shapes, non-first-party authoring, CLI invocation proof), and the documented second-engineer workflow is now proven, including real two-worktree auto-discovery/isolation for Step 5 and no-manual-`NODE_OPTIONS` TypeScript provider loading in workspace scope on compiled/global binary paths. 1.0 remains intentionally narrow; outside-workspace packaging and distribution remain deferred.
+1.0 remains intentionally narrow; outside-workspace packaging and distribution remain deferred.
 
 That includes:
 
