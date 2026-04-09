@@ -186,10 +186,16 @@ const USAGE_LINES = [
   "  validate-worktree    --worktree-id VALUE",
   "  validate-repository  --config PATH",
   "",
+  "Options:",
+  "  --help, -h           Show this help text and exit 0",
+  "",
   "Options (derive, validate, reset, cleanup, run):",
   "  --config PATH        Repository configuration file (default: ./multiverse.json)",
   "  --providers MODULE   Providers module path (default: ./providers.ts)",
   "  --worktree-id VALUE  Worktree identity (auto-discovered from git state when omitted)",
+  "",
+  "Options (derive only):",
+  "  --format json|env    Output format (default: json)",
 ];
 
 function help(): CliResult {

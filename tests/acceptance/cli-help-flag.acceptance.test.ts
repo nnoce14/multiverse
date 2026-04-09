@@ -50,4 +50,17 @@ describe("CLI --help flag (Slice 50)", () => {
     expect(outcome.stderr.length).toBeGreaterThan(0);
     expect(outcome.stderr.join("\n")).toContain("Usage:");
   });
+
+  it("--help output includes --help / -h in the Options section", async () => {
+    const outcome = await runCli(["--help"]);
+    const text = outcome.stdout.join("\n");
+    expect(text).toContain("--help");
+    expect(text).toContain("-h");
+  });
+
+  it("--help output includes --format in the Options section", async () => {
+    const outcome = await runCli(["--help"]);
+    const text = outcome.stdout.join("\n");
+    expect(text).toMatch(/--format\s+json\|env/);
+  });
 });
