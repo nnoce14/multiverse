@@ -320,6 +320,9 @@ The `--format env` output includes the canonical `MULTIVERSE_RESOURCE_*` and
 injected only by `pnpm cli run` at process-launch time. Use `derive --format=env` for
 inspection and scripting against canonical variable names.
 
+For the authoritative JSON field contract (field names, shapes, and output routing for all
+primary commands), see `docs/spec/cli-output-shapes.md`.
+
 ---
 
 ## Step 7 — Reset and clean up
@@ -347,6 +350,8 @@ Cleanup only affects resources that declare `scopedCleanup: true` in `multiverse
 ## Reference: CLI options
 
 All Multiverse commands use these options. `--config` and `--providers` default to `./multiverse.json` and `./providers.ts` respectively. `--worktree-id` is optional when invoked from inside a git worktree — Multiverse discovers the identity from the worktree path automatically. Pass `--worktree-id` explicitly to override. All flags accept both space form (`--flag value`) and equals form (`--flag=value`).
+
+Run `pnpm cli --help` (or `pnpm cli -h`) to print the full command and options list.
 
 ```
 pnpm cli run       [--config PATH] [--providers MODULE] [--worktree-id VALUE] -- <cmd> [args...]

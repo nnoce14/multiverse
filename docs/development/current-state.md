@@ -362,6 +362,19 @@ for `--help`/`-h` and "Options (derive only):" for `--format`. The `current-stat
 kinds of work" section was also updated to retire the two completed items (help-output and
 output-shape entries) and bring the "Practical instruction" guidance current.
 
+**Are the README and external-demo-guide aligned with the now-established CLI surface artifacts?**
+
+Slice 53 answers yes, after four targeted corrections. (1) `README.md` "Common commands" listed
+bare `pnpm cli` — which exits 1 with usage to stderr — alongside `pnpm test` and other useful
+bare invocations; corrected to `pnpm cli --help`. (2) `README.md` "Key docs" did not list
+`docs/spec/cli-output-shapes.md`, making the output-shape spec (Slice 51) undiscoverable from
+the repository entry point; added with a one-line description. (3) The guide Reference section
+documented all primary commands and common flags but omitted the `--help`/`-h` flag established
+in Slice 50; a sentence directing readers to `pnpm cli --help` is now included. (4) Guide Step 6
+showed `derive` in both output formats but provided no pointer to the JSON field contract; a
+sentence referencing `docs/spec/cli-output-shapes.md` is now included. No code or test changes
+were required.
+
 ## Current priority
 
 The current priority is:
@@ -376,11 +389,14 @@ The following 0.7.x items are complete:
 * ~~specifying expected output shape for each command in source-of-truth docs~~ — done (Slice 51): `docs/spec/cli-output-shapes.md` with executable acceptance tests
 * ~~completing the `--help` Options section~~ — done (Slice 52): `--help`/`-h` and `--format` now described in Options subsections
 
+The following 0.7.x items are also complete:
+
+* ~~aligning guide examples with actual invocation surface~~ — done (Slice 53): README and guide now reference `--help`/`-h`, `cli-output-shapes.md`, and use `pnpm cli --help` as the bare invocation entry point
+* ~~reducing inconsistencies between repo-local (`pnpm cli`) and formal binary (`multiverse`) invocation paths in docs~~ — done (Slice 53): README Common commands now shows `pnpm cli --help` rather than exit-1 bare `pnpm cli`
+
 Examples of work still aligned with the current `0.7.x` phase:
 
 * examining whether `validate-worktree` and `validate-repository` utility commands belong on the same surface as `derive`, `run`, `reset`, `cleanup`, `validate` (deferred — needs a design decision about removal/move; Slice 50 USAGE_LINES visually separates them)
-* aligning guide examples with actual invocation surface (guide is largely accurate after Slices 36–49; outstanding items are minor)
-* reducing inconsistencies between repo-local (`pnpm cli`) and formal binary (`multiverse`) invocation paths in docs and guides
 
 ## What is intentionally deferred
 
@@ -403,10 +419,12 @@ to relearn it between minor versions?**
 
 Use this preference order:
 
-1. audit the remaining guide and documentation surface for inconsistencies with the now-established help text (Slice 50), output shape spec (Slice 51), and complete Options section (Slice 52)
-2. assess whether utility commands (`validate-worktree`, `validate-repository`) belong on the same public surface as the primary commands — this requires a design decision; do not conflate it with guide cleanup
-3. address any remaining inconsistencies between repo-local (`pnpm cli`) and formal binary (`multiverse`) invocation paths in docs and guides
-4. implementation changes only when the spec or guide alignment work clearly requires them
+1. assess whether utility commands (`validate-worktree`, `validate-repository`) belong on the same public surface as the primary commands — this requires a design decision; do not conflate it with guide cleanup
+2. implementation changes only when the spec or guide alignment work clearly requires them
+
+Note: guide and README alignment with help text (Slice 50), output shape spec (Slice 51), Options
+section (Slice 52), and invocation surface (Slice 53) is now complete. Do not attempt these as
+pending work.
 
 ## Related documents
 
