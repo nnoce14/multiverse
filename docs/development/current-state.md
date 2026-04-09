@@ -15,7 +15,7 @@ This is a short state-of-the-project document, not a full history.
 
 ## Current version posture
 
-Current version posture: **0.5.0-alpha.1**
+Current version posture: **0.6.0-alpha.1**
 
 Interpretation:
 
@@ -24,7 +24,8 @@ Interpretation:
 * the composed application consumer workflow is established and stable
 * the provider model is extensible: a second endpoint shape, a non-first-party authoring path, a parameterized compliance suite, and CLI-level invocation proof are all on `main`
 * all four 0.4.x roadmap exit criteria are met; the extensibility wave is complete
-* `0.5.0-alpha.1` begins the early outside usability phase: the next honest proving question is whether a second engineer can follow the docs and succeed without live guidance
+* all 0.5.x exit criteria are met: the documented second-engineer workflow is proven end-to-end, including real two-worktree auto-discovery/isolation and no-manual-`NODE_OPTIONS` TypeScript provider loading in workspace scope; outside-workspace packaging and distribution remain explicitly deferred
+* `0.6.0-alpha.1` begins the semantic stability phase: the next honest proving question is whether lifecycle semantics, refusal behavior, and naming are consistent and trustworthy across providers, docs, and CLI output
 * 1.0 expectations remain intentionally narrow
 
 ## What is already proven
@@ -233,22 +234,24 @@ distribution remain deferred.
 
 The current priority is:
 
-**`0.5.x` early outside usability — the documented in-repo and within-workspace binary paths are proven, including real multi-worktree proof and no-manual-`NODE_OPTIONS` TypeScript provider loading in workspace scope. The remaining outside-workspace packaging/distribution gap is explicitly deferred.**
+**`0.6.x` semantic stability — lifecycle semantics, refusal behavior, and naming consistency across providers, docs, and CLI output. The `0.5.x` early outside-usability phase is complete. Outside-workspace packaging and distribution remain explicitly deferred.**
 
 ## What kinds of work are highest-value right now
 
-Examples of work that are strongly aligned with the current `0.5.x` phase:
+Examples of work that are strongly aligned with the current `0.6.x` phase:
 
-* bounded truth-alignment and documentation clarity for the now-proven 0.5.x
-  common workflow
-* targeted stability hardening that does not broaden scope or introduce new
-  product behavior
+* tightening lifecycle definitions across provider types (reset, cleanup, validate semantics)
+* clarifying and testing refusal outcomes across all commands and providers
+* naming consistency across docs, code, and CLI output
+* making reset and cleanup behavior predictable for composed multi-provider applications
+* spec or ADR groundwork before any implementation work in this area
 
 ## What is intentionally deferred
 
-The following remain explicitly lower priority for the `0.5.x` phase:
+The following remain explicitly deferred:
 
 * provider packaging and distribution outside the repository as standalone npm packages
+* globally-linked binary usability for non-workspace repositories
 * community-extension workflow optimization
 * generalized plugin/ecosystem framing
 * broad CLI redesign or new command surface
@@ -258,15 +261,14 @@ The following remain explicitly lower priority for the `0.5.x` phase:
 
 When deciding what to work on next, prefer work that answers the current proving question:
 
-**Can a second engineer follow the existing docs and successfully run a
-Multiverse-isolated application without live guidance?**
+**Are Multiverse lifecycle semantics, refusal behavior, and naming consistent and
+trustworthy across providers, docs, and CLI output?**
 
 Use this preference order:
 
-1. identify and close the most load-bearing cold-start friction in the current docs
-2. prove (by demonstration or test) that the documented common-case workflow is
-   reproducible from scratch
-3. truth-align docs where they reference stale posture or phase language
+1. identify lifecycle or refusal behavior that is ambiguous or inconsistent across provider types
+2. establish clear definitions through spec or ADR work before writing implementation code
+3. validate that docs, code, and CLI output use consistent terminology
 4. only then broader surface polish or new capabilities
 
 ## Related documents
