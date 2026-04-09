@@ -272,26 +272,40 @@ No new refusal categories. No CLI redesign.
 
 ---
 
-### Slice 48 — Worktree identity and consumer integration alignment (docs-only)
+### Slice 48 — Worktree identity scenario alignment (docs-only)
 
-**Primary question**: Are the worktree identity scenarios consistent with ADR-0021 behavior,
-and is the appEnv/derive exclusion explicitly classified?
+**Primary question**: Are the worktree identity scenarios consistent with ADR-0021
+auto-discovery behavior?
 
 **Likely file changes**:
 - `docs/scenarios/worktree-identity.scenarios.md` — annotate the main checkout identity
   scenario to clarify it applies to the explicit `--worktree-id main` case; add a scenario
-  for auto-discovery behavior (discovered id = path basename, not guaranteed to be `"main"`)
-- ADR-0018 or a brief follow-on note — explicitly classify `appEnv` injection for
-  `derive --format=env` as deferred rather than as an oversight
-- Review consumer integration model docs for any remaining undocumented assumptions
+  for auto-discovery behavior (discovered id = path basename, not guaranteed to be `"main"`);
+  add a scenario for auto-discovery refusal (git unavailable or no matching worktree path)
 
-**Out of scope**: Implementation changes, new appEnv semantics, new discovery behavior.
+**Out of scope**: Implementation changes, new discovery behavior, consumer integration changes.
+
+---
+
+### Slice 49 — Consumer integration alignment (docs-only)
+
+**Primary question**: Is the `appEnv` exclusion from `derive --format=env` explicitly
+classified as a deliberate design decision rather than an oversight?
+
+**Likely file changes**:
+- ADR-0018 or a brief follow-on note — explicitly classify `appEnv` injection for
+  `derive --format=env` as deferred rather than as an oversight; note that the exclusion
+  was explicit and intentional in the 0.3.x scope decision
+- Review consumer integration model docs for any remaining undocumented assumptions
+  after the 0.5.x proving wave
+
+**Out of scope**: Implementation changes, new appEnv semantics, new derive output formats.
 
 ---
 
 ## Out of scope for this planning slice
 
-- Spec or scenario changes (belong to Slices 45–48)
+- Spec or scenario changes (belong to Slices 45–49)
 - ADR authoring (deferred to individual slices)
 - Implementation changes of any kind
 - New provider packages or provider shapes
@@ -302,7 +316,9 @@ and is the appEnv/derive exclusion explicitly classified?
 
 - `docs/development/dev-slice-44.md` (this file) is present and internally consistent
 - `docs/development/dev-slice-44-scenario-map.md` is present and maps all six seams
-- `docs/development/current-state.md` and `docs/development/roadmap.md` reflect
-  `0.6.0-alpha.1` posture and point to 0.6.x semantic stability as current priority
+- `docs/development/current-state.md` reflects `0.6.0-alpha.1` posture and the Slice 44
+  planning findings (updated in this PR)
+- `docs/development/roadmap.md` reflects `0.6.0-alpha.1` posture and immediate direction
+  pointing to 0.6.x semantic stability (updated in PR #110, already merged to main)
 - No implementation, spec, or ADR changes are introduced in this slice
-- The proposed slice sequence is narrow, bounded, and ordered by priority
+- The proposed slice sequence (Slices 45–49) is narrow, bounded, and ordered by priority

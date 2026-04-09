@@ -189,7 +189,7 @@ Source-of-truth precedence order (from CLAUDE.md):
 
 ### Gaps and responsible slice
 
-- **Slice 48**: Add explicit deferred classification for `appEnv` injection in
+- **Slice 49**: Add explicit deferred classification for `appEnv` injection in
   `derive --format=env` to ADR-0018 or a brief follow-on note; clarify this was excluded
   by design and is not an oversight
 - The remainder of this seam is well-covered and stable
@@ -232,6 +232,7 @@ Source-of-truth precedence order (from CLAUDE.md):
 - The "recreated worktree" scenario remains aspirational and deferred (requires a persistent
   registry); no change needed
 
+
 ---
 
 ## Summary: gap inventory by slice
@@ -241,7 +242,8 @@ Source-of-truth precedence order (from CLAUDE.md):
 | 45 | Seam 1, Seam 4 | Spec + scenarios + guide update; docs-only |
 | 46 | Seam 2 | Decision + narrow implementation or explicit deferral |
 | 47 | Seam 3, Seam 4 | Docs + targeted CLI messaging audit; narrow fixes only |
-| 48 | Seam 5, Seam 6 | Docs-only; scenario annotation and deferred classification |
+| 48 | Seam 6 | Docs-only; worktree identity scenario annotation |
+| 49 | Seam 5 | Docs-only; appEnv/derive deferred classification |
 
 ## Items confirmed stable — no 0.6.x work required
 
