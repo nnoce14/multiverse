@@ -1,5 +1,8 @@
-import { describe, it, expect } from "vitest";
-import type { DerivedResourcePlan, ResourceReset, ResourceCleanup, Refusal } from "@multiverse/provider-contracts";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import type { DerivedResourcePlan, ResourceReset, ResourceCleanup, ResourceValidation, Refusal } from "@multiverse/provider-contracts";
 import { createPathScopedProvider } from "@multiverse/provider-path-scoped";
 
 function isDerivedResourcePlan(value: DerivedResourcePlan | Refusal): value is DerivedResourcePlan {
@@ -136,5 +139,119 @@ describe("resource provider contract: path-scoped cleanup", () => {
     expect(cleanup.capability).toBe("cleanup");
     expect(cleanup.resourceName).toBe("sqlite-db");
     expect(cleanup.worktreeId).toBe("feature-login");
+  });
+});
+
+describe("resource provider contract: path-scoped validate", () => {
+  let tmpDir: string;
+  let existingPath: string;
+
+  beforeAll(async () => {
+    tmpDir = await mkdtemp(join(tmpdir(), "multiverse-validate-test-"));
+    existingPath = tmpDir;
+  });
+
+  afterAll(async () => {
+    await rm(tmpDir, { recursive: true, force: true });
+  });
+
+  it("declares validate capability", () => {
+    const provider = createPathScopedProvider({ baseDir: "/var/multiverse" });
+    expect(provider.capabilities?.validate).toBe(true);
+  });
+
+  it("returns a ResourceValidation when the derived path exists", () => {
+    const provider = createPathScopedProvider({ baseDir: tmpDir });
+    const resourceInput = {
+      name: "sqlite-db",
+      provider: "path-scoped",
+      isolationStrategy: "path-scoped" as const,
+      scopedValidate: true,
+      scopedReset: false,
+      scopedCleanup: false
+    };
+    const derived = {
+      resourceName: "sqlite-db",
+      provider: "path-scoped",
+      isolationStrategy: "path-scoped" as const,
+      worktreeId: "feature-login",
+      handle: existingPath
+    };
+
+    expect(provider.validateResource).toBeDefined();
+    if (!provider.validateResource) return;
+
+    const result = provider.validateResource({
+      resource: resourceInput,
+      derived,
+      worktree: { id: "feature-login" }
+    });
+
+    const validation = result as ResourceValidation;
+    expect(validation.capability).toBe("validate");
+    expect(validation.resourceName).toBe("sqlite-db");
+    expect(validation.worktreeId).toBe("feature-login");
+  });
+
+  it("returns a provider_failure Refusal when the derived path is not accessible", () => {
+    const provider = createPathScopedProvider({ baseDir: "/var/multiverse" });
+    const resourceInput = {
+      name: "sqlite-db",
+      provider: "path-scoped",
+      isolationStrategy: "path-scoped" as const,
+      scopedValidate: true,
+      scopedReset: false,
+      scopedCleanup: false
+    };
+    const derived = {
+      resourceName: "sqlite-db",
+      provider: "path-scoped",
+      isolationStrategy: "path-scoped" as const,
+      worktreeId: "feature-login",
+      handle: "/var/multiverse/sqlite-db/feature-login/does-not-exist"
+    };
+
+    expect(provider.validateResource).toBeDefined();
+    if (!provider.validateResource) return;
+
+    const result = provider.validateResource({
+      resource: resourceInput,
+      derived,
+      worktree: { id: "feature-login" }
+    }) as Refusal;
+
+    expect(result.category).toBe("provider_failure");
+    expect(result.reason).toContain("sqlite-db");
+    expect(result.reason).toContain(derived.handle);
+  });
+
+  it("returns an unsafe_scope Refusal when worktree.id is absent", () => {
+    const provider = createPathScopedProvider({ baseDir: "/var/multiverse" });
+    const resourceInput = {
+      name: "sqlite-db",
+      provider: "path-scoped",
+      isolationStrategy: "path-scoped" as const,
+      scopedValidate: true,
+      scopedReset: false,
+      scopedCleanup: false
+    };
+    const derived = {
+      resourceName: "sqlite-db",
+      provider: "path-scoped",
+      isolationStrategy: "path-scoped" as const,
+      worktreeId: "feature-login",
+      handle: "/var/multiverse/sqlite-db/feature-login"
+    };
+
+    expect(provider.validateResource).toBeDefined();
+    if (!provider.validateResource) return;
+
+    const result = provider.validateResource({
+      resource: resourceInput,
+      derived,
+      worktree: { id: "" }
+    }) as Refusal;
+
+    expect(result.category).toBe("unsafe_scope");
   });
 });

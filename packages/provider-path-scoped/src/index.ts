@@ -1,8 +1,10 @@
+import { accessSync } from "node:fs";
 import { join } from "node:path";
 import { rm } from "node:fs/promises";
 import type {
   ResourceProvider,
   DerivedResourcePlan,
+  ResourceValidation,
   ResourceReset,
   ResourceCleanup,
   Refusal
@@ -22,6 +24,7 @@ function unsafeScope(): Refusal {
 export function createPathScopedProvider(config: PathScopedProviderConfig): ResourceProvider {
   return {
     capabilities: {
+      validate: true,
       reset: true,
       cleanup: true
     },
@@ -37,6 +40,28 @@ export function createPathScopedProvider(config: PathScopedProviderConfig): Reso
         isolationStrategy: "path-scoped",
         worktreeId: worktree.id,
         handle: join(config.baseDir, resource.name, worktree.id)
+      };
+    },
+
+    validateResource({ resource, derived, worktree }): ResourceValidation | Refusal {
+      if (!worktree.id) {
+        return unsafeScope();
+      }
+
+      try {
+        accessSync(derived.handle);
+      } catch {
+        return {
+          category: "provider_failure",
+          reason: `Path-scoped resource '${resource.name}' is not accessible at: ${derived.handle}`
+        };
+      }
+
+      return {
+        resourceName: resource.name,
+        provider: resource.provider,
+        worktreeId: derived.worktreeId,
+        capability: "validate"
       };
     },
 

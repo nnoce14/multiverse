@@ -65,3 +65,19 @@ Then the second worktree's isolated resource state remains unchanged
 Given a resource operation that would destroy or reinitialize resource state
 When the tool cannot safely determine the owning worktree scope
 Then the tool does not proceed silently with the destructive action
+
+## Scenario: path-scoped validate confirms the derived path is accessible
+
+Given a path-scoped resource that declares scopedValidate
+And the derived resource path exists on the local filesystem
+When the tool validates the resource for a worktree instance
+Then the provider confirms the derived path is accessible
+And validation succeeds for that worktree instance
+
+## Scenario: path-scoped validate refuses when the derived path is not accessible
+
+Given a path-scoped resource that declares scopedValidate
+And the derived resource path does not exist on the local filesystem
+When the tool validates the resource for a worktree instance
+Then the provider refuses with a provider_failure
+And the refusal message identifies the inaccessible path
