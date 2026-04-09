@@ -21,52 +21,6 @@ describe("Development Slice 10 acceptance", () => {
     new URL("./fixtures/explicit-test-providers.ts", import.meta.url)
   );
 
-  it("accepts valid raw worktree identity input through the CLI", async () => {
-    const outcome = await runCli([
-      "validate-worktree",
-      "--worktree-id",
-      "wt-cli-valid"
-    ]);
-
-    expect(outcome).toEqual({
-      exitCode: 0,
-      stdout: [
-        JSON.stringify({
-          ok: true,
-          value: {
-            kind: "worktree_identity",
-            value: "wt-cli-valid"
-          }
-        })
-      ],
-      stderr: []
-    });
-  });
-
-  it("rejects invalid raw worktree identity input through the CLI", async () => {
-    const outcome = await runCli([
-      "validate-worktree",
-      "--worktree-id",
-      "   "
-    ]);
-
-    expect(outcome).toEqual({
-      exitCode: 1,
-      stdout: [
-        JSON.stringify({
-          ok: false,
-          errors: [
-            {
-              path: "worktreeId",
-              code: "invalid_value"
-            }
-          ]
-        })
-      ],
-      stderr: []
-    });
-  });
-
   it("accepts valid raw repository configuration input through the CLI", async () => {
     const tempDir = await mkdtemp(path.join(tmpdir(), "multiverse-cli-"));
     tempDirs.push(tempDir);

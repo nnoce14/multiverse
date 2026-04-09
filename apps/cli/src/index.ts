@@ -9,8 +9,7 @@ import {
   deriveAndValidateOne,
   resetOneResource,
   deriveOne,
-  validateRepositoryConfiguration,
-  validateWorktreeIdentity
+  validateRepositoryConfiguration
 } from "@multiverse/core";
 import type {
   DeriveOneResult,
@@ -185,7 +184,6 @@ const USAGE_LINES = [
   "  run        [--config PATH] [--providers MODULE] [--worktree-id VALUE] -- <cmd> [args...]",
   "",
   "Utility commands (declaration validation):",
-  "  validate-worktree    --worktree-id VALUE",
   "  validate-repository  --config PATH",
   "",
   "Options:",
@@ -521,19 +519,6 @@ async function defaultChildProcessRunner(input: {
   });
 }
 
-async function handleValidateWorktree(args: string[]): Promise<CliResult> {
-  const worktreeId = readRequiredOption(args, "--worktree-id");
-  if (isCliResult(worktreeId)) {
-    return worktreeId;
-  }
-
-  const result = validateWorktreeIdentity({
-    worktreeId
-  });
-
-  return result.ok ? success(result) : failure(result);
-}
-
 async function handleValidateRepository(args: string[]): Promise<CliResult> {
   const configPath = readRequiredOption(args, "--config");
   if (isCliResult(configPath)) {
@@ -659,10 +644,6 @@ export async function runCli(args: string[], options: RunCliOptions = {}): Promi
 
   if (command === "--help" || command === "-h") {
     return help();
-  }
-
-  if (command === "validate-worktree") {
-    return handleValidateWorktree(args);
   }
 
   if (command === "validate-repository") {

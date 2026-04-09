@@ -2,7 +2,12 @@
 
 ## Status
 
-**Open — awaiting product decision.**
+**Resolved — Option B implemented (Slice 56).**
+
+`validate-worktree` removed; `validate-repository` retained. See
+`docs/development/tasks/dev-slice-56-task-01.md` and the ADR-0021 amendment.
+
+---
 
 This memo records the current truth, explicit options, and a recommendation
 for the `validate-worktree` / `validate-repository` surface question that

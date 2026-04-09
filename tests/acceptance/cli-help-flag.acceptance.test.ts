@@ -64,15 +64,15 @@ describe("CLI --help flag (Slice 50)", () => {
     expect(text).toMatch(/--format\s+json\|env/);
   });
 
-  it("--help output includes a utility-commands section label before validate-worktree and validate-repository", async () => {
+  it("--help output includes a utility-commands section label before validate-repository", async () => {
     const outcome = await runCli(["--help"]);
     const text = outcome.stdout.join("\n");
     expect(text).toContain("Utility commands");
-    // label must appear before both utility commands
+    expect(text).toContain("validate-repository");
+    expect(text).not.toContain("validate-worktree");
+    // label must appear before validate-repository
     const labelIdx = text.indexOf("Utility commands");
-    const vtIdx = text.indexOf("validate-worktree");
     const vrIdx = text.indexOf("validate-repository");
-    expect(labelIdx).toBeLessThan(vtIdx);
     expect(labelIdx).toBeLessThan(vrIdx);
   });
 });
