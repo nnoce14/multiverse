@@ -394,9 +394,25 @@ The following 0.7.x items are also complete:
 * ~~aligning guide examples with actual invocation surface~~ — done (Slice 53): README and guide now reference `--help`/`-h`, `cli-output-shapes.md`, and use `pnpm cli --help` as the bare invocation entry point
 * ~~reducing inconsistencies between repo-local (`pnpm cli`) and formal binary (`multiverse`) invocation paths in docs~~ — done (Slice 53): README Common commands now shows `pnpm cli --help` rather than exit-1 bare `pnpm cli`
 
+**Is the utility-command surface classification explicit, and what remains deferred?**
+
+Slice 54 answers the first part: yes, after a narrow planning audit and minimal help-text fix.
+`validate-worktree` and `validate-repository` are declaration-validation utilities — they check
+that a worktree identity string or repository config file is well-formed before any isolation
+operation. They are not primary workflow commands. The `cli-output-shapes.md` spec already
+explicitly excluded them; the guide already omitted them. The gap was that USAGE_LINES had no
+section label distinguishing them from primary commands. A `"Utility commands (declaration
+validation):"` label is now added, mirroring the existing `"Options:"` subsection pattern. The
+`cli-output-shapes.md` exclusion note is expanded to explain the reason. Two product decisions
+remain deferred: (1) whether `validate-worktree` should be removed — since Slice 37 auto-
+discovery, worktree identity validation is embedded in every primary command's path, making the
+standalone command largely redundant; (2) whether to restructure these commands or document them
+as diagnostic tools in the guide.
+
 Examples of work still aligned with the current `0.7.x` phase:
 
-* examining whether `validate-worktree` and `validate-repository` utility commands belong on the same surface as `derive`, `run`, `reset`, `cleanup`, `validate` (deferred — needs a design decision about removal/move; Slice 50 USAGE_LINES visually separates them)
+* determining whether `validate-worktree` should be retained or removed — now that auto-discovery (Slice 37) validates worktree identity inline, the standalone command has limited additional value; this requires a product decision
+* determining whether utility commands should be restructured (e.g., subcommand namespace) or documented in the guide as diagnostic tools — requires a product decision / new ADR
 
 ## What is intentionally deferred
 
@@ -419,12 +435,13 @@ to relearn it between minor versions?**
 
 Use this preference order:
 
-1. assess whether utility commands (`validate-worktree`, `validate-repository`) belong on the same public surface as the primary commands — this requires a design decision; do not conflate it with guide cleanup
-2. implementation changes only when the spec or guide alignment work clearly requires them
+1. make the product decision on `validate-worktree` retention vs removal — the command is now
+   classified as a declaration-validation utility (Slice 54) but whether it should be retained
+   given inline validation in primary commands is unresolved; this requires a product decision
+2. implementation changes only when a product decision or new ADR explicitly supports them
 
-Note: guide and README alignment with help text (Slice 50), output shape spec (Slice 51), Options
-section (Slice 52), and invocation surface (Slice 53) is now complete. Do not attempt these as
-pending work.
+Note: guide and README alignment (Slices 50–53) and utility-command section classification
+(Slice 54) are complete. Do not attempt these as pending work.
 
 ## Related documents
 
