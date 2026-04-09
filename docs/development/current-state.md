@@ -230,6 +230,17 @@ with a TypeScript providers module without manually setting
 `NODE_OPTIONS="--import tsx/esm"`. Outside-workspace provider packaging and
 distribution remain deferred.
 
+**What are the semantic stability gaps that constitute the 0.6.x proving wave?**
+
+Slice 44 establishes the planning baseline for `0.6.x`. A full provider lifecycle
+capability matrix, a six-seam stability audit, and a proposed follow-on slice sequence
+are documented in `docs/development/dev-slice-44.md`. The scenario-to-source-of-truth
+cross-reference is in `docs/development/dev-slice-44-scenario-map.md`. Key findings:
+no first-party provider implements `validateResource()` (spec gap); the scope-confirmation
+vs effectful lifecycle distinction is proven in code but absent from spec docs; the
+worktree identity scenario for the main checkout is inconsistent with ADR-0021
+auto-discovery behavior. Four follow-on slices (45–48) are proposed to close these gaps.
+
 ## Current priority
 
 The current priority is:
