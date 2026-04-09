@@ -352,6 +352,16 @@ field names, output routing, and exit codes for every primary command in both su
 paths. No production code was changed. Deferred: `validate-worktree`/`validate-repository`
 output shape classification; per-command help; utility-command surface classification.
 
+**Is the `--help` Options section complete — does it document all supported flags?**
+
+Slice 52 answers yes, after two additions to `USAGE_LINES`. The Options section introduced in
+Slice 50 omitted two flags: (1) `--help` / `-h` itself — the help text did not self-describe the
+flag that produces it; (2) `--format json|env` — visible in the derive command line but not
+described in the Options section. Both are now listed in named subsections: a global "Options:"
+for `--help`/`-h` and "Options (derive only):" for `--format`. The `current-state.md` "What
+kinds of work" section was also updated to retire the two completed items (help-output and
+output-shape entries) and bring the "Practical instruction" guidance current.
+
 ## Current priority
 
 The current priority is:
@@ -360,12 +370,16 @@ The current priority is:
 
 ## What kinds of work are highest-value right now
 
-Examples of work that are strongly aligned with the current `0.7.x` phase:
+The following 0.7.x items are complete:
 
-* auditing and improving CLI help output (the current `--help` surface is a raw usage string, not a structured help system)
-* examining whether `validate-worktree` and `validate-repository` utility commands belong on the same surface as `derive`, `run`, `reset`, `cleanup`, `validate`
-* specifying expected output shape for each command in source-of-truth docs (no output-format spec exists for `derive`, `validate`, `reset`, `cleanup` result shapes)
-* aligning guide examples with actual invocation surface
+* ~~auditing and improving CLI help output~~ — done (Slice 50): `--help`/`-h` exit 0, structured multi-line USAGE_LINES
+* ~~specifying expected output shape for each command in source-of-truth docs~~ — done (Slice 51): `docs/spec/cli-output-shapes.md` with executable acceptance tests
+* ~~completing the `--help` Options section~~ — done (Slice 52): `--help`/`-h` and `--format` now described in Options subsections
+
+Examples of work still aligned with the current `0.7.x` phase:
+
+* examining whether `validate-worktree` and `validate-repository` utility commands belong on the same surface as `derive`, `run`, `reset`, `cleanup`, `validate` (deferred — needs a design decision about removal/move; Slice 50 USAGE_LINES visually separates them)
+* aligning guide examples with actual invocation surface (guide is largely accurate after Slices 36–49; outstanding items are minor)
 * reducing inconsistencies between repo-local (`pnpm cli`) and formal binary (`multiverse`) invocation paths in docs and guides
 
 ## What is intentionally deferred
@@ -389,10 +403,10 @@ to relearn it between minor versions?**
 
 Use this preference order:
 
-1. audit the CLI surface before changing it — identify specific inconsistencies across help text, output shape, flag naming, and guide examples
-2. establish expected output shapes and invocation conventions in source-of-truth docs before modifying code
-3. assess whether utility commands (`validate-worktree`, `validate-repository`) belong on the same public surface as the primary commands
-4. only then implementation changes that align code with the stabilized surface spec
+1. audit the remaining guide and documentation surface for inconsistencies with the now-established help text (Slice 50), output shape spec (Slice 51), and complete Options section (Slice 52)
+2. assess whether utility commands (`validate-worktree`, `validate-repository`) belong on the same public surface as the primary commands — this requires a design decision; do not conflate it with guide cleanup
+3. address any remaining inconsistencies between repo-local (`pnpm cli`) and formal binary (`multiverse`) invocation paths in docs and guides
+4. implementation changes only when the spec or guide alignment work clearly requires them
 
 ## Related documents
 
