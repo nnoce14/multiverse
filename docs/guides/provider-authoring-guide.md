@@ -172,12 +172,26 @@ import type { ResourceProvider } from "@multiverse/provider-contracts";
 export function createMyStatefulProvider(): ResourceProvider {
   return {
     capabilities: {
+      validate: true,
       reset: true,
       cleanup: true
     },
 
     deriveResource({ resource, worktree }) {
       // ... derive logic
+    },
+
+    validateResource({ resource, derived, worktree }) {
+      if (!worktree.id) {
+        return { category: "unsafe_scope", reason: "Worktree identity is required." };
+      }
+      // ... verify derived scope is usable (provider-specific check)
+      return {
+        resourceName: resource.name,
+        provider: resource.provider,
+        worktreeId: derived.worktreeId,
+        capability: "validate"
+      };
     },
 
     async resetResource({ resource, derived, worktree }) {
@@ -208,6 +222,10 @@ export function createMyStatefulProvider(): ResourceProvider {
   };
 }
 ```
+
+`validateResource` is synchronous and returns `ResourceValidation | Refusal` directly.
+Use it to verify that the derived scope is in a usable state — for example, that a required
+path or backing resource exists. If the check fails, return a `provider_failure` Refusal.
 
 **Do not declare a capability you cannot safely perform.** Core will refuse if a
 declared resource configuration requests a capability the registered provider does

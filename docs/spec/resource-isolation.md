@@ -97,6 +97,7 @@ Each resource must declare:
 - a resource name
 - a provider
 - a primary isolation strategy
+- whether scoped validate is supported (optional; defaults to false)
 - whether scoped reset is supported
 - whether scoped cleanup is supported
 

@@ -255,6 +255,24 @@ scope-confirmation section with a code example, and a built-in provider referenc
 documenting process-scoped readiness (fixed-interval wait after spawn) and the
 process-port-scoped `{PORT}` placeholder substitution.
 
+**Is the validate capability seam — contract, core orchestration, CLI, and at least one
+first-party provider — proven end to end?**
+
+Slice 46 answers yes. The validate seam was already fully wired in core and CLI; the gap
+was that no first-party production provider implemented `validateResource()`. For path-
+scoped, "verify derived scope is usable" maps directly to `accessSync(derived.handle)`:
+if the path exists, return `ResourceValidation`; if not, return a `provider_failure`
+Refusal identifying the inaccessible path. `provider-path-scoped` now declares
+`capabilities.validate: true` and implements the synchronous `validateResource` method.
+`docs/spec/resource-isolation.md` now lists `scopedValidate` as an optional declaration
+field (defaults to false, was previously omitted). `docs/scenarios/resource-isolation
+.scenarios.md` adds two scenarios: path-scoped validate confirms an accessible path, and
+path-scoped validate refuses with `provider_failure` when the path is not accessible.
+`docs/guides/provider-authoring-guide.md` adds a `validateResource` example to the
+capabilities section. Four new contract tests in `resource-provider.path-scoped.contract
+.test.ts` cover: declares validate capability, succeeds when path exists, refuses on
+unsafe scope, refuses when path not accessible.
+
 ## Current priority
 
 The current priority is:
