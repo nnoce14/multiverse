@@ -324,6 +324,19 @@ misleading since `run` also injects appEnv aliases not present in derive output.
 sentence is corrected to accurately describe what each command outputs and where the
 boundary lies.
 
+**Is the `--help` / `-h` flag behavior correct, and is the usage string readable?**
+
+Slice 50 answers yes, after two narrow fixes. (1) `--help` and `-h` previously fell through the
+unknown-command path and exited 1 — the guide explicitly documents `multiverse --help` as a
+verification step in the globally-linked binary section, so exit 1 was incorrect. Both flags
+now return exit 0 with help text written to stdout. (2) The usage string was a single 250+
+character unreadable blob. It is now a structured multi-line text showing primary commands and
+options in a scannable layout. The utility commands (`validate-worktree`,
+`validate-repository`) are retained in the help output; their surface classification is a
+separate question deferred to a later 0.7.x slice. Acceptance tests were added for `--help`
+and `-h` exit code and output routing; the Slice 41 tests for usage string content were
+updated to work with multi-line output.
+
 ## Current priority
 
 The current priority is:
