@@ -216,6 +216,41 @@ not support.
 Endpoint providers are derive-only in the current scope. Optional lifecycle
 capabilities for endpoint providers are not supported.
 
+### Scope-confirmation lifecycle
+
+A provider that owns no mutable state of its own may implement `resetResource` and
+`cleanupResource` as scope-confirmation operations. This is correct when the provider's
+derived handle is a logical identifier — a name, prefix, or label — rather than physical
+state that the provider manages directly.
+
+Scope-confirmation means returning the standard result metadata to confirm that the
+correct worktree scope was recognized, without performing any side effects.
+
+```typescript
+async resetResource({ resource, derived, worktree }) {
+  if (!worktree.id) {
+    return { category: "unsafe_scope", reason: "Worktree identity is required." };
+  }
+  // No state to destroy. Return scope-confirmation result.
+  return {
+    resourceName: resource.name,
+    provider: resource.provider,
+    worktreeId: derived.worktreeId,
+    capability: "reset"
+  };
+}
+```
+
+The built-in `name-scoped` provider uses this pattern: it derives a scoped name
+(`resourceName_worktreeId`) but owns no state — the underlying database or namespace
+is managed by the backing system, not by the provider. Declaring `reset: true` and
+`cleanup: true` with scope-confirmation implementations means the provider participates
+correctly in the lifecycle contract without claiming ownership of state it does not hold.
+
+Providers that do own physical state — filesystem paths, process instances — should
+perform the appropriate side effect during `resetResource` and `cleanupResource` rather
+than using scope-confirmation.
+
 ---
 
 ## Refusal behavior
@@ -353,3 +388,44 @@ What is **not** covered here:
   repository. That packaging workflow is not addressed in the current scope.
 - Provider discovery or auto-registration. Provider selection is always explicit
   in repository configuration.
+
+---
+
+## Built-in provider behavior reference
+
+The following documents specific behaviors of first-party providers shipped with
+Multiverse. This section is informational — it describes existing implementations,
+not requirements that apply to all custom providers.
+
+### process-scoped: readiness semantics
+
+The `provider-process-scoped` provider launches an explicit child process on
+`resetResource` and performs a readiness check after spawn. The current implementation
+uses a fixed-interval wait: after the process is spawned, the provider waits a short
+interval and checks that the process is still alive. If the process exits during that
+interval, the provider refuses.
+
+This is the current minimal readiness contract. ADR-0015 defines readiness as explicit
+and provider-defined and lists richer strategies (port reachability, health check) as
+possibilities; those remain deferred.
+
+### process-port-scoped: `{PORT}` placeholder
+
+The `provider-process-port-scoped` provider derives a deterministic port for the worktree
+instance. It substitutes a `{PORT}` placeholder in the user-supplied launch command with
+that derived port value at launch time. This allows the launched process to bind to its
+correct isolated port.
+
+Example provider configuration:
+
+```typescript
+createProcessPortScopedProvider({
+  baseDir: join(tmpdir(), "my-app"),
+  basePort: 6000,
+  command: ["node", "server.js", "--port", "{PORT}"]
+})
+```
+
+When the provider launches the process for a given worktree instance, `{PORT}` is replaced
+with the derived port value for that instance. The same port value is exposed as the
+`host:port` resource handle through `MULTIVERSE_RESOURCE_<NAME>`.

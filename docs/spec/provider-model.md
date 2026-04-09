@@ -84,15 +84,33 @@ Validation behavior is provider-specific and optional.
 
 ### Reset
 
+Reset prepares a worktree instance's isolated state for fresh use.
+
 Reset reinitializes or destroys only the isolated state belonging to one worktree instance.
+The intent of reset is that the worktree instance will continue in use: isolated state is
+cleared so the next run starts fresh, not permanently removed.
 
 Reset is destructive and optional.
 
+A provider that owns no mutable state may implement reset as a scope-confirmation operation:
+returning the standard reset result to confirm that the correct worktree scope was recognized,
+without performing any side effects. This is the correct behavior for a provider whose derived
+handle is a logical identifier rather than physical state the provider manages directly.
+
 ### Cleanup
 
-Cleanup removes tool-generated or provider-managed isolated state belonging only to one worktree instance when that state is no longer needed.
+Cleanup permanently removes tool-generated or provider-managed state belonging only to a
+single worktree instance when that worktree is no longer needed.
+
+The intent of cleanup is finality: the isolated state is removed with the expectation that
+the worktree instance will not continue in use. This distinguishes cleanup from reset —
+reset clears state so the next run can proceed; cleanup removes state because the next
+run is not expected.
 
 Cleanup may be destructive and is optional.
+
+A provider that owns no mutable state may implement cleanup as a scope-confirmation operation
+for the same reason as reset.
 
 ## Safety Rules
 
