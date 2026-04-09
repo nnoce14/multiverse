@@ -174,6 +174,28 @@ function findAppEnvConflict(
   return undefined;
 }
 
+const USAGE_LINES = [
+  "Usage: multiverse <command> [options]",
+  "",
+  "Commands:",
+  "  derive     [--config PATH] [--providers MODULE] [--worktree-id VALUE] [--format json|env]",
+  "  validate   [--config PATH] [--providers MODULE] [--worktree-id VALUE]",
+  "  reset      [--config PATH] [--providers MODULE] [--worktree-id VALUE]",
+  "  cleanup    [--config PATH] [--providers MODULE] [--worktree-id VALUE]",
+  "  run        [--config PATH] [--providers MODULE] [--worktree-id VALUE] -- <cmd> [args...]",
+  "  validate-worktree    --worktree-id VALUE",
+  "  validate-repository  --config PATH",
+  "",
+  "Options (derive, validate, reset, cleanup, run):",
+  "  --config PATH        Repository configuration file (default: ./multiverse.json)",
+  "  --providers MODULE   Providers module path (default: ./providers.ts)",
+  "  --worktree-id VALUE  Worktree identity (auto-discovered from git state when omitted)",
+];
+
+function help(): CliResult {
+  return { exitCode: 0, stdout: USAGE_LINES, stderr: [] };
+}
+
 function usage(message: string): CliResult {
   return {
     exitCode: 1,
@@ -627,6 +649,10 @@ export async function runCli(args: string[], options: RunCliOptions = {}): Promi
   const parentEnv = options.parentEnv ?? process.env;
   const [command] = args;
 
+  if (command === "--help" || command === "-h") {
+    return help();
+  }
+
   if (command === "validate-worktree") {
     return handleValidateWorktree(args);
   }
@@ -655,9 +681,7 @@ export async function runCli(args: string[], options: RunCliOptions = {}): Promi
     return handleRun(args, cwd, runner, parentEnv);
   }
 
-  return usage(
-    "Usage: multiverse <validate-worktree --worktree-id VALUE | validate-repository --config PATH | derive [--config PATH] [--providers MODULE] [--worktree-id VALUE] | validate [--config PATH] [--providers MODULE] [--worktree-id VALUE] | reset [--config PATH] [--providers MODULE] [--worktree-id VALUE] | cleanup [--config PATH] [--providers MODULE] [--worktree-id VALUE] | run [--config PATH] [--providers MODULE] [--worktree-id VALUE] -- <cmd> [args...]>"
-  );
+  return { exitCode: 1, stdout: [], stderr: USAGE_LINES };
 }
 
 export async function main(): Promise<void> {
