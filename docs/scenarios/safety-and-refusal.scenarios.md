@@ -31,6 +31,13 @@ When the tool requests validation
 And safe worktree-instance ownership cannot be determined
 Then the operation is refused
 
+## Scenario: unsafe scope causes refusal during run
+
+Given a declared repository
+When the tool requests run
+And safe worktree-instance ownership cannot be determined
+Then the operation is refused
+
 ## Scenario: unsafe scope causes refusal during reset
 
 Given a declared repository object

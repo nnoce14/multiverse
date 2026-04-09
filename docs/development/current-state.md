@@ -273,6 +273,25 @@ capabilities section. Four new contract tests in `resource-provider.path-scoped.
 .test.ts` cover: declares validate capability, succeeds when path exists, refuses on
 unsafe scope, refuses when path not accessible.
 
+**Are refusal categories consistent and actionable in CLI output, and is the spec/contract
+naming split documented clearly enough that a second engineer will not mistake it for
+inconsistency?**
+
+Slice 47 answers yes. A full refusal audit across all five commands (derive, validate, run,
+reset, cleanup) found no category conflation: every command emits the correct `category`
+value for every failure path. Three narrow gaps were closed. (1) `docs/spec/safety-and-
+refusal.md` now explicitly documents that the four category names correspond to `category`
+field values in `@multiverse/provider-contracts` `Refusal` type — the spec uses human-
+readable names (spaces) and the contract uses underscore identifiers; both refer to the
+same four categories at different layers. (2) `run` is now listed in "Operations Subject
+to Refusal" (it was technically covered by "but is not limited to" language but was not
+listed explicitly, even though `run` calls `deriveOne` and is refused on unsafe scope).
+(3) A scenario for "unsafe scope causes refusal during run" was added to
+`docs/scenarios/safety-and-refusal.scenarios.md`, consistent with the existing pattern for
+derive, validate, reset, and cleanup. The one observed behavioral asymmetry — `run` routes
+refusal output to stderr while other commands use stdout — is in the spec's explicitly open
+area ("refusal reporting format") and was not changed.
+
 ## Current priority
 
 The current priority is:
