@@ -15,7 +15,7 @@ This is a short state-of-the-project document, not a full history.
 
 ## Current version posture
 
-Current version posture: **0.6.0-alpha.1**
+Current version posture: **0.7.0-alpha.1**
 
 Interpretation:
 
@@ -25,7 +25,8 @@ Interpretation:
 * the provider model is extensible: a second endpoint shape, a non-first-party authoring path, a parameterized compliance suite, and CLI-level invocation proof are all on `main`
 * all four 0.4.x roadmap exit criteria are met; the extensibility wave is complete
 * all 0.5.x exit criteria are met: the documented second-engineer workflow is proven end-to-end, including real two-worktree auto-discovery/isolation and no-manual-`NODE_OPTIONS` TypeScript provider loading in workspace scope; outside-workspace packaging and distribution remain explicitly deferred
-* `0.6.0-alpha.1` begins the semantic stability phase: the next honest proving question is whether lifecycle semantics, refusal behavior, and naming are consistent and trustworthy across providers, docs, and CLI output
+* all 0.6.x exit criteria are met: lifecycle semantics, refusal behavior, naming, worktree identity accuracy, and consumer integration boundaries are now aligned across spec, ADR, scenarios, and guide docs; the planned six-seam semantic stability wave (Slices 44–49) is complete
+* `0.7.0-alpha.1` enters the public surface stability phase: the next honest proving question is whether the CLI surface — invocation patterns, help output, output format conventions, and guide examples — is stable and intentional enough that users would not be forced to relearn it between minor versions
 * 1.0 expectations remain intentionally narrow
 
 ## What is already proven
@@ -327,17 +328,17 @@ boundary lies.
 
 The current priority is:
 
-**`0.6.x` semantic stability — lifecycle semantics, refusal behavior, and naming consistency across providers, docs, and CLI output. The `0.5.x` early outside-usability phase is complete. Outside-workspace packaging and distribution remain explicitly deferred.**
+**`0.7.x` public surface stability — CLI invocation patterns, help text, output format conventions, and guide consistency. The `0.6.x` semantic stability wave is complete. Outside-workspace packaging and distribution remain explicitly deferred.**
 
 ## What kinds of work are highest-value right now
 
-Examples of work that are strongly aligned with the current `0.6.x` phase:
+Examples of work that are strongly aligned with the current `0.7.x` phase:
 
-* tightening lifecycle definitions across provider types (reset, cleanup, validate semantics)
-* clarifying and testing refusal outcomes across all commands and providers
-* naming consistency across docs, code, and CLI output
-* making reset and cleanup behavior predictable for composed multi-provider applications
-* spec or ADR groundwork before any implementation work in this area
+* auditing and improving CLI help output (the current `--help` surface is a raw usage string, not a structured help system)
+* examining whether `validate-worktree` and `validate-repository` utility commands belong on the same surface as `derive`, `run`, `reset`, `cleanup`, `validate`
+* specifying expected output shape for each command in source-of-truth docs (no output-format spec exists for `derive`, `validate`, `reset`, `cleanup` result shapes)
+* aligning guide examples with actual invocation surface
+* reducing inconsistencies between repo-local (`pnpm cli`) and formal binary (`multiverse`) invocation paths in docs and guides
 
 ## What is intentionally deferred
 
@@ -354,15 +355,16 @@ The following remain explicitly deferred:
 
 When deciding what to work on next, prefer work that answers the current proving question:
 
-**Are Multiverse lifecycle semantics, refusal behavior, and naming consistent and
-trustworthy across providers, docs, and CLI output?**
+**Is the public CLI surface — command names, flags, invocation patterns, help text, and
+output format conventions — stable and intentional enough that a user would not be forced
+to relearn it between minor versions?**
 
 Use this preference order:
 
-1. identify lifecycle or refusal behavior that is ambiguous or inconsistent across provider types
-2. establish clear definitions through spec or ADR work before writing implementation code
-3. validate that docs, code, and CLI output use consistent terminology
-4. only then broader surface polish or new capabilities
+1. audit the CLI surface before changing it — identify specific inconsistencies across help text, output shape, flag naming, and guide examples
+2. establish expected output shapes and invocation conventions in source-of-truth docs before modifying code
+3. assess whether utility commands (`validate-worktree`, `validate-repository`) belong on the same public surface as the primary commands
+4. only then implementation changes that align code with the stabilized surface spec
 
 ## Related documents
 

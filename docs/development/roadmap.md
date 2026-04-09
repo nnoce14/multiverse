@@ -26,7 +26,7 @@ Multiverse development continues under the same core assumptions:
 
 ## Current version posture
 
-Current version posture: **0.6.0-alpha.1**
+Current version posture: **0.7.0-alpha.1**
 
 What that means:
 
@@ -41,7 +41,8 @@ What that means:
 * the globally-linked binary path is proven within the workspace (Slice 41)
 * manual `NODE_OPTIONS` is no longer required for TypeScript providers on the compiled/global binary path in workspace scope (Slice 43)
 * all `0.5.x` exit criteria are met; the early outside-usability phase is complete in substance
-* `0.6.0-alpha.1` enters the semantic stability phase: lifecycle semantics, refusal behavior, and naming consistency are the next proving target
+* all `0.6.x` exit criteria are met; the semantic stability wave (Slices 44–49) is complete: lifecycle semantics, refusal behavior and category naming, worktree identity scenario accuracy, and consumer integration boundary classification are all aligned across spec, ADR, scenarios, and guide docs
+* `0.7.0-alpha.1` enters the public surface stability phase: CLI invocation patterns, help output, output format conventions, and guide consistency are the next proving target
 * outside-workspace packaging/distribution remains explicitly deferred
 
 ## Version roadmap
@@ -482,15 +483,19 @@ It should mean that the product is trustworthy in its intended scope.
 
 The current near-term direction is:
 
-* begin `0.6.x` semantic stability work through spec and ADR groundwork before any implementation
-* audit lifecycle semantics (reset, cleanup, validate) for consistency across provider types
-* clarify refusal behavior and ensure error/refusal messages are actionable and consistent
-* identify naming inconsistencies across docs, code, and CLI output
+* audit the CLI surface — help text, output format conventions, flag naming, and invocation patterns — for stability and intentionality
+* identify inconsistencies between repo-local and formal binary invocation paths in docs and guides
+* specify expected output shapes for each command in source-of-truth docs
+* assess whether the current `validate-worktree` and `validate-repository` utility commands belong on the same CLI surface as the primary `derive`, `validate`, `run`, `reset`, `cleanup` commands
 
-The `0.5.x` work is complete. The documented second-engineer workflow is proven and
-truth-aligned. The next honest proving question is whether lifecycle semantics, refusal
-behavior, and naming are consistent and trustworthy — not adding new product behaviors
-or broadening scope.
+The `0.6.x` semantic stability wave is complete. The six planned seams (lifecycle semantics,
+validate capability, refusal boundaries, naming/terminology, consumer integration boundaries,
+worktree identity alignment) are all addressed in source-of-truth documents. The next honest
+proving question is whether the public CLI surface is stable and intentional enough that
+users would not be forced to relearn it between minor versions.
+
+Each 0.7.x slice should begin with a targeted audit and task doc before any implementation.
+Broad CLI redesign without spec groundwork is not the right direction for this phase.
 
 Provider-ecosystem formalization and external distribution remain deferred.
 
