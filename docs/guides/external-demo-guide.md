@@ -315,7 +315,10 @@ pnpm cli derive --worktree-id feature-login --format env
 
 Both `--format env` (space form) and `--format=env` (equals form) are accepted.
 
-The `--format env` output uses the same variable names that `pnpm cli run` injects.
+The `--format env` output includes the canonical `MULTIVERSE_RESOURCE_*` and
+`MULTIVERSE_ENDPOINT_*` variables. It does not include `appEnv` aliases — those are
+injected only by `pnpm cli run` at process-launch time. Use `derive --format=env` for
+inspection and scripting against canonical variable names.
 
 ---
 

@@ -46,7 +46,11 @@ Included:
 
 Excluded:
 
-- `derive --format=env`
+- `derive --format=env` — appEnv injection is scoped to `multiverse run` (run-time process
+  launch) only. `derive --format=env` is a derivation inspection tool that outputs canonical
+  `MULTIVERSE_*` variables; it does not include app-native aliases. This exclusion is
+  intentional and is not an oversight. Adding appEnv aliases to `derive --format=env` is
+  deferred; no follow-on ADR has been accepted for this.
 - provider contract changes
 - provider implementation changes
 - config-file overlays or mutation

@@ -308,6 +308,21 @@ explicitly). (3) The "recreated worktree" scenario is now annotated as aspiratio
 deferred — ADR-0021 explicitly calls it out as requiring a persistent registry that does
 not yet exist.
 
+**Is the exclusion of appEnv from `derive --format=env` explicitly classified as an
+intentional deferred boundary rather than an accidental omission?**
+
+Slice 49 answers yes, after two narrow corrections. ADR-0018 and ADR-0019 both listed
+`derive --format=env` in their Excluded sections but gave no rationale, leaving a reader
+to wonder whether the exclusion was intentional or an oversight. ADR-0018 now includes an
+explicit note: appEnv is scoped to `multiverse run` (run-time process launch) only;
+`derive --format=env` is a derivation inspection tool for canonical `MULTIVERSE_*` vars;
+adding appEnv aliases to derive output is deferred with no accepted follow-on ADR. The
+second correction was in `docs/guides/external-demo-guide.md` Step 6, which stated "The
+`--format env` output uses the same variable names that `pnpm cli run` injects" — now
+misleading since `run` also injects appEnv aliases not present in derive output. The
+sentence is corrected to accurately describe what each command outputs and where the
+boundary lies.
+
 ## Current priority
 
 The current priority is:
