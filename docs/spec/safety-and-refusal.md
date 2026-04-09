@@ -157,4 +157,4 @@ The following remain to be specified elsewhere:
 - refusal reporting format
 - error surface design
 - user-facing messaging conventions
-- implementation-specific exception or return modelsF
+- implementation-specific exception or return models
