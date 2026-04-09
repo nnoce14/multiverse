@@ -292,6 +292,22 @@ derive, validate, reset, and cleanup. The one observed behavioral asymmetry — 
 refusal output to stderr while other commands use stdout — is in the spec's explicitly open
 area ("refusal reporting format") and was not changed.
 
+**Are the worktree identity scenarios consistent with ADR-0021 auto-discovery behavior and
+the current intended truthful scope?**
+
+Slice 48 answers yes, after corrections. The scenarios file had one false general statement
+and three missing scenarios. (1) The "main checkout identity" scenario previously stated the
+Worktree ID is `main` unconditionally — true only when `--worktree-id main` is supplied
+explicitly (ADR-0003); not true under auto-discovery, where the id is the directory basename
+and may differ from `"main"` (ADR-0021). The scenario is now annotated as the explicit
+override case. (2) Three new scenarios were added: auto-discovery success (id = directory
+basename of the matching worktree path), primary checkout identity under auto-discovery (not
+guaranteed to be `"main"`), and auto-discovery refusal (git unavailable or no matching
+worktree path → refuse with actionable message directing caller to supply `--worktree-id`
+explicitly). (3) The "recreated worktree" scenario is now annotated as aspirational /
+deferred — ADR-0021 explicitly calls it out as requiring a persistent registry that does
+not yet exist.
+
 ## Current priority
 
 The current priority is:
