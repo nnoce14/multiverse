@@ -433,15 +433,17 @@ When deciding what to work on next, prefer work that answers the current proving
 output format conventions — stable and intentional enough that a user would not be forced
 to relearn it between minor versions?**
 
-Use this preference order:
+The decision memo at `docs/development/tasks/utility-command-surface-decision-memo.md`
+frames the remaining open product question and recommends Option B (keep `validate-repository`,
+remove `validate-worktree`). **That decision requires owner input before any implementation.**
 
-1. make the product decision on `validate-worktree` retention vs removal — the command is now
-   classified as a declaration-validation utility (Slice 54) but whether it should be retained
-   given inline validation in primary commands is unresolved; this requires a product decision
-2. implementation changes only when a product decision or new ADR explicitly supports them
+Do not implement command-surface changes without an explicit decision on this memo.
+Do not attempt guide/README/help-output work — those are complete (Slices 50–54).
 
-Note: guide and README alignment (Slices 50–53) and utility-command section classification
-(Slice 54) are complete. Do not attempt these as pending work.
+If the decision is made:
+
+- **Option B chosen:** implement the removal slice following the scope in the memo
+- **Option D chosen (defer):** update the memo status and move the question to the post-0.7.x backlog
 
 ## Related documents
 
