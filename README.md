@@ -207,6 +207,7 @@ Core product and architecture docs:
 * `docs/spec/cli-output-shapes.md` — stable output contract for all primary commands (JSON shapes, field names, output routing)
 * `docs/spec/provider-support-classification.md` — which first-party providers are first-class vs supported-with-constraints for 1.0
 * `docs/spec/supported-workflow.md` — the officially supported 1.0 common-case developer workflow and what is deferred
+* `docs/spec/consumer-integration-model.md` — which consumer integration patterns are officially supported for 1.0 and what is deferred
 * `docs/adr/0001-git-worktrees-only-1.0.md`
 * `docs/adr/0004-resource-isolation-strategies.md`
 * `docs/adr/0005-providers-implement-isolation-contracts.md`
