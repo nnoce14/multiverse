@@ -484,7 +484,7 @@ It should mean that the product is trustworthy in its intended scope.
 
 The current near-term direction is:
 
-* produce an explicit support classification for the six first-party providers — which are first-class for 1.0, which are experimental, which are deferred
+* ~~produce an explicit support classification for the six first-party providers~~ — done (Slice 58): `docs/spec/provider-support-classification.md` classifies all six providers into two tiers with rationale; no provider is deferred
 * define which developer workflows are part of the officially supported common case for 1.0
 * make the core/extension boundary explicit as a 1.0 support statement in source-of-truth docs
 * state explicitly which consumer integration model (appEnv, runtime-config boundary) is officially supported for 1.0

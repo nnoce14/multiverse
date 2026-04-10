@@ -376,6 +376,21 @@ showed `derive` in both output formats but provided no pointer to the JSON field
 sentence referencing `docs/spec/cli-output-shapes.md` is now included. No code or test changes
 were required.
 
+**Is the support classification for the six first-party providers explicit enough that a user
+can tell which providers are part of the 1.0 stability guarantee, without reading the source
+code or ADRs?**
+
+Slice 58 answers yes. A new source-of-truth spec, `docs/spec/provider-support-classification.md`,
+classifies all six first-party providers into two tiers with explicit rationale: (1) first-class
+for the 1.0 common case — `path-scoped`, `name-scoped`, `local-port` — covering the primary
+documented workflows with full or appropriate lifecycle support; (2) supported in 1.0 for
+specific use cases with stated constraints — `process-scoped`, `process-port-scoped`,
+`fixed-host-port` — each valid and in scope for 1.0 but governing a more specialized use case
+with limitations documented in their ADRs. No provider is deferred. Validate capability gaps
+(name-scoped, process-scoped, process-port-scoped) are documented as intentional design
+decisions, not missing features. `docs/spec/provider-model.md` now references the classification
+doc.
+
 ## Current priority
 
 The current priority is:

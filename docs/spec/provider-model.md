@@ -141,6 +141,13 @@ The provider model does not require providers to manage general application orch
 
 Concepts such as app startup, app shutdown, or full infrastructure provisioning are outside the core provider contract unless later formalized.
 
+## Provider Support Classification
+
+The six first-party providers shipped with Multiverse are classified by support tier in
+`docs/spec/provider-support-classification.md`. That document states which providers are
+first-class for the 1.0 common case, which are supported for specific use cases with stated
+constraints, and what is deferred.
+
 ## Open Areas
 
 The following remain to be specified in more detail elsewhere:
