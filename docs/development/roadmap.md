@@ -483,19 +483,20 @@ It should mean that the product is trustworthy in its intended scope.
 
 The current near-term direction is:
 
-* audit the CLI surface — help text, output format conventions, flag naming, and invocation patterns — for stability and intentionality
-* identify inconsistencies between repo-local and formal binary invocation paths in docs and guides
-* specify expected output shapes for each command in source-of-truth docs
-* assess whether the current `validate-worktree` and `validate-repository` utility commands belong on the same CLI surface as the primary `derive`, `validate`, `run`, `reset`, `cleanup` commands
+* produce an explicit support classification for the six first-party providers — which are first-class for 1.0, which are experimental, which are deferred
+* define which developer workflows are part of the officially supported common case for 1.0
+* make the core/extension boundary explicit as a 1.0 support statement in source-of-truth docs
+* state explicitly which consumer integration model (appEnv, runtime-config boundary) is officially supported for 1.0
 
-The `0.6.x` semantic stability wave is complete. The six planned seams (lifecycle semantics,
-validate capability, refusal boundaries, naming/terminology, consumer integration boundaries,
-worktree identity alignment) are all addressed in source-of-truth documents. The next honest
-proving question is whether the public CLI surface is stable and intentional enough that
-users would not be forced to relearn it between minor versions.
+The `0.7.x` public-surface stability wave is complete. The seven planned slices (50–56)
+addressed help text, output-shape specification, guide/README alignment, utility-command
+classification, and CLI surface cleanup. The next honest proving question is whether the
+product's support boundaries can be made explicit enough that a user can identify what
+Multiverse officially supports for 1.0 without reading the source code.
 
-Each 0.7.x slice should begin with a targeted audit and task doc before any implementation.
-Broad CLI redesign without spec groundwork is not the right direction for this phase.
+Each 0.8.x slice should begin with a targeted audit and task doc before any implementation.
+Broad redefinition of what Multiverse is without clear source-of-truth grounding is not
+the right direction for this phase.
 
 Provider-ecosystem formalization and external distribution remain deferred.
 

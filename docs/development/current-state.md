@@ -15,7 +15,7 @@ This is a short state-of-the-project document, not a full history.
 
 ## Current version posture
 
-Current version posture: **0.7.0-alpha.1**
+Current version posture: **0.8.0-alpha.1**
 
 Interpretation:
 
@@ -26,7 +26,8 @@ Interpretation:
 * all four 0.4.x roadmap exit criteria are met; the extensibility wave is complete
 * all 0.5.x exit criteria are met: the documented second-engineer workflow is proven end-to-end, including real two-worktree auto-discovery/isolation and no-manual-`NODE_OPTIONS` TypeScript provider loading in workspace scope; outside-workspace packaging and distribution remain explicitly deferred
 * all 0.6.x exit criteria are met: lifecycle semantics, refusal behavior, naming, worktree identity accuracy, and consumer integration boundaries are now aligned across spec, ADR, scenarios, and guide docs; the planned six-seam semantic stability wave (Slices 44–49) is complete
-* `0.7.0-alpha.1` enters the public surface stability phase: the next honest proving question is whether the CLI surface — invocation patterns, help output, output format conventions, and guide examples — is stable and intentional enough that users would not be forced to relearn it between minor versions
+* all 0.7.x exit criteria are met: the CLI surface is coherent and stable — `--help`/`-h` works correctly, output shapes are specified and tested, help text is complete, documentation examples are consistent with actual usage, and common command flows feel intentional; the planned seven-slice public-surface stability wave (Slices 50–56) is complete
+* `0.8.0-alpha.1` enters the support boundary definition phase: the next honest proving question is whether Multiverse's support boundaries can be made explicit enough that a user can tell what the tool officially supports for 1.0, without reading the source code
 * 1.0 expectations remain intentionally narrow
 
 ## What is already proven
@@ -379,7 +380,7 @@ were required.
 
 The current priority is:
 
-**`0.7.x` public surface stability — CLI invocation patterns, help text, output format conventions, and guide consistency. The `0.6.x` semantic stability wave is complete. Outside-workspace packaging and distribution remain explicitly deferred.**
+**`0.8.x` support boundary definition — making Multiverse's 1.0 support boundaries explicit enough that a user can tell what the tool officially supports without reading the source code. The `0.7.x` public-surface stability wave is complete. Outside-workspace packaging and distribution remain explicitly deferred.**
 
 ## What kinds of work are highest-value right now
 
@@ -451,22 +452,25 @@ The following remain explicitly deferred:
 
 When deciding what to work on next, prefer work that answers the current proving question:
 
-**Is the public CLI surface — command names, flags, invocation patterns, help text, and
-output format conventions — stable and intentional enough that a user would not be forced
-to relearn it between minor versions?**
+**Can Multiverse's support boundaries be made explicit enough that a user can tell what the
+tool officially supports for 1.0, without reading the source code?**
 
-The `0.7.x` public surface stability wave is complete in substance (Slices 50–56).
-The CLI surface is now intentional: primary commands, one utility command
-(`validate-repository`), structured help text, output-shape spec, and aligned docs/guide.
+Use this preference order:
 
-Do not attempt Slices 50–56 work as if it were pending — it is complete.
-Post-0.7.x candidates: `validate-repository` guide docs, utility-command subcommand
-restructuring (deferred), outside-workspace packaging (always deferred).
+1. audit which of the six first-party providers (name-scoped, path-scoped, process-scoped,
+   process-port-scoped, local-port, fixed-host-port) are first-class for 1.0 vs experimental
+   vs deferred — produce an explicit support classification
+2. define which workflows are part of the officially supported common case for 1.0
+3. make the core/extension boundary explicit as a 1.0 support statement
+4. state explicitly what consumer integration model is officially supported (appEnv,
+   runtime-config boundary) vs what remains experimental
 
-If the decision is made:
+Each item requires its own slice and task doc before any implementation changes.
+Begin with audit and classification work; do not invent new providers or workflows.
 
-- **Option B chosen:** implement the removal slice following the scope in the memo
-- **Option D chosen (defer):** update the memo status and move the question to the post-0.7.x backlog
+Do not attempt Slices 50–56 work as if it were pending — the 0.7.x wave is complete.
+0.8.x post-wave candidates (not current work): `validate-repository` guide docs,
+utility-command subcommand restructuring, outside-workspace packaging (always deferred).
 
 ## Related documents
 
