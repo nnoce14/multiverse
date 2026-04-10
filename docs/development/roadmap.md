@@ -26,7 +26,7 @@ Multiverse development continues under the same core assumptions:
 
 ## Current version posture
 
-Current version posture: **0.7.0-alpha.1**
+Current version posture: **0.8.0-alpha.1**
 
 What that means:
 
@@ -42,7 +42,8 @@ What that means:
 * manual `NODE_OPTIONS` is no longer required for TypeScript providers on the compiled/global binary path in workspace scope (Slice 43)
 * all `0.5.x` exit criteria are met; the early outside-usability phase is complete in substance
 * all `0.6.x` exit criteria are met; the semantic stability wave (Slices 44–49) is complete: lifecycle semantics, refusal behavior and category naming, worktree identity scenario accuracy, and consumer integration boundary classification are all aligned across spec, ADR, scenarios, and guide docs
-* `0.7.0-alpha.1` enters the public surface stability phase: CLI invocation patterns, help output, output format conventions, and guide consistency are the next proving target
+* all `0.7.x` exit criteria are met; the public-surface stability wave (Slices 50–56) is complete: `--help`/`-h` exit 0, structured usage, output-shape spec, Options section, guide/README alignment, utility-command classification, and `validate-worktree` removal
+* `0.8.0-alpha.1` enters the support boundary definition phase: the next proving target is making Multiverse's 1.0 support boundaries explicit — which providers are first-class, which workflows are officially supported, and what remains experimental or deferred
 * outside-workspace packaging/distribution remains explicitly deferred
 
 ## Version roadmap
