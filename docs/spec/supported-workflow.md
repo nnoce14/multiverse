@@ -94,7 +94,7 @@ Does not affect any other worktree's isolated state.
 
 ## Common-case invocation path
 
-The officially supported invocation path for in-repository development is **`pnpm cli`**.
+The primary recommendation for in-repository development is **`pnpm cli`**.
 
 `pnpm cli` runs the CLI through the TypeScript source using `tsx`, without requiring a build
 step. It is available from the multiverse repo root once `pnpm install` has been run.
@@ -102,6 +102,11 @@ step. It is available from the multiverse repo root once `pnpm install` has been
 All primary commands (`run`, `derive`, `validate`, `reset`, `cleanup`) are available through
 `pnpm cli`. All flags accept both space form (`--flag VALUE`) and equals form
 (`--flag=VALUE`).
+
+Alternative invocation paths — the formal compiled binary and the globally-linked binary —
+are supported within the workspace and behave identically, but require additional setup
+steps (a build step, or a build plus link step respectively). They are covered in the
+"outside the common case but supported" section below.
 
 ---
 
