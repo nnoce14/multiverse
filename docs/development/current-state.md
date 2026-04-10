@@ -391,6 +391,22 @@ with limitations documented in their ADRs. No provider is deferred. Validate cap
 decisions, not missing features. `docs/spec/provider-model.md` now references the classification
 doc.
 
+**Is the officially supported 1.0 common-case developer workflow stated explicitly enough
+that a user can identify it without reading scattered guides or ADRs?**
+
+Slice 59 answers yes. A new source-of-truth spec, `docs/spec/supported-workflow.md`,
+explicitly states the 1.0 common-case workflow: a developer working inside a git worktree
+uses `pnpm cli run -- <cmd>` (from the multiverse workspace, with `multiverse.json` and
+`providers.ts` at CWD or via explicit flags) to derive isolated values and launch their
+application. Worktree identity is auto-discovered from git state (ADR-0021). The preferred
+consumer integration pattern is `appEnv` with typed endpoint mapping at one
+application-owned boundary. The doc also states explicitly: what is outside the common case
+but supported (explicit flag overrides, compiled binary, globally-linked binary,
+`validate`), and what is deferred (outside-workspace usage, standalone global binary,
+configuration inference, overlay files). The invocation-path limitation — provider packages
+are workspace-local and not published to npm — is stated honestly as a 1.0 deferred item,
+not obscured.
+
 ## Current priority
 
 The current priority is:
