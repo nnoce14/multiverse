@@ -9,10 +9,10 @@ import { runCli } from "../../apps/cli/src/index";
  * - The fallback usage output shown on unknown command reflects that
  *   --worktree-id is optional (not required) for derive, validate, reset,
  *   cleanup, and run — as introduced by Slice 37 auto-discovery.
- * - validate-worktree still shows --worktree-id as required (it is).
  *
  * Slice 50 update: usage output is now multi-line. Tests join stderr lines
  * before pattern matching instead of searching for a single usage line.
+ * Slice 56 update: validate-worktree removed from CLI surface; test removed.
  */
 describe("CLI usage string accuracy (Slice 41)", () => {
   it("unknown command usage shows --worktree-id as optional for derive", async () => {
@@ -37,13 +37,4 @@ describe("CLI usage string accuracy (Slice 41)", () => {
     expect(stderrText).toMatch(/run\s+\[.*\[--worktree-id VALUE\]/);
   });
 
-  it("unknown command usage still shows --worktree-id as required for validate-worktree", async () => {
-    const outcome = await runCli(["not-a-command"]);
-
-    expect(outcome.exitCode).toBe(1);
-    const stderrText = outcome.stderr.join("\n");
-    expect(stderrText).toContain("Usage:");
-    // validate-worktree still requires --worktree-id
-    expect(stderrText).toMatch(/validate-worktree\s+--worktree-id VALUE/);
-  });
 });

@@ -6,6 +6,13 @@ Accepted
 
 Amends ADR-0014.
 
+Amended by Slice 56: the `validate-worktree` CLI command was removed. The rationale
+follows directly from this ADR — inline validation of worktree identity is now embedded
+in every primary command's path via `discoverWorktreeId` / `readCommonOptions`. The
+standalone command replicated existing behavior without adding user-facing value. The
+`validateWorktreeIdentity` core function is retained for internal use by the CLI's
+auto-discovery path.
+
 ## Context
 
 ADR-0014 established conventional defaults for `--config` and `--providers` but

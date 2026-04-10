@@ -409,10 +409,32 @@ discovery, worktree identity validation is embedded in every primary command's p
 standalone command largely redundant; (2) whether to restructure these commands or document them
 as diagnostic tools in the guide.
 
-Examples of work still aligned with the current `0.7.x` phase:
+**Is `validate-worktree` removed, and is the CLI surface now fully intentional?**
 
-* determining whether `validate-worktree` should be retained or removed — now that auto-discovery (Slice 37) validates worktree identity inline, the standalone command has limited additional value; this requires a product decision
-* determining whether utility commands should be restructured (e.g., subcommand namespace) or documented in the guide as diagnostic tools — requires a product decision / new ADR
+Slice 56 answers yes. Option B from the utility-command decision memo was implemented.
+`validate-worktree` is removed from the CLI surface: its dispatch case, handler function,
+and import are removed from `apps/cli/src/index.ts`; its entry is removed from `USAGE_LINES`;
+affected acceptance tests are updated. The `validateWorktreeIdentity` core function is
+retained — it is still used internally by the CLI's auto-discovery path. The rationale note
+is added to ADR-0021: inline validation in primary commands (established by that ADR) makes
+the standalone command redundant. `validate-repository` is retained as the sole utility
+command; it provides standalone config-linting value that no primary command replicates.
+The decision memo status is updated to Resolved.
+
+The `0.7.x` public surface stability wave is now complete in substance:
+- `--help`/`-h` exit code and structured help text — Slice 50
+- CLI output-shape spec and executable acceptance tests — Slice 51
+- `--help` Options section completeness — Slice 52
+- README and guide alignment — Slice 53
+- Utility-command classification and section label — Slice 54
+- Utility-command decision memo and option framing — Slice 55
+- `validate-worktree` removal — Slice 56
+
+Remaining 0.7.x open items:
+
+* `validate-repository` guide documentation — optional; no urgency; no user workflow
+  currently depends on it being in the guide
+* utility command subcommand restructuring — explicitly deferred to post-0.7.x if desired
 
 ## What is intentionally deferred
 
@@ -433,12 +455,13 @@ When deciding what to work on next, prefer work that answers the current proving
 output format conventions — stable and intentional enough that a user would not be forced
 to relearn it between minor versions?**
 
-The decision memo at `docs/development/tasks/utility-command-surface-decision-memo.md`
-frames the remaining open product question and recommends Option B (keep `validate-repository`,
-remove `validate-worktree`). **That decision requires owner input before any implementation.**
+The `0.7.x` public surface stability wave is complete in substance (Slices 50–56).
+The CLI surface is now intentional: primary commands, one utility command
+(`validate-repository`), structured help text, output-shape spec, and aligned docs/guide.
 
-Do not implement command-surface changes without an explicit decision on this memo.
-Do not attempt guide/README/help-output work — those are complete (Slices 50–54).
+Do not attempt Slices 50–56 work as if it were pending — it is complete.
+Post-0.7.x candidates: `validate-repository` guide docs, utility-command subcommand
+restructuring (deferred), outside-workspace packaging (always deferred).
 
 If the decision is made:
 
