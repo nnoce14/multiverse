@@ -485,7 +485,7 @@ It should mean that the product is trustworthy in its intended scope.
 The current near-term direction is:
 
 * ~~produce an explicit support classification for the six first-party providers~~ — done (Slice 58): `docs/spec/provider-support-classification.md` classifies all six providers into two tiers with rationale; no provider is deferred
-* define which developer workflows are part of the officially supported common case for 1.0
+* ~~define which developer workflows are part of the officially supported common case for 1.0~~ — done (Slice 59): `docs/spec/supported-workflow.md` states the common-case workflow, what is outside it but supported, and what is deferred; `appEnv` with typed endpoint mapping is stated as the preferred consumer pattern
 * make the core/extension boundary explicit as a 1.0 support statement in source-of-truth docs
 * state explicitly which consumer integration model (appEnv, runtime-config boundary) is officially supported for 1.0
 
