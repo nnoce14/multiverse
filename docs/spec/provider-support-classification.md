@@ -233,10 +233,10 @@ by the application's configuration format.
 | `local-port` | ✓ | — (derive-only scope) | n/a | n/a |
 | `fixed-host-port` | ✓ | — (derive-only scope) | n/a | n/a |
 
-**Note on "—" entries:** The absent capabilities are intentional. Each is explained in the
-provider section above and in the governing ADR. The `—` does not indicate a deficiency or
-a planned future addition — it indicates that the capability does not apply to the
-provider's design.
+**Note on "—" entries:** Each absent capability is intentionally absent from the current 1.0
+support model. The reason is explained in the provider section above and in the governing ADR.
+Where a named future extension exists (such as port-reachability readiness), it is listed in
+the deferred section below.
 
 ## What is deferred
 
