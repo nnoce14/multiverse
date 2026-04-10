@@ -26,7 +26,7 @@ Multiverse development continues under the same core assumptions:
 
 ## Current version posture
 
-Current version posture: **0.7.0-alpha.1**
+Current version posture: **0.8.0-alpha.1**
 
 What that means:
 
@@ -42,7 +42,8 @@ What that means:
 * manual `NODE_OPTIONS` is no longer required for TypeScript providers on the compiled/global binary path in workspace scope (Slice 43)
 * all `0.5.x` exit criteria are met; the early outside-usability phase is complete in substance
 * all `0.6.x` exit criteria are met; the semantic stability wave (Slices 44–49) is complete: lifecycle semantics, refusal behavior and category naming, worktree identity scenario accuracy, and consumer integration boundary classification are all aligned across spec, ADR, scenarios, and guide docs
-* `0.7.0-alpha.1` enters the public surface stability phase: CLI invocation patterns, help output, output format conventions, and guide consistency are the next proving target
+* all `0.7.x` exit criteria are met; the public-surface stability wave (Slices 50–56) is complete: `--help`/`-h` exit 0, structured usage, output-shape spec, Options section, guide/README alignment, utility-command classification, and `validate-worktree` removal
+* `0.8.0-alpha.1` enters the support boundary definition phase: the next proving target is making Multiverse's 1.0 support boundaries explicit — which providers are first-class, which workflows are officially supported, and what remains experimental or deferred
 * outside-workspace packaging/distribution remains explicitly deferred
 
 ## Version roadmap
@@ -483,19 +484,20 @@ It should mean that the product is trustworthy in its intended scope.
 
 The current near-term direction is:
 
-* audit the CLI surface — help text, output format conventions, flag naming, and invocation patterns — for stability and intentionality
-* identify inconsistencies between repo-local and formal binary invocation paths in docs and guides
-* specify expected output shapes for each command in source-of-truth docs
-* assess whether the current `validate-worktree` and `validate-repository` utility commands belong on the same CLI surface as the primary `derive`, `validate`, `run`, `reset`, `cleanup` commands
+* produce an explicit support classification for the six first-party providers — which are first-class for 1.0, which are experimental, which are deferred
+* define which developer workflows are part of the officially supported common case for 1.0
+* make the core/extension boundary explicit as a 1.0 support statement in source-of-truth docs
+* state explicitly which consumer integration model (appEnv, runtime-config boundary) is officially supported for 1.0
 
-The `0.6.x` semantic stability wave is complete. The six planned seams (lifecycle semantics,
-validate capability, refusal boundaries, naming/terminology, consumer integration boundaries,
-worktree identity alignment) are all addressed in source-of-truth documents. The next honest
-proving question is whether the public CLI surface is stable and intentional enough that
-users would not be forced to relearn it between minor versions.
+The `0.7.x` public-surface stability wave is complete. The seven planned slices (50–56)
+addressed help text, output-shape specification, guide/README alignment, utility-command
+classification, and CLI surface cleanup. The next honest proving question is whether the
+product's support boundaries can be made explicit enough that a user can identify what
+Multiverse officially supports for 1.0 without reading the source code.
 
-Each 0.7.x slice should begin with a targeted audit and task doc before any implementation.
-Broad CLI redesign without spec groundwork is not the right direction for this phase.
+Each 0.8.x slice should begin with a targeted audit and task doc before any implementation.
+Broad redefinition of what Multiverse is without clear source-of-truth grounding is not
+the right direction for this phase.
 
 Provider-ecosystem formalization and external distribution remain deferred.
 
