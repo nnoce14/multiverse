@@ -407,6 +407,21 @@ configuration inference, overlay files). The invocation-path limitation — prov
 are workspace-local and not published to npm — is stated honestly as a 1.0 deferred item,
 not obscured.
 
+**Which consumer integration patterns are officially supported for 1.0, and which is preferred
+for composed applications?**
+
+Slice 60 answers this. A new source-of-truth spec, `docs/spec/consumer-integration-model.md`,
+classifies three supported patterns: (1) canonical `MULTIVERSE_*` transport variables —
+always injected by `run`, supported for direct reading in simple single-seam applications;
+(2) `appEnv` alias mapping — supported via ADR-0018 and ADR-0019 for resources (string alias)
+and endpoints (string alias or typed `url`/`port` extraction), injected by `run` only;
+(3) application-owned runtime-config boundary — the recommended pattern for composed
+applications with multiple seams, consuming only app-owned names at one explicit boundary
+(demonstrated by `apps/sample-compose/src/runtime-config.ts`). No pattern is experimental.
+The `run` stderr refusal routing is stated as a stable 1.0 behavior per `cli-output-shapes.md`.
+Deferred items are explicit: `appEnv` in `derive --format=env`, resource typed extraction,
+multiple aliases per declaration, additional endpoint value kinds, config overlays.
+
 ## Current priority
 
 The current priority is:
