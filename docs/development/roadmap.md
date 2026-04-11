@@ -26,7 +26,7 @@ Multiverse development continues under the same core assumptions:
 
 ## Current version posture
 
-Current version posture: **0.8.0-alpha.1**
+Current version posture: **0.9.0-alpha.1**
 
 What that means:
 
@@ -43,7 +43,8 @@ What that means:
 * all `0.5.x` exit criteria are met; the early outside-usability phase is complete in substance
 * all `0.6.x` exit criteria are met; the semantic stability wave (Slices 44–49) is complete: lifecycle semantics, refusal behavior and category naming, worktree identity scenario accuracy, and consumer integration boundary classification are all aligned across spec, ADR, scenarios, and guide docs
 * all `0.7.x` exit criteria are met; the public-surface stability wave (Slices 50–56) is complete: `--help`/`-h` exit 0, structured usage, output-shape spec, Options section, guide/README alignment, utility-command classification, and `validate-worktree` removal
-* `0.8.0-alpha.1` enters the support boundary definition phase: the next proving target is making Multiverse's 1.0 support boundaries explicit — which providers are first-class, which workflows are officially supported, and what remains experimental or deferred
+* all `0.8.x` exit criteria are met; the support boundary definition wave (Slices 57–61) is complete: provider support classification, official common-case workflow, consumer integration model classification, and core/extension boundary consolidation are all now explicit in source-of-truth specs
+* `0.9.0-alpha.1` enters the release-candidate hardening phase: the next proving target is verifying that the defined 1.0 support boundaries hold up in practice — final guide/README accuracy, end-to-end workflow validation, and CLI polish
 * outside-workspace packaging/distribution remains explicitly deferred
 
 ## Version roadmap
@@ -489,15 +490,15 @@ The current near-term direction is:
 * ~~make the core/extension boundary explicit as a 1.0 support statement in source-of-truth docs~~ — done (Slice 61): `docs/spec/core-extension-boundary.md` synthesizes ADR-0005, ADR-0009, and the authoring guide into one reference; `@multiverse/provider-contracts` stated as the stable extension seam; first-party vs custom provider distinction explicit; deferred items documented
 * ~~state explicitly which consumer integration model (appEnv, runtime-config boundary) is officially supported for 1.0~~ — done (Slice 60): `docs/spec/consumer-integration-model.md` classifies three supported patterns; runtime-config boundary recommended for composed apps; `run` stderr routing stated as stable 1.0 behavior; deferred items explicit
 
-The `0.7.x` public-surface stability wave is complete. The seven planned slices (50–56)
-addressed help text, output-shape specification, guide/README alignment, utility-command
-classification, and CLI surface cleanup. The next honest proving question is whether the
-product's support boundaries can be made explicit enough that a user can identify what
-Multiverse officially supports for 1.0 without reading the source code.
+The `0.8.x` support boundary definition wave is complete. The five planned slices (57–61)
+defined provider support tiers, the official common-case workflow, the supported consumer
+integration model, and the core/extension boundary — all now explicit in source-of-truth
+specs. The next honest proving question is whether those defined boundaries hold up in
+practice under final guide and workflow validation.
 
-Each 0.8.x slice should begin with a targeted audit and task doc before any implementation.
-Broad redefinition of what Multiverse is without clear source-of-truth grounding is not
-the right direction for this phase.
+Each 0.9.x slice should begin with a targeted audit and task doc before any implementation.
+Do not invent new providers, commands, or workflows. Harden and verify what is already
+defined and proven.
 
 Provider-ecosystem formalization and external distribution remain deferred.
 
