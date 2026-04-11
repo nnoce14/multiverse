@@ -486,7 +486,7 @@ The current near-term direction is:
 
 * ~~produce an explicit support classification for the six first-party providers~~ — done (Slice 58): `docs/spec/provider-support-classification.md` classifies all six providers into two tiers with rationale; no provider is deferred
 * ~~define which developer workflows are part of the officially supported common case for 1.0~~ — done (Slice 59): `docs/spec/supported-workflow.md` states the common-case workflow, what is outside it but supported, and what is deferred; `appEnv` with typed endpoint mapping is stated as the preferred consumer pattern
-* make the core/extension boundary explicit as a 1.0 support statement in source-of-truth docs
+* ~~make the core/extension boundary explicit as a 1.0 support statement in source-of-truth docs~~ — done (Slice 61): `docs/spec/core-extension-boundary.md` synthesizes ADR-0005, ADR-0009, and the authoring guide into one reference; `@multiverse/provider-contracts` stated as the stable extension seam; first-party vs custom provider distinction explicit; deferred items documented
 * ~~state explicitly which consumer integration model (appEnv, runtime-config boundary) is officially supported for 1.0~~ — done (Slice 60): `docs/spec/consumer-integration-model.md` classifies three supported patterns; runtime-config boundary recommended for composed apps; `run` stderr routing stated as stable 1.0 behavior; deferred items explicit
 
 The `0.7.x` public-surface stability wave is complete. The seven planned slices (50–56)

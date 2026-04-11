@@ -422,6 +422,21 @@ The `run` stderr refusal routing is stated as a stable 1.0 behavior per `cli-out
 Deferred items are explicit: `appEnv` in `derive --format=env`, resource typed extraction,
 multiple aliases per declaration, additional endpoint value kinds, config overlays.
 
+**What is the official 1.0 core/extension boundary, and what can a custom provider rely on?**
+
+Slice 61 answers this. A new source-of-truth spec, `docs/spec/core-extension-boundary.md`,
+consolidates the boundary definitions distributed across ADR-0005, ADR-0009, `provider-model.md`,
+and the provider authoring guide into one readable reference. Four key statements: (1) core
+owns configuration validation, worktree identity resolution, safety/refusal enforcement, and
+provider coordination — not technology-specific isolation; (2) `@multiverse/provider-contracts`
+is the stable extension seam for 1.0 — a custom provider authored against this package alone
+integrates correctly through core (proven by Slices 32 and 35); (3) the six first-party
+providers (classified in `provider-support-classification.md`) are the 1.0 first-party
+support guarantee; (4) custom providers can implement any isolation strategy the contract
+supports but are outside the first-party support tier. Provider packaging/distribution, community
+extension workflow, and additional first-party providers beyond the current six are explicitly
+deferred.
+
 ## Current priority
 
 The current priority is:

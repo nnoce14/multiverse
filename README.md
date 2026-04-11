@@ -208,6 +208,7 @@ Core product and architecture docs:
 * `docs/spec/provider-support-classification.md` — which first-party providers are first-class vs supported-with-constraints for 1.0
 * `docs/spec/supported-workflow.md` — the officially supported 1.0 common-case developer workflow and what is deferred
 * `docs/spec/consumer-integration-model.md` — which consumer integration patterns are officially supported for 1.0 and what is deferred
+* `docs/spec/core-extension-boundary.md` — the 1.0 core/extension boundary: what core owns, the stable `@multiverse/provider-contracts` extension seam, first-party vs custom provider distinction, and what is deferred
 * `docs/adr/0001-git-worktrees-only-1.0.md`
 * `docs/adr/0004-resource-isolation-strategies.md`
 * `docs/adr/0005-providers-implement-isolation-contracts.md`
