@@ -148,6 +148,14 @@ The six first-party providers shipped with Multiverse are classified by support 
 first-class for the 1.0 common case, which are supported for specific use cases with stated
 constraints, and what is deferred.
 
+## Core/Extension Boundary
+
+The boundary between core responsibilities and provider (extension) responsibilities is
+stated explicitly in `docs/spec/core-extension-boundary.md`. That document synthesizes
+ADR-0005, ADR-0009, and the provider authoring guide into a single readable reference:
+what core owns, what `@multiverse/provider-contracts` guarantees as the stable extension
+seam, what first-party providers guarantee, and what custom providers can do.
+
 ## Open Areas
 
 The following remain to be specified in more detail elsewhere:
