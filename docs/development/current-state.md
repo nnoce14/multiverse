@@ -15,7 +15,7 @@ This is a short state-of-the-project document, not a full history.
 
 ## Current version posture
 
-Current version posture: **0.8.0-alpha.1**
+Current version posture: **0.9.0-alpha.1**
 
 Interpretation:
 
@@ -27,7 +27,8 @@ Interpretation:
 * all 0.5.x exit criteria are met: the documented second-engineer workflow is proven end-to-end, including real two-worktree auto-discovery/isolation and no-manual-`NODE_OPTIONS` TypeScript provider loading in workspace scope; outside-workspace packaging and distribution remain explicitly deferred
 * all 0.6.x exit criteria are met: lifecycle semantics, refusal behavior, naming, worktree identity accuracy, and consumer integration boundaries are now aligned across spec, ADR, scenarios, and guide docs; the planned six-seam semantic stability wave (Slices 44–49) is complete
 * all 0.7.x exit criteria are met: the CLI surface is coherent and stable — `--help`/`-h` works correctly, output shapes are specified and tested, help text is complete, documentation examples are consistent with actual usage, and common command flows feel intentional; the planned seven-slice public-surface stability wave (Slices 50–56) is complete
-* `0.8.0-alpha.1` enters the support boundary definition phase: the next honest proving question is whether Multiverse's support boundaries can be made explicit enough that a user can tell what the tool officially supports for 1.0, without reading the source code
+* all 0.8.x exit criteria are met: Multiverse's 1.0 support boundaries are now explicit in source-of-truth docs — provider support tiers, the official common-case workflow, the supported consumer integration model, and the core/extension boundary are all stated clearly enough that a user can answer those questions without reading source code; the planned five-slice support boundary definition wave (Slices 57–61) is complete
+* `0.9.0-alpha.1` enters the release-candidate hardening phase: the next honest proving question is whether the defined support boundaries hold up under final workflow validation, guide accuracy review, and CLI polish
 * 1.0 expectations remain intentionally narrow
 
 ## What is already proven
@@ -441,7 +442,7 @@ deferred.
 
 The current priority is:
 
-**`0.8.x` support boundary definition — making Multiverse's 1.0 support boundaries explicit enough that a user can tell what the tool officially supports without reading the source code. The `0.7.x` public-surface stability wave is complete. Outside-workspace packaging and distribution remain explicitly deferred.**
+**`0.9.x` release-candidate hardening — verifying that the defined 1.0 support boundaries hold up in practice: final guide and README accuracy, end-to-end workflow validation against the now-explicit support specs, and final CLI polish. The `0.8.x` support boundary definition wave is complete. Outside-workspace packaging and distribution remain explicitly deferred.**
 
 ## What kinds of work are highest-value right now
 
@@ -513,24 +514,29 @@ The following remain explicitly deferred:
 
 When deciding what to work on next, prefer work that answers the current proving question:
 
-**Can Multiverse's support boundaries be made explicit enough that a user can tell what the
-tool officially supports for 1.0, without reading the source code?**
+**Do the defined 1.0 support boundaries hold up in practice? Can a user read the support
+specs, follow the guide, and reproduce the documented experience without gaps or surprises?**
 
-Use this preference order:
+The `0.8.x` support boundary definition wave is complete. The `0.9.x` hardening wave is
+the current focus. Work in this phase verifies that already-stated boundaries are accurate
+and trustworthy — it does not invent new boundaries.
 
-1. audit which of the six first-party providers (name-scoped, path-scoped, process-scoped,
-   process-port-scoped, local-port, fixed-host-port) are first-class for 1.0 vs experimental
-   vs deferred — produce an explicit support classification
-2. define which workflows are part of the officially supported common case for 1.0
-3. make the core/extension boundary explicit as a 1.0 support statement
-4. state explicitly what consumer integration model is officially supported (appEnv,
-   runtime-config boundary) vs what remains experimental
+Highest-value work for `0.9.x`:
 
-Each item requires its own slice and task doc before any implementation changes.
-Begin with audit and classification work; do not invent new providers or workflows.
+1. Final guide and README accuracy pass — verify that `external-demo-guide.md`, `README.md`,
+   and the new support specs are mutually consistent and that no step produces a surprise
+2. End-to-end validation of the supported workflows against the now-explicit support specs
+   (`supported-workflow.md`, `consumer-integration-model.md`, `provider-support-classification.md`)
+3. Final CLI polish — error messages, edge-case refusal clarity, any rough edge that would
+   undermine trust in the common-case workflow
+4. Final verification that the core/extension boundary statement is accurate against the actual
+   provider-contracts package contents
 
-Do not attempt Slices 50–56 work as if it were pending — the 0.7.x wave is complete.
-0.8.x post-wave candidates (not current work): `validate-repository` guide docs,
+Each item requires a targeted audit and task doc before implementation. Begin with audit;
+do not invent new providers, commands, or workflows.
+
+Do not attempt 0.8.x work as if it were pending — the support boundary definition wave is
+complete. `0.9.x` candidates that are not yet current work: `validate-repository` guide docs,
 utility-command subcommand restructuring, outside-workspace packaging (always deferred).
 
 ## Related documents

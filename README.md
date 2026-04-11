@@ -52,7 +52,7 @@ Today’s repo includes:
 
 ## Current behavior being proven
 
-The current implementation proves the core loop for explicit declarations and deterministic derivation, the composed application consumer workflow, and a complete provider extensibility story. The `0.6.x` semantic stability wave (Slices 44–49) is now complete: lifecycle semantics, refusal behavior and category naming, worktree identity scenario accuracy, and consumer integration boundaries are all aligned across spec, ADR, scenarios, and guide docs. `0.7.0-alpha.1` enters the public surface stability phase: CLI invocation patterns, help text, output format conventions, and guide consistency.
+The current implementation proves the core loop for explicit declarations and deterministic derivation, the composed application consumer workflow, and a complete provider extensibility story. The `0.6.x` semantic stability wave (Slices 44–49) is complete. The `0.7.x` public-surface stability wave (Slices 50–56) is complete: CLI surface, help text, output shapes, and guide consistency. The `0.8.x` support boundary definition wave (Slices 57–61) is complete: provider support tiers, the official common-case workflow, the consumer integration model, and the core/extension boundary are all now explicit in source-of-truth specs. `0.9.0-alpha.1` enters the release-candidate hardening phase.
 
 1.0 remains intentionally narrow; outside-workspace packaging and distribution remain deferred.
 
