@@ -1,0 +1,24 @@
+{
+  "source_id": "src-chrome-devtools-mcp",
+  "title": "Chrome DevTools MCP Server",
+  "url": "https://github.com/ChromeDevTools/chrome-devtools-mcp",
+  "source_type": "technical-reference",
+  "citation": "ChromeDevTools/chrome-devtools-mcp GitHub repository, accessed 2026-05-09",
+  "accessed_at": "2026-05-09",
+  "permitted_uses": [
+    "Supports local browser inspection, interaction, and visual verification during Docusaurus site development.",
+    "Supports agentic acceptance testing of the docs site UI by enabling agents to navigate pages, take screenshots, and evaluate JavaScript in a live Chrome instance.",
+    "Supports local development workflow verification — agents can open the dev server, interact with it, and confirm the golden path renders correctly."
+  ],
+  "claims_supported": [
+    "The chrome-devtools-mcp server provides 40+ tools across 8 categories: input automation, navigation, debugging, performance, network, memory, extensions, and emulation.",
+    "It connects to a live Chrome instance via MCP and is compatible with Claude Code and Codex sub-agents via project-scoped .mcp.json configuration.",
+    "Requires Node.js v20.19+ and current stable Chrome. Configured in this repo via .mcp.json at project scope.",
+    "A lightweight slim mode with 3 essential tools (screenshot, navigate, evaluate) is available for basic UI verification."
+  ],
+  "claims_not_supported": [
+    "The MCP server replaces acceptance tests — it is a local visibility tool, not a substitute for pnpm test coverage.",
+    "It supports browsers other than Google Chrome/Chrome for Testing."
+  ],
+  "confidence": 0.95
+}
