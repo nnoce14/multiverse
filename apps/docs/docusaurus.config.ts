@@ -1,13 +1,15 @@
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 
+const baseUrl = process.env.DOCUSAURUS_BASE_URL ?? "/multiverse/";
+
 const config: Config = {
   title: "Multiverse",
   tagline: "Deterministic local runtime isolation for parallel git worktrees.",
   favicon: "img/favicon.svg",
 
   url: "https://nnoce14.github.io",
-  baseUrl: "/multiverse/",
+  baseUrl,
 
   organizationName: "nnoce14",
   projectName: "multiverse",

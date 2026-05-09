@@ -7,7 +7,7 @@
     "build": "docusaurus build",
     "clear": "docusaurus clear",
     "serve": "docusaurus serve --host 0.0.0.0",
-    "start": "docusaurus start --host 0.0.0.0",
+    "start": "DOCUSAURUS_BASE_URL=/ docusaurus start --host 0.0.0.0",
     "swizzle": "docusaurus swizzle",
     "typecheck": "tsc --noEmit"
   },

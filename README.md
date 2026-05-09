@@ -20,7 +20,10 @@ scripts/codex-env.sh pnpm agent:verify
 scripts/codex-env.sh pnpm typecheck
 scripts/codex-env.sh pnpm test
 scripts/codex-env.sh pnpm docs:build
+scripts/codex-env.sh pnpm docs:start
 ```
+
+The local docs preview runs at `http://localhost:3000/#/`. Production builds keep the GitHub Pages base path at `/multiverse/`.
 
 ## Workflow Entry Points
 
