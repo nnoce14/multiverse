@@ -1,7 +1,12 @@
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import webpack from "webpack";
 
 const baseUrl = process.env.DOCUSAURUS_BASE_URL ?? "/multiverse/";
+const currentDir = dirname(fileURLToPath(import.meta.url));
+const clientModulesPath = resolve(currentDir, "src/client-modules.ts");
 
 const config: Config = {
   title: "Multiverse",
@@ -46,6 +51,25 @@ const config: Config = {
         }
       } satisfies Preset.Options
     ]
+  ],
+
+  plugins: [
+    function generatedClientModulesEsm() {
+      return {
+        name: "generated-client-modules-esm",
+        configureWebpack() {
+          return {
+            plugins: [
+              // Docusaurus generates this module with CommonJS require calls; keep the docs package ESM.
+              new webpack.NormalModuleReplacementPlugin(
+                /^@generated\/client-modules$/,
+                clientModulesPath
+              )
+            ]
+          };
+        }
+      };
+    }
   ],
 
   themeConfig: {

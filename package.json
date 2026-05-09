@@ -15,6 +15,8 @@
     "agent:score": "tsx tools/agent-factory/score-iteration.ts",
     "agent:verify": "pnpm agent:validate && pnpm agent:index && pnpm agent:sources",
     "docs:build": "pnpm --filter @multiverse/docs build",
+    "docs:smoke": "node tools/docs/verify-client-bundle.mjs",
+    "docs:verify": "pnpm docs:build && pnpm docs:smoke",
     "docs:start": "pnpm --filter @multiverse/docs start",
     "build": "TURBO_TELEMETRY_DISABLED=1 DO_NOT_TRACK=1 turbo run build",
     "typecheck": "tsc --noEmit && pnpm --filter @multiverse/docs typecheck",

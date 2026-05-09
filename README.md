@@ -19,11 +19,11 @@ scripts/codex-env.sh pnpm install
 scripts/codex-env.sh pnpm agent:verify
 scripts/codex-env.sh pnpm typecheck
 scripts/codex-env.sh pnpm test
-scripts/codex-env.sh pnpm docs:build
+scripts/codex-env.sh pnpm docs:verify
 scripts/codex-env.sh pnpm docs:start
 ```
 
-The local docs preview runs at `http://localhost:3000/#/`. Production builds keep the GitHub Pages base path at `/multiverse/`.
+The local docs preview runs at `http://localhost:3000/#/`. Production builds keep the GitHub Pages base path at `/multiverse/`. To smoke-check a running preview bundle, run `DOCS_PREVIEW_BUNDLE_URL=http://127.0.0.1:3000/main.js scripts/codex-env.sh pnpm docs:smoke`.
 
 ## Workflow Entry Points
 

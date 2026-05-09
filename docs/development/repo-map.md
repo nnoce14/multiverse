@@ -11,6 +11,7 @@
 - `sources/` - source ledger records
 - `templates/` - artifact templates
 - `tools/agent-factory/` - validation, source ledger, memory index, and scoring tools
+- `tools/docs/` - documentation build and browser-bundle smoke checks
 
 Product directories are reserved but intentionally empty until governed slices need them:
 

@@ -45,12 +45,18 @@ importers:
       '@docusaurus/preset-classic':
         specifier: 3.9.2
         version: 3.9.2(@algolia/client-search@5.52.1)(@mdx-js/react@3.1.1(@types/react@18.3.27)(react@18.3.1))(@types/react@18.3.27)(esbuild@0.27.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)(typescript@6.0.3)
+      '@docusaurus/theme-classic':
+        specifier: 3.9.2
+        version: 3.9.2(@types/react@18.3.27)(esbuild@0.27.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@6.0.3)
       '@mdx-js/react':
         specifier: 3.1.1
         version: 3.1.1(@types/react@18.3.27)(react@18.3.1)
       clsx:
         specifier: 2.1.1
         version: 2.1.1
+      infima:
+        specifier: 0.2.0-alpha.45
+        version: 0.2.0-alpha.45
       prism-react-renderer:
         specifier: 2.4.1
         version: 2.4.1(react@18.3.1)
@@ -82,6 +88,9 @@ importers:
       typescript:
         specifier: 6.0.3
         version: 6.0.3
+      webpack:
+        specifier: 5.99.9
+        version: 5.99.9(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.14))(esbuild@0.27.7)(html-minifier-terser@7.2.0)(postcss@8.5.14)
 
 packages:
 

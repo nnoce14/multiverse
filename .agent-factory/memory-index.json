@@ -1,7 +1,7 @@
 {
   "generated_by": "tools/agent-factory/build-memory-index.ts",
-  "agent_count": 12,
-  "entry_count": 12,
+  "agent_count": 13,
+  "entry_count": 13,
   "superseded_entry_count": 0,
   "entries": [
     {
@@ -19,6 +19,22 @@
       "agent_id": "tdd-acceptance-lead",
       "team": "core",
       "source_file": "agents/core/tdd-acceptance-lead/index.json"
+    },
+    {
+      "id": "frontend-runtime-verification-lead-lesson-0001",
+      "type": "lesson",
+      "topic": "browser-runtime",
+      "summary": "Frontend work is not verified by build success alone; local preview output and browser-console/client-bundle runtime hazards must be checked before declaring it done.",
+      "confidence": 0.95,
+      "source_ids": [
+        "src-openclinxr-agent-workflow-reference"
+      ],
+      "iteration": 0,
+      "status": "active",
+      "supersedes": [],
+      "agent_id": "frontend-runtime-verification-lead",
+      "team": "core",
+      "source_file": "agents/core/frontend-runtime-verification-lead/index.json"
     },
     {
       "id": "cli-workflow-lead-lesson-0001",

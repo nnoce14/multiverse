@@ -63,6 +63,7 @@ Core:
 - Provider Contract Lead
 - CLI Workflow Lead
 - TDD Acceptance Lead
+- Frontend Runtime Verification Lead
 
 Adversarial:
 
