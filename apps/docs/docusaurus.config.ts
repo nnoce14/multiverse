@@ -82,6 +82,8 @@ const config: Config = {
       },
       items: [
         { to: "/docs/agent-factory/", label: "Agent Swarm", position: "left" },
+        { to: "/docs/spec/glossary", label: "Specifications", position: "left" },
+        { to: "/docs/decisions/", label: "Decisions", position: "left" },
         { to: "/docs/development/current-state", label: "Development", position: "left" },
         {
           href: "https://github.com/nnoce14/multiverse",
@@ -94,9 +96,20 @@ const config: Config = {
       style: "light",
       links: [
         {
+          title: "Specifications",
+          items: [
+            { label: "Glossary", to: "/docs/spec/glossary" },
+            { label: "Product Spec", to: "/docs/spec/product-spec" },
+            { label: "Safety and Refusal", to: "/docs/spec/safety-and-refusal" },
+            { label: "Provider Model", to: "/docs/spec/provider-model" },
+            { label: "CLI Output Shapes", to: "/docs/spec/cli-output-shapes" }
+          ]
+        },
+        {
           title: "Workflow",
           items: [
             { label: "Agent Swarm", to: "/docs/agent-factory/" },
+            { label: "Decisions", to: "/docs/decisions/" },
             { label: "Current State", to: "/docs/development/current-state" },
             { label: "Roadmap", to: "/docs/development/roadmap" }
           ]
@@ -105,8 +118,8 @@ const config: Config = {
           title: "Repository",
           items: [
             { label: "GitHub", href: "https://github.com/nnoce14/multiverse" },
-            { label: "Decisions", href: "https://github.com/nnoce14/multiverse/tree/main/decisions" },
-            { label: "Agents", href: "https://github.com/nnoce14/multiverse/tree/main/agents" }
+            { label: "Agents", href: "https://github.com/nnoce14/multiverse/tree/main/agents" },
+            { label: "Iterations", href: "https://github.com/nnoce14/multiverse/tree/main/iterations" }
           ]
         }
       ],

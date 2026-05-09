@@ -26,6 +26,10 @@
       "items": { "type": "string" }
     },
     "reversal_trigger": { "type": "string", "minLength": 1 },
+    "source_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
     "linked_rubric_dimensions": {
       "type": "array",
       "items": { "type": "string" }

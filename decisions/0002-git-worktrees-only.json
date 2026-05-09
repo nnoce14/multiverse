@@ -1,0 +1,24 @@
+{
+  "decision_id": "decision-0002",
+  "title": "Git worktrees only in v1",
+  "status": "accepted",
+  "iteration": 1,
+  "context": "The tool needs to define its scope boundary for parallel isolation. Arbitrary parallel checkouts beyond git worktrees would expand the domain and increase ambiguity.",
+  "decision": "The tool will explicitly support git worktrees in v1 and will not attempt to support arbitrary parallel checkouts.",
+  "alternatives": [
+    "Support arbitrary parallel checkouts (directories) as a generalized model.",
+    "Support both git worktrees and arbitrary directories with a unified abstraction."
+  ],
+  "rationale": "This narrows the domain and reduces ambiguity during initial design and implementation. Git worktrees are a well-defined, well-understood git primitive with clear identity semantics.",
+  "consequences": [
+    "The tool's scope is limited to git worktree isolation scenarios.",
+    "Non-git-worktree parallel isolation is not supported in 1.0.",
+    "The worktree identity model can be designed around git's own worktree primitives."
+  ],
+  "reversal_trigger": "If a compelling use case for non-git-worktree parallel isolation emerges with sufficient user demand and a clear safety model, this decision can be revisited in a post-1.0 cycle.",
+  "source_ids": ["src-multiverse-old-reference"],
+  "linked_rubric_dimensions": [
+    "business_truth_alignment",
+    "architecture_boundary_integrity"
+  ]
+}

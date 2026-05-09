@@ -1,0 +1,27 @@
+{
+  "decision_id": "decision-0009",
+  "title": "Unsafe operations are refused in 1.0",
+  "status": "accepted",
+  "iteration": 1,
+  "context": "The core purpose of the tool is to preserve worktree isolation boundaries. Any operation that cannot safely determine or preserve worktree ownership boundaries risks violating those guarantees.",
+  "decision": "In 1.0, the tool treats refusal as a first-class business behavior. The tool must refuse operations when safe worktree-instance ownership cannot be determined or preserved. This refusal behavior applies to derive, validate, reset, and cleanup. The tool does not use best-effort behavior when safety is ambiguous. The tool preserves a distinction between: invalid configuration, unsupported capability, unsafe scope, and provider failure.",
+  "alternatives": [
+    "Use best-effort behavior and proceed when scope is ambiguous.",
+    "Collapse all failure categories into a single generic error.",
+    "Treat refusal as an implementation detail rather than a first-class business behavior."
+  ],
+  "rationale": "Guessing when scope is ambiguous would violate the core purpose of the tool and weaken the guarantees promised by the business model. Treating refusal as a first-class behavior keeps the design explicit, testable, and appropriate for behavior-first development and TDD.",
+  "consequences": [
+    "Both the core tool and providers participate in refusal behavior.",
+    "The core refuses operations when safe ownership cannot be established from the business model or declared configuration.",
+    "Providers refuse operations when technology-specific safety cannot be established.",
+    "Future implementation work must preserve these distinctions rather than collapsing them into generic failure handling."
+  ],
+  "reversal_trigger": "Not applicable. The safety principle is fundamental to the tool's purpose and cannot be compromised.",
+  "source_ids": ["src-multiverse-old-reference"],
+  "linked_rubric_dimensions": [
+    "refusal_safety",
+    "business_truth_alignment",
+    "architecture_boundary_integrity"
+  ]
+}

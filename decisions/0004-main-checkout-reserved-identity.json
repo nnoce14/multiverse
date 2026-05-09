@@ -1,0 +1,25 @@
+{
+  "decision_id": "decision-0004",
+  "title": "Main checkout uses reserved main identity",
+  "status": "accepted",
+  "iteration": 1,
+  "context": "The main checkout of a git repository is a special case: it exists independently of linked worktrees and must have a stable, predictable identity for isolation to work correctly across all worktrees in a repository.",
+  "decision": "The main checkout uses the reserved Worktree ID 'main' and Worktree Label 'main'.",
+  "alternatives": [
+    "Treat the main checkout as having no identity and special-case it throughout the implementation.",
+    "Derive the main checkout's identity the same way as linked worktrees, with no reserved value."
+  ],
+  "rationale": "This keeps the main checkout explicit and avoids special casing through absence of identity. The main checkout has valid, predictable identity rather than being treated as a special case or an unmanaged worktree.",
+  "consequences": [
+    "The reserved identity 'main' must not be assignable to a linked worktree.",
+    "Implementation must detect and refuse attempts to assign 'main' to a non-main checkout.",
+    "The main checkout participates fully in the identity model rather than being an edge case."
+  ],
+  "reversal_trigger": "If the reserved 'main' identity creates irreconcilable conflicts with a repository naming convention, a configurable reserved identity may be considered post-1.0.",
+  "source_ids": ["src-multiverse-old-reference"],
+  "linked_rubric_dimensions": [
+    "business_truth_alignment",
+    "refusal_safety",
+    "architecture_boundary_integrity"
+  ]
+}
