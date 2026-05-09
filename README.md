@@ -19,11 +19,13 @@ scripts/codex-env.sh pnpm install
 scripts/codex-env.sh pnpm agent:verify
 scripts/codex-env.sh pnpm typecheck
 scripts/codex-env.sh pnpm test
+scripts/codex-env.sh pnpm docs:build
 ```
 
 ## Workflow Entry Points
 
 - `AGENTS.md` - repository operating rules for agents
+- `apps/docs/` - Docusaurus documentation application
 - `docs/agent-factory/README.md` - agentic planning workflow
 - `docs/development/current-state.md` - current implementation posture
 - `docs/development/roadmap.md` - foundation-first roadmap

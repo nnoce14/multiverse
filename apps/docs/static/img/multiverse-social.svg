@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="Multiverse local runtime isolation">
+  <rect width="1200" height="630" fill="#f8f7f2"/>
+  <rect x="80" y="84" width="1040" height="462" rx="18" fill="#fff" stroke="#d9ded6" stroke-width="3"/>
+  <text x="120" y="174" fill="#144536" font-family="Inter, Arial, sans-serif" font-size="76" font-weight="800">Multiverse</text>
+  <text x="124" y="236" fill="#59645e" font-family="Inter, Arial, sans-serif" font-size="32">Deterministic local runtime isolation for parallel git worktrees</text>
+  <rect x="124" y="316" width="270" height="116" rx="10" fill="#ecf1ed" stroke="#d9ded6" stroke-width="2"/>
+  <rect x="466" y="286" width="270" height="176" rx="10" fill="#f8f7f2" stroke="#d9ded6" stroke-width="2"/>
+  <rect x="808" y="316" width="270" height="116" rx="10" fill="#ecf1ed" stroke="#d9ded6" stroke-width="2"/>
+  <text x="154" y="366" fill="#245f8f" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="800">worktree-a</text>
+  <text x="496" y="348" fill="#144536" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="800">explicit core</text>
+  <text x="838" y="366" fill="#245f8f" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="800">worktree-b</text>
+  <path d="M394 374h72M736 374h72" stroke="#1f6f56" stroke-width="8" stroke-linecap="round"/>
+</svg>

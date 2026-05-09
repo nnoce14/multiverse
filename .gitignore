@@ -3,4 +3,6 @@ dist/
 coverage/
 .turbo/
 .codex/
+apps/docs/.docusaurus/
+apps/docs/build/
 *.log

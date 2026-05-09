@@ -8,6 +8,7 @@ Implemented:
 - source, decision, scorecard, score-history, and agent-index schemas
 - agent swarm charters and memory records for Multiverse-specific roles
 - source ledger records for the old Multiverse attempt and OpenClinXR workflow reference
+- Docusaurus documentation app with the public, evidence-gated posture surfaced first
 
 Not yet implemented:
 

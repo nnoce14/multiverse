@@ -1,6 +1,7 @@
 # Repository Map
 
 - `agents/` - Multiverse agent swarm charters, memory, indexes, and score history
+- `apps/docs/` - Docusaurus documentation application for the public project posture
 - `decisions/` - machine-readable decision records
 - `docs/agent-factory/` - swarm operating workflow
 - `docs/development/` - current state, roadmap, task planning, and repo map
@@ -13,6 +14,6 @@
 
 Product directories are reserved but intentionally empty until governed slices need them:
 
-- `apps/`
+- `apps/*` except `apps/docs/`
 - `packages/`
 - `tests/`
