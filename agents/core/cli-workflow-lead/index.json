@@ -1,0 +1,18 @@
+{
+  "agent_id": "cli-workflow-lead",
+  "team": "core",
+  "last_updated": "2026-05-09",
+  "entries": [
+    {
+      "id": "cli-workflow-lead-lesson-0001",
+      "type": "lesson",
+      "topic": "cli-is-release-surface",
+      "summary": "CLI command names, output shapes, and refusal messages should be treated as release surface once accepted.",
+      "confidence": 0.85,
+      "source_ids": ["src-multiverse-old-reference"],
+      "iteration": 0,
+      "status": "active",
+      "supersedes": []
+    }
+  ]
+}

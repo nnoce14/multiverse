@@ -1,0 +1,18 @@
+{
+  "agent_id": "tdd-acceptance-lead",
+  "team": "core",
+  "last_updated": "2026-05-09",
+  "entries": [
+    {
+      "id": "tdd-acceptance-lead-lesson-0001",
+      "type": "lesson",
+      "topic": "behavior-first",
+      "summary": "Multiverse implementation slices should start from executable acceptance or contract coverage, then add minimal production code.",
+      "confidence": 0.9,
+      "source_ids": ["src-multiverse-old-reference"],
+      "iteration": 0,
+      "status": "active",
+      "supersedes": []
+    }
+  ]
+}

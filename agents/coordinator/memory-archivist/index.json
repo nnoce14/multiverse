@@ -1,0 +1,18 @@
+{
+  "agent_id": "memory-archivist",
+  "team": "coordinator",
+  "last_updated": "2026-05-09",
+  "entries": [
+    {
+      "id": "memory-archivist-lesson-0001",
+      "type": "lesson",
+      "topic": "memory-index",
+      "summary": "Agent memory must be machine-indexed and only durable lessons should be promoted into active memory.",
+      "confidence": 0.95,
+      "source_ids": ["src-openclinxr-agent-workflow-reference"],
+      "iteration": 0,
+      "status": "active",
+      "supersedes": []
+    }
+  ]
+}

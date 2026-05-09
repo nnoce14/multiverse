@@ -1,0 +1,25 @@
+{
+  "decision_id": "decision-0001",
+  "title": "Establish agentic workflow before implementation slices",
+  "status": "accepted",
+  "iteration": 0,
+  "context": "The fresh Multiverse implementation needs to reuse lessons from OpenClinXR's agentic workflow while staying relevant to Multiverse's local runtime isolation domain.",
+  "decision": "Build the agent swarm, source ledger, decision records, scorecards, memory index, and validation scripts before starting product implementation slices.",
+  "alternatives": [
+    "Start by copying packages and tests from the old Multiverse attempt.",
+    "Start by implementing the first CLI/core slice without agent workflow artifacts.",
+    "Copy OpenClinXR's full agent roster unchanged."
+  ],
+  "rationale": "The foundation makes business truth explicit before code and gives future agents persistent, domain-specific responsibilities for boundaries, refusal behavior, provider contracts, and release governance.",
+  "consequences": [
+    "Initial work produces governed planning artifacts instead of product behavior.",
+    "Future implementation slices must be selected and reviewed through the swarm workflow.",
+    "Historical Multiverse code can inform the fresh implementation only through explicit source-backed decisions and tasks."
+  ],
+  "reversal_trigger": "If the validation workflow becomes busywork that fails to improve implementation quality, reduce the artifact set while preserving source-backed decisions and acceptance-driven implementation.",
+  "linked_rubric_dimensions": [
+    "business_truth_alignment",
+    "evidence_discipline",
+    "implementation_sequence"
+  ]
+}

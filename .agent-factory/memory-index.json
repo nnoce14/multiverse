@@ -1,0 +1,201 @@
+{
+  "generated_by": "tools/agent-factory/build-memory-index.ts",
+  "agent_count": 12,
+  "entry_count": 12,
+  "superseded_entry_count": 0,
+  "entries": [
+    {
+      "id": "tdd-acceptance-lead-lesson-0001",
+      "type": "lesson",
+      "topic": "behavior-first",
+      "summary": "Multiverse implementation slices should start from executable acceptance or contract coverage, then add minimal production code.",
+      "confidence": 0.9,
+      "source_ids": [
+        "src-multiverse-old-reference"
+      ],
+      "iteration": 0,
+      "status": "active",
+      "supersedes": [],
+      "agent_id": "tdd-acceptance-lead",
+      "team": "core",
+      "source_file": "agents/core/tdd-acceptance-lead/index.json"
+    },
+    {
+      "id": "cli-workflow-lead-lesson-0001",
+      "type": "lesson",
+      "topic": "cli-is-release-surface",
+      "summary": "CLI command names, output shapes, and refusal messages should be treated as release surface once accepted.",
+      "confidence": 0.85,
+      "source_ids": [
+        "src-multiverse-old-reference"
+      ],
+      "iteration": 0,
+      "status": "active",
+      "supersedes": [],
+      "agent_id": "cli-workflow-lead",
+      "team": "core",
+      "source_file": "agents/core/cli-workflow-lead/index.json"
+    },
+    {
+      "id": "ambiguity-refusal-attacker-risk-0001",
+      "type": "risk",
+      "topic": "convenience-inference",
+      "summary": "The most likely safety regression is adding convenience inference that bypasses explicit repository configuration or safe worktree scope.",
+      "confidence": 0.9,
+      "source_ids": [
+        "src-multiverse-old-reference"
+      ],
+      "iteration": 0,
+      "status": "active",
+      "supersedes": [],
+      "agent_id": "ambiguity-refusal-attacker",
+      "team": "adversarial",
+      "source_file": "agents/adversarial/ambiguity-refusal-attacker/index.json"
+    },
+    {
+      "id": "architecture-boundary-lead-lesson-0001",
+      "type": "lesson",
+      "topic": "core-provider-separation",
+      "summary": "Core owns business rules, coordination, and refusal; providers own technology-specific isolation through explicit contracts.",
+      "confidence": 0.9,
+      "source_ids": [
+        "src-multiverse-old-reference"
+      ],
+      "iteration": 0,
+      "status": "active",
+      "supersedes": [],
+      "agent_id": "architecture-boundary-lead",
+      "team": "core",
+      "source_file": "agents/core/architecture-boundary-lead/index.json"
+    },
+    {
+      "id": "provider-contract-lead-lesson-0001",
+      "type": "lesson",
+      "topic": "explicit-provider-contracts",
+      "summary": "Provider behavior must be exposed through explicit contracts and contract tests before broader implementation relies on it.",
+      "confidence": 0.9,
+      "source_ids": [
+        "src-multiverse-old-reference"
+      ],
+      "iteration": 0,
+      "status": "active",
+      "supersedes": [],
+      "agent_id": "provider-contract-lead",
+      "team": "core",
+      "source_file": "agents/core/provider-contract-lead/index.json"
+    },
+    {
+      "id": "chief-coordinator-lesson-0001",
+      "type": "lesson",
+      "topic": "foundation-first",
+      "summary": "Multiverse starts with a domain-specific agent swarm and artifact validation before implementation slices.",
+      "confidence": 1,
+      "source_ids": [
+        "src-openclinxr-agent-workflow-reference"
+      ],
+      "iteration": 0,
+      "status": "active",
+      "supersedes": [],
+      "agent_id": "chief-coordinator",
+      "team": "coordinator",
+      "source_file": "agents/coordinator/chief-coordinator/index.json"
+    },
+    {
+      "id": "product-truth-steward-lesson-0001",
+      "type": "lesson",
+      "topic": "hard-constraints",
+      "summary": "Multiverse 1.0 constraints include no provider inference, no managed object inference, declarative repository configuration, and refusal rather than guessing.",
+      "confidence": 0.9,
+      "source_ids": [
+        "src-multiverse-old-reference"
+      ],
+      "iteration": 0,
+      "status": "active",
+      "supersedes": [],
+      "agent_id": "product-truth-steward",
+      "team": "core",
+      "source_file": "agents/core/product-truth-steward/index.json"
+    },
+    {
+      "id": "source-librarian-lesson-0001",
+      "type": "lesson",
+      "topic": "historical-source-boundary",
+      "summary": "The old Multiverse repository may inform reconstruction, but it is not automatic truth for the fresh implementation.",
+      "confidence": 0.9,
+      "source_ids": [
+        "src-multiverse-old-reference"
+      ],
+      "iteration": 0,
+      "status": "active",
+      "supersedes": [],
+      "agent_id": "source-librarian",
+      "team": "coordinator",
+      "source_file": "agents/coordinator/source-librarian/index.json"
+    },
+    {
+      "id": "memory-archivist-lesson-0001",
+      "type": "lesson",
+      "topic": "memory-index",
+      "summary": "Agent memory must be machine-indexed and only durable lessons should be promoted into active memory.",
+      "confidence": 0.95,
+      "source_ids": [
+        "src-openclinxr-agent-workflow-reference"
+      ],
+      "iteration": 0,
+      "status": "active",
+      "supersedes": [],
+      "agent_id": "memory-archivist",
+      "team": "coordinator",
+      "source_file": "agents/coordinator/memory-archivist/index.json"
+    },
+    {
+      "id": "implementation-plan-gap-attacker-risk-0001",
+      "type": "risk",
+      "topic": "over-scaffolding",
+      "summary": "A fresh implementation can recreate old complexity too early if packages are added before a governed acceptance slice needs them.",
+      "confidence": 0.9,
+      "source_ids": [
+        "src-multiverse-old-reference",
+        "src-openclinxr-agent-workflow-reference"
+      ],
+      "iteration": 0,
+      "status": "active",
+      "supersedes": [],
+      "agent_id": "implementation-plan-gap-attacker",
+      "team": "adversarial",
+      "source_file": "agents/adversarial/implementation-plan-gap-attacker/index.json"
+    },
+    {
+      "id": "provider-boundary-attacker-risk-0001",
+      "type": "risk",
+      "topic": "provider-contract-drift",
+      "summary": "Provider contract drift can silently move business rules into provider packages unless contract tests and boundary reviews are required.",
+      "confidence": 0.9,
+      "source_ids": [
+        "src-multiverse-old-reference"
+      ],
+      "iteration": 0,
+      "status": "active",
+      "supersedes": [],
+      "agent_id": "provider-boundary-attacker",
+      "team": "adversarial",
+      "source_file": "agents/adversarial/provider-boundary-attacker/index.json"
+    },
+    {
+      "id": "release-governance-lead-lesson-0001",
+      "type": "lesson",
+      "topic": "public-surface-discipline",
+      "summary": "CLI, provider contracts, output shapes, and documented workflow promises require leadership review once they become accepted surface.",
+      "confidence": 0.9,
+      "source_ids": [
+        "src-multiverse-old-reference"
+      ],
+      "iteration": 0,
+      "status": "active",
+      "supersedes": [],
+      "agent_id": "release-governance-lead",
+      "team": "leadership",
+      "source_file": "agents/leadership/release-governance-lead/index.json"
+    }
+  ]
+}

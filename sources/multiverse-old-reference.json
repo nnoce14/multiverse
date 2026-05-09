@@ -1,0 +1,21 @@
+{
+  "source_id": "src-multiverse-old-reference",
+  "title": "Original Multiverse attempt",
+  "file_path": "../multiverse-old",
+  "source_type": "historical-project",
+  "citation": "Local ../multiverse-old repository inspected 2026-05-09",
+  "accessed_at": "2026-05-09",
+  "permitted_uses": [
+    "Supports historical context about Multiverse's intended business boundaries, previous slices, and prior implementation shape.",
+    "Supports reconstruction of decisions, specs, scenarios, and acceptance tests when reviewed by the swarm."
+  ],
+  "claims_supported": [
+    "The prior project treated refusal, explicit repository configuration, and provider/core separation as central constraints.",
+    "The prior project had a pnpm monorepo with CLI, core, provider contracts, providers, and acceptance/contract tests."
+  ],
+  "claims_not_supported": [
+    "The prior implementation should be copied wholesale.",
+    "The prior latest state is automatically the desired fresh implementation plan."
+  ],
+  "confidence": 0.9
+}

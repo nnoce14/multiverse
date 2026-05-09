@@ -1,0 +1,33 @@
+{
+  "name": "multiverse",
+  "version": "0.1.0-foundation.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.19.0",
+    "pnpm": ">=10.33.0"
+  },
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "agent:validate": "tsx tools/agent-factory/validate-artifacts.ts",
+    "agent:index": "tsx tools/agent-factory/build-memory-index.ts",
+    "agent:sources": "tsx tools/agent-factory/check-source-ledger.ts",
+    "agent:score": "tsx tools/agent-factory/score-iteration.ts",
+    "agent:verify": "pnpm agent:validate && pnpm agent:index && pnpm agent:sources",
+    "build": "TURBO_TELEMETRY_DISABLED=1 DO_NOT_TRACK=1 turbo run build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "ajv": "8.20.0",
+    "fast-glob": "3.3.3",
+    "gray-matter": "4.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "25.6.0",
+    "tsx": "4.21.0",
+    "turbo": "2.9.8",
+    "typescript": "6.0.3",
+    "vitest": "4.1.5"
+  }
+}

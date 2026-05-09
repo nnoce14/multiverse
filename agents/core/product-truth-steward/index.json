@@ -1,0 +1,18 @@
+{
+  "agent_id": "product-truth-steward",
+  "team": "core",
+  "last_updated": "2026-05-09",
+  "entries": [
+    {
+      "id": "product-truth-steward-lesson-0001",
+      "type": "lesson",
+      "topic": "hard-constraints",
+      "summary": "Multiverse 1.0 constraints include no provider inference, no managed object inference, declarative repository configuration, and refusal rather than guessing.",
+      "confidence": 0.9,
+      "source_ids": ["src-multiverse-old-reference"],
+      "iteration": 0,
+      "status": "active",
+      "supersedes": []
+    }
+  ]
+}

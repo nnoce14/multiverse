@@ -1,0 +1,21 @@
+{
+  "source_id": "src-openclinxr-agent-workflow-reference",
+  "title": "OpenClinXR agent factory workflow reference",
+  "file_path": "../OpenClinXR/docs/agent-factory/README.md",
+  "source_type": "internal-artifact",
+  "citation": "OpenClinXR docs/agent-factory/README.md, local clone inspected 2026-05-09",
+  "accessed_at": "2026-05-09",
+  "permitted_uses": [
+    "Supports repo-native agent workflow patterns: charters, memory indexes, scorecards, source ledgers, and leadership review.",
+    "Supports adapting the workflow shape to Multiverse without copying OpenClinXR clinical/XR-specific roles."
+  ],
+  "claims_supported": [
+    "OpenClinXR uses machine-readable agent artifacts and validation scripts as part of its planning workflow.",
+    "OpenClinXR separates coordinator, core, adversarial, and leadership review layers."
+  ],
+  "claims_not_supported": [
+    "OpenClinXR business-domain roles are appropriate for Multiverse unchanged.",
+    "OpenClinXR product implementation choices should be copied into Multiverse."
+  ],
+  "confidence": 0.95
+}

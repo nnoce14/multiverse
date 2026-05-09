@@ -1,0 +1,18 @@
+{
+  "agent_id": "chief-coordinator",
+  "team": "coordinator",
+  "last_updated": "2026-05-09",
+  "entries": [
+    {
+      "id": "chief-coordinator-lesson-0001",
+      "type": "lesson",
+      "topic": "foundation-first",
+      "summary": "Multiverse starts with a domain-specific agent swarm and artifact validation before implementation slices.",
+      "confidence": 1,
+      "source_ids": ["src-openclinxr-agent-workflow-reference"],
+      "iteration": 0,
+      "status": "active",
+      "supersedes": []
+    }
+  ]
+}

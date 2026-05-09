@@ -1,0 +1,18 @@
+{
+  "agent_id": "architecture-boundary-lead",
+  "team": "core",
+  "last_updated": "2026-05-09",
+  "entries": [
+    {
+      "id": "architecture-boundary-lead-lesson-0001",
+      "type": "lesson",
+      "topic": "core-provider-separation",
+      "summary": "Core owns business rules, coordination, and refusal; providers own technology-specific isolation through explicit contracts.",
+      "confidence": 0.9,
+      "source_ids": ["src-multiverse-old-reference"],
+      "iteration": 0,
+      "status": "active",
+      "supersedes": []
+    }
+  ]
+}

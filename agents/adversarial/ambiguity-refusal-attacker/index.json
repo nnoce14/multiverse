@@ -1,0 +1,18 @@
+{
+  "agent_id": "ambiguity-refusal-attacker",
+  "team": "adversarial",
+  "last_updated": "2026-05-09",
+  "entries": [
+    {
+      "id": "ambiguity-refusal-attacker-risk-0001",
+      "type": "risk",
+      "topic": "convenience-inference",
+      "summary": "The most likely safety regression is adding convenience inference that bypasses explicit repository configuration or safe worktree scope.",
+      "confidence": 0.9,
+      "source_ids": ["src-multiverse-old-reference"],
+      "iteration": 0,
+      "status": "active",
+      "supersedes": []
+    }
+  ]
+}
