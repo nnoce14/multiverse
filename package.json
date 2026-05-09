@@ -13,9 +13,16 @@
     "agent:index": "tsx tools/agent-factory/build-memory-index.ts",
     "agent:sources": "tsx tools/agent-factory/check-source-ledger.ts",
     "agent:score": "tsx tools/agent-factory/score-iteration.ts",
+    "agent:compare": "tsx tools/agent-factory/compare-iterations.ts",
+    "agent:risks": "tsx tools/agent-factory/find-stale-risks.ts",
+    "agent:evidence": "tsx tools/agent-factory/find-evidence-debt.ts",
     "agent:verify": "pnpm agent:validate && pnpm agent:index && pnpm agent:sources",
+    "docs:build": "pnpm --filter @multiverse/docs build",
+    "docs:smoke": "node tools/docs/verify-client-bundle.mjs",
+    "docs:verify": "pnpm docs:build && pnpm docs:smoke",
+    "docs:start": "pnpm --filter @multiverse/docs start",
     "build": "TURBO_TELEMETRY_DISABLED=1 DO_NOT_TRACK=1 turbo run build",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && pnpm --filter @multiverse/docs typecheck",
     "test": "vitest run"
   },
   "dependencies": {
@@ -29,5 +36,10 @@
     "turbo": "2.9.8",
     "typescript": "6.0.3",
     "vitest": "4.1.5"
+  },
+  "pnpm": {
+    "overrides": {
+      "webpack": "5.99.9"
+    }
   }
 }

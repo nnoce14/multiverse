@@ -1,0 +1,26 @@
+{
+  "decision_id": "decision-0006",
+  "title": "Providers implement isolation contracts",
+  "status": "accepted",
+  "iteration": 1,
+  "context": "The tool needs to support multiple concrete technologies (databases, file systems, processes) without hardcoding them into the core business model. A provider abstraction is needed to separate the core coordination logic from technology-specific isolation behavior.",
+  "decision": "The tool defines one high-level provider abstraction with two provider domains: resource providers and endpoint providers. In v1, every provider must support derive. Providers may additionally declare explicit support for validate, reset, and cleanup. Provider selection is explicit in repository configuration and is not inferred by the core tool in 1.0.",
+  "alternatives": [
+    "Hardcode supported technologies in the core tool.",
+    "Infer provider selection from the resource type or isolation strategy.",
+    "Use a plugin system with runtime discovery instead of explicit declaration."
+  ],
+  "rationale": "This keeps the core model technology-agnostic while still allowing concrete technologies to fulfill isolation behavior through a normalized contract. Explicit provider selection and explicit capability declaration keep behavior deterministic, understandable, and suitable for behavior-first development and TDD.",
+  "consequences": [
+    "The repository must declare which provider is assigned to each resource or endpoint.",
+    "The core tool coordinates providers through the shared contract rather than hardcoding specific technologies.",
+    "Destructive lifecycle behavior remains explicit and capability-based rather than implicit."
+  ],
+  "reversal_trigger": "If explicit provider selection creates unacceptable ergonomic friction for common cases, conventional defaults may be introduced post-1.0 with a governing decision record.",
+  "source_ids": ["src-multiverse-old-reference"],
+  "linked_rubric_dimensions": [
+    "provider_contract_stability",
+    "architecture_boundary_integrity",
+    "business_truth_alignment"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "decision_id": "decision-0005",
+  "title": "Resource isolation strategies for 1.0",
+  "status": "accepted",
+  "iteration": 1,
+  "context": "Resources need a normalized way to express their isolation approach so the core tool can reason about them generically without hardcoding specific technologies.",
+  "decision": "In 1.0, resources are isolated using one primary strategy chosen from: name-scoped, path-scoped, or process-scoped. Each declared resource must specify exactly one primary isolation strategy.",
+  "alternatives": [
+    "Allow resources to omit a strategy and infer one from the provider type.",
+    "Define a single unified isolation concept rather than named strategies.",
+    "Allow multiple concurrent strategies per resource."
+  ],
+  "rationale": "These three categories cover common local isolation patterns while keeping the model small and understandable. They allow the tool to reason about resource isolation without hardcoding specific technologies into the core model.",
+  "consequences": [
+    "The core tool models resources generically by strategy.",
+    "Concrete technologies are handled by providers rather than by the core business model.",
+    "Endpoints remain a separate concept and are not modeled as resources."
+  ],
+  "reversal_trigger": "If a clear isolation pattern exists that cannot be expressed by name-scoped, path-scoped, or process-scoped, a new strategy may be added with a governing decision record.",
+  "source_ids": ["src-multiverse-old-reference"],
+  "linked_rubric_dimensions": [
+    "business_truth_alignment",
+    "architecture_boundary_integrity",
+    "provider_contract_stability"
+  ]
+}

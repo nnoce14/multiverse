@@ -1,0 +1,24 @@
+{
+  "decision_id": "decision-0003",
+  "title": "Branch name is metadata, not identity",
+  "status": "accepted",
+  "iteration": 1,
+  "context": "Multiple worktrees may share the same branch, branches may change, and detached HEAD states exist. A worktree identity scheme that depends on branch name would fail under these normal conditions.",
+  "decision": "Branch name is treated as optional metadata and not as the canonical worktree identity.",
+  "alternatives": [
+    "Use branch name as the primary worktree identity.",
+    "Use branch name as a fallback identity when no other identifier is available."
+  ],
+  "rationale": "Multiple worktrees may share the same branch, branches may change, and detached HEAD states exist. Using branch name as identity would create unsafe scope ambiguity under all three of these normal conditions.",
+  "consequences": [
+    "Worktree identity must be derived from a tool-owned identifier rather than from git branch metadata.",
+    "Labels may incorporate branch-derived metadata for readability, but isolation must never depend on branch name being unique or stable.",
+    "The Worktree ID and Worktree Label are distinct concepts with distinct roles."
+  ],
+  "reversal_trigger": "Not applicable. The fundamental git semantics that motivate this decision are not expected to change.",
+  "source_ids": ["src-multiverse-old-reference"],
+  "linked_rubric_dimensions": [
+    "business_truth_alignment",
+    "refusal_safety"
+  ]
+}

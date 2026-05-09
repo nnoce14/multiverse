@@ -1,0 +1,48 @@
+:root {
+  --ifm-color-primary: #1f6f56;
+  --ifm-color-primary-dark: #1b604b;
+  --ifm-color-primary-darker: #185742;
+  --ifm-color-primary-darkest: #144536;
+  --ifm-color-primary-light: #2b8066;
+  --ifm-color-primary-lighter: #358b71;
+  --ifm-color-primary-lightest: #4b9d84;
+  --ifm-font-family-base: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ifm-heading-font-weight: 800;
+  --ifm-button-border-radius: 6px;
+  --mv-ink: #17201b;
+  --mv-muted: #59645e;
+  --mv-paper: #f7f8f9;
+  --mv-line: #d8dfdc;
+  --mv-green-dark: #144536;
+  --mv-blue: #245f8f;
+}
+
+html[data-theme="dark"] {
+  --ifm-background-color: #101512;
+  --ifm-navbar-background-color: #101512;
+  --ifm-footer-background-color: #151c18;
+  --mv-ink: #f4f7f2;
+  --mv-muted: #c1cbc4;
+  --mv-paper: #101512;
+  --mv-line: #2d3833;
+  --mv-green-dark: #8fd2bb;
+  --mv-blue: #8abce8;
+}
+
+body {
+  color: var(--mv-ink);
+}
+
+.navbar {
+  border-bottom: 1px solid var(--mv-line);
+  box-shadow: none;
+}
+
+.button {
+  min-height: 44px;
+  font-weight: 800;
+}
+
+.footer {
+  border-top: 1px solid var(--mv-line);
+}

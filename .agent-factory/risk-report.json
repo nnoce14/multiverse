@@ -1,0 +1,15 @@
+{
+  "generated_by": "tools/agent-factory/find-stale-risks.ts",
+  "scorecard_count": 0,
+  "risk_count": 0,
+  "open_count": 0,
+  "open_critical_count": 0,
+  "open_high_or_critical_count": 0,
+  "status_counts": {},
+  "open_by_severity": {},
+  "open_by_iteration": {},
+  "open_by_owner": {},
+  "open_high_or_critical_risks": [],
+  "open_risks": [],
+  "all_risks": []
+}

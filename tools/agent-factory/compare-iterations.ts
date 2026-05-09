@@ -1,0 +1,36 @@
+import {
+  compositeScore,
+  readJson,
+  requireArgs,
+  scoreWeights,
+  weightedScore,
+  type ScoreDimension,
+  type Scorecard,
+} from "./lib.js";
+
+async function main(): Promise<void> {
+  const args = process.argv.slice(2);
+  requireArgs(args, "pnpm agent:compare -- <scorecard-a.json> <scorecard-b.json>");
+
+  if (args.length < 2) {
+    throw new Error("Two scorecard paths are required. Usage: pnpm agent:compare -- <a.json> <b.json>");
+  }
+
+  const [beforePath, afterPath] = args;
+  const before = await readJson<Scorecard>(beforePath!);
+  const after = await readJson<Scorecard>(afterPath!);
+
+  console.log(`before: ${beforePath}`);
+  console.log(`after:  ${afterPath}`);
+  console.log(`weighted_delta:  ${(weightedScore(after) - weightedScore(before)).toFixed(3)}`);
+  console.log(`composite_delta: ${(compositeScore(after) - compositeScore(before)).toFixed(3)}`);
+  console.log("dimension_deltas:");
+
+  for (const dimension of Object.keys(scoreWeights) as ScoreDimension[]) {
+    const delta = after.dimensions[dimension].score - before.dimensions[dimension].score;
+    const sign = delta > 0 ? "+" : "";
+    console.log(`  ${dimension}: ${sign}${delta.toFixed(2)}`);
+  }
+}
+
+await main();

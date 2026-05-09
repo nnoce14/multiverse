@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Multiverse">
+  <rect width="64" height="64" rx="12" fill="#f8f7f2"/>
+  <path d="M14 21h36v8H14zM14 35h36v8H14z" fill="#1f6f56"/>
+  <path d="M22 17v30M42 17v30" stroke="#245f8f" stroke-width="5" stroke-linecap="round"/>
+</svg>

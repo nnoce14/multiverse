@@ -1,0 +1,13 @@
+{
+  "generated_by": "tools/agent-factory/find-evidence-debt.ts",
+  "scorecard_count": 0,
+  "debt_count": 0,
+  "open_count": 0,
+  "closed_count": 0,
+  "status_counts": {},
+  "open_by_iteration": {},
+  "open_by_owner": {},
+  "priority_open_debt": [],
+  "open_debt": [],
+  "all_debt": []
+}

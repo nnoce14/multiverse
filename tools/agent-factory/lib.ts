@@ -107,3 +107,9 @@ export function scorecardSummary(filePath: string, scorecard: Scorecard): string
 export async function iterationScorecardPaths(iterationDir: string): Promise<string[]> {
   return globFiles(`${iterationDir.replace(/\/$/, "")}/*scorecard.json`);
 }
+
+export function requireArgs(args: string[], usage: string): void {
+  if (args.length === 0) {
+    throw new Error(`Missing argument. Usage: ${usage}`);
+  }
+}
