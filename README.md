@@ -23,7 +23,7 @@ scripts/codex-env.sh pnpm test
 
 ## Workflow Entry Points
 
-- `RTK.md` - repository operating rules for agents
+- `AGENTS.md` - repository operating rules for agents
 - `docs/agent-factory/README.md` - agentic planning workflow
 - `docs/development/current-state.md` - current implementation posture
 - `docs/development/roadmap.md` - foundation-first roadmap
