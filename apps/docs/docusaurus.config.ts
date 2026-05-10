@@ -1,12 +1,7 @@
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
-import webpack from "webpack";
 
 const baseUrl = process.env.DOCUSAURUS_BASE_URL ?? "/multiverse/";
-const currentDir = dirname(fileURLToPath(import.meta.url));
-const clientModulesPath = resolve(currentDir, "src/client-modules.ts");
 
 const config: Config = {
   title: "Multiverse",
@@ -35,6 +30,30 @@ const config: Config = {
     locales: ["en"]
   },
 
+  plugins: [
+    function forceClientModulesCjsParsing() {
+      return {
+        name: "force-client-modules-cjs-parsing",
+        configureWebpack() {
+          return {
+            module: {
+              rules: [
+                {
+                  // The generated file uses `export default [require(...)]` — mixed ESM/CJS.
+                  // Webpack treats it as ESM (due to `export`), leaving require() as a literal
+                  // global reference that fails in the browser. Force `javascript/auto` so
+                  // webpack resolves the require() calls into bundled module IDs.
+                  test: /\.docusaurus[/\\]client-modules\.js$/,
+                  type: "javascript/auto"
+                }
+              ]
+            }
+          };
+        }
+      };
+    }
+  ],
+
   presets: [
     [
       "classic",
@@ -51,25 +70,6 @@ const config: Config = {
         }
       } satisfies Preset.Options
     ]
-  ],
-
-  plugins: [
-    function generatedClientModulesEsm() {
-      return {
-        name: "generated-client-modules-esm",
-        configureWebpack() {
-          return {
-            plugins: [
-              // Docusaurus generates this module with CommonJS require calls; keep the docs package ESM.
-              new webpack.NormalModuleReplacementPlugin(
-                /^@generated\/client-modules$/,
-                clientModulesPath
-              )
-            ]
-          };
-        }
-      };
-    }
   ],
 
   themeConfig: {
