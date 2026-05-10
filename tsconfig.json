@@ -1,4 +1,16 @@
 {
   "extends": "./tsconfig.base.json",
-  "include": ["tools/**/*.ts", "vitest.config.ts"]
+  "compilerOptions": {
+    "paths": {
+      "@multiverse/provider-contracts": ["./packages/provider-contracts/index.ts"],
+      "@multiverse/core": ["./packages/core/index.ts"],
+      "@multiverse/providers-testkit": ["./packages/providers-testkit/index.ts"]
+    }
+  },
+  "include": [
+    "tools/**/*.ts",
+    "packages/**/*.ts",
+    "tests/**/*.ts",
+    "vitest.config.ts"
+  ]
 }

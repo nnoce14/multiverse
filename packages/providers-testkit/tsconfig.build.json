@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "./dist",
+    "rootDir": "./",
+    "declaration": false,
+    "strict": true,
+    "skipLibCheck": true,
+    "exactOptionalPropertyTypes": true,
+    "paths": {
+      "@multiverse/provider-contracts": ["../provider-contracts/index.ts"]
+    }
+  },
+  "include": ["index.ts", "src/**/*.ts"],
+  "exclude": ["dist"]
+}
